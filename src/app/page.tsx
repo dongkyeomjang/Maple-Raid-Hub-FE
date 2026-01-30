@@ -56,10 +56,10 @@ export default function HomePage() {
 
             <p className="text-body-lg sm:text-h3 text-muted-foreground max-w-2xl mx-auto mb-2 leading-relaxed">
               월드통합 보스, 이제 서로 다른 서버 유저끼리도
-              <br className="hidden sm:block" />
+              <br />
               <strong className="text-foreground">실시간 채팅</strong>과{" "}
               <strong className="text-foreground">일정 조율</strong>로 쉽게 파티를 구성하세요.
-              <br className="hidden sm:block" />
+              <br />
               <strong className="text-foreground">노림발익검?</strong> 묶어서 한 번에 모집하세요.
             </p>
 
