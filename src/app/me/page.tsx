@@ -49,20 +49,20 @@ export default function MyPage() {
       <PageHeader title="마이페이지" />
 
       {/* User Profile Card */}
-      <Card className="mb-6">
+      <Card className="mb-6 border border-border/50 shadow-card hover:shadow-elevated transition-all duration-300">
         <CardContent className="pt-6">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16">
-              <AvatarFallback>
-                <User className="h-8 w-8" />
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+            <Avatar className="h-20 w-20 border-4 border-muted shadow-lg">
+              <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold">
+                {user.nickname?.slice(0, 2) || <User className="h-8 w-8" />}
               </AvatarFallback>
             </Avatar>
-            <div className="flex-1">
-              <h2 className="text-xl font-semibold">{user.nickname}</h2>
-              <p className="text-sm text-muted-foreground">{user.email}</p>
-              <div className="flex items-center gap-4 mt-2">
+            <div className="flex-1 text-center sm:text-left">
+              <h2 className="text-h2 font-bold">{user.nickname}</h2>
+              <p className="text-body-sm text-muted-foreground">{user.email}</p>
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-2">
                 <TemperatureBadge temperature={user.temperature} showLabel />
-                <span className="text-xs text-muted-foreground">
+                <span className="text-tiny text-muted-foreground">
                   가입일: {formatRelativeTime(user.createdAt)}
                 </span>
               </div>
@@ -164,7 +164,7 @@ export default function MyPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {partyRooms.map((room) => (
-                <Card key={room.id} className="hover:shadow-md transition-shadow">
+                <Card key={room.id} className="hover:shadow-md transition-shadow flex flex-col">
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between">
                       <CardTitle className="text-lg">
@@ -173,9 +173,9 @@ export default function MyPage() {
                       <PartyStatusBadge status={room.status} />
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="space-y-3 flex flex-col flex-1">
                     {room.scheduleConfirmed && room.scheduledTime ? (
-                      <div className="flex items-center gap-2 p-2 bg-green-50 dark:bg-green-950 rounded-md border border-green-200 dark:border-green-800">
+                      <div className="flex items-center gap-2 p-2 bg-green-50 dark:bg-green-950 rounded-md border border-green-200 dark:border-green-800 min-h-[52px]">
                         <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                           <p className="text-xs text-green-700 dark:text-green-300 font-medium">확정된 출발 시간</p>
@@ -185,14 +185,14 @@ export default function MyPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-muted-foreground">시간 미정</span>
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-md border border-border min-h-[52px]">
+                        <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <span className="text-sm text-muted-foreground">시간 미정</span>
                       </div>
                     )}
 
                     {/* 파티원 목록 */}
-                    <div className="space-y-1.5">
+                    <div className="space-y-1.5 flex-1">
                       <p className="text-xs text-muted-foreground font-medium">파티원 ({room.members?.length ?? 0})</p>
                       <div className="flex flex-wrap gap-2">
                         {room.members?.map((member) => (
@@ -224,7 +224,7 @@ export default function MyPage() {
                       </div>
                     </div>
 
-                    <Button className="w-full" asChild>
+                    <Button className="w-full mt-auto" asChild>
                       <Link href={`/chat/${room.id}`}>
                         <MessageSquare className="h-4 w-4 mr-2" />
                         파티방 입장

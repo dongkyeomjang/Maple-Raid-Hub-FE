@@ -1,0 +1,72 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 메-력소 마스코트: 근육 주황버섯 (바이킹 뿔 버전) -->
+  <defs>
+    <!-- 버섯 갓 그라데이션 -->
+    <linearGradient id="capGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF8C42"/>
+      <stop offset="50%" stop-color="#F97316"/>
+      <stop offset="100%" stop-color="#EA580C"/>
+    </linearGradient>
+    <!-- 하이라이트 -->
+    <radialGradient id="capHighlight" cx="30%" cy="25%" r="40%">
+      <stop offset="0%" stop-color="white" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 버섯 기둥 그라데이션 -->
+    <linearGradient id="stemGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FEF3C7"/>
+      <stop offset="100%" stop-color="#FDE68A"/>
+    </linearGradient>
+    <!-- 바이킹 뿔 그라데이션 -->
+    <linearGradient id="hornGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#A8A29E"/>
+      <stop offset="50%" stop-color="#D6D3D1"/>
+      <stop offset="100%" stop-color="#F5F5F4"/>
+    </linearGradient>
+    <!-- 볼터치 -->
+    <radialGradient id="blushGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FDA4AF" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#FDA4AF" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 그림자 -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <!-- 바이킹 뿔 왼쪽 -->
+    <path d="M22 52 Q14 38 10 15 Q18 25 26 35 Q22 42 22 52" fill="url(#hornGrad)"/>
+    <!-- 바이킹 뿔 오른쪽 -->
+    <path d="M98 52 Q106 38 110 15 Q102 25 94 35 Q98 42 98 52" fill="url(#hornGrad)"/>
+
+    <!-- 버섯 기둥 (몸통) -->
+    <ellipse cx="60" cy="95" rx="18" ry="14" fill="url(#stemGrad)"/>
+
+    <!-- 버섯 갓 (머리) -->
+    <ellipse cx="60" cy="55" rx="40" ry="35" fill="url(#capGrad)"/>
+
+    <!-- 버섯 갓 하이라이트 -->
+    <ellipse cx="60" cy="55" rx="40" ry="35" fill="url(#capHighlight)"/>
+
+    <!-- 버섯 갓 무늬 - 흰색 점들 -->
+    <ellipse cx="32" cy="42" rx="8" ry="6" fill="white" fill-opacity="0.9"/>
+    <ellipse cx="55" cy="30" rx="10" ry="7" fill="white" fill-opacity="0.9"/>
+    <ellipse cx="80" cy="45" rx="7" ry="5" fill="white" fill-opacity="0.85"/>
+    <ellipse cx="70" cy="62" rx="5" ry="4" fill="white" fill-opacity="0.8"/>
+    <ellipse cx="42" cy="58" rx="5" ry="4" fill="white" fill-opacity="0.8"/>
+  </g>
+
+  <!-- 귀여운 눈 -->
+  <ellipse cx="45" cy="65" rx="5" ry="6" fill="#44403C"/>
+  <ellipse cx="75" cy="65" rx="5" ry="6" fill="#44403C"/>
+  <circle cx="43.5" cy="63" r="2" fill="white"/>
+  <circle cx="73.5" cy="63" r="2" fill="white"/>
+
+  <!-- 볼터치 -->
+  <ellipse cx="30" cy="75" rx="8" ry="5" fill="url(#blushGrad)"/>
+  <ellipse cx="90" cy="75" rx="8" ry="5" fill="url(#blushGrad)"/>
+
+  <!-- 미소 -->
+  <path d="M50 82 Q60 92 70 82" stroke="#44403C" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+</svg>

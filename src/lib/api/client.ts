@@ -425,6 +425,11 @@ export const api = {
     bosses: () => fetchApi("/api/config/bosses"),
     bundles: () => fetchApi("/api/config/boss-bundles"),
   },
+
+  // Stats (no auth required)
+  stats: {
+    site: () => fetchApi<{ userCount: number; averageTemperature: number }>("/api/stats"),
+  },
 };
 
 // Export mock mode flag for conditional logic

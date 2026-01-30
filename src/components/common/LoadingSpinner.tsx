@@ -1,5 +1,7 @@
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Mascot } from "@/components/brand/Mascot";
+import { EASTER_EGGS } from "@/components/brand/brand-constants";
 
 interface LoadingSpinnerProps {
   size?: "sm" | "md" | "lg";
@@ -14,19 +16,29 @@ const sizes = {
 
 export function LoadingSpinner({ size = "md", className }: LoadingSpinnerProps) {
   return (
-    <Loader2 className={cn("animate-spin text-muted-foreground", sizes[size], className)} />
+    <Loader2 className={cn("animate-spin text-primary", sizes[size], className)} />
   );
 }
 
 interface LoadingPageProps {
   message?: string;
+  showMascot?: boolean;
 }
 
-export function LoadingPage({ message = "로딩 중..." }: LoadingPageProps) {
+export function LoadingPage({ message, showMascot = true }: LoadingPageProps) {
+  // 랜덤 로딩 메시지
+  const randomMessage = message || EASTER_EGGS.loading[Math.floor(Math.random() * EASTER_EGGS.loading.length)];
+
   return (
     <div className="flex flex-col items-center justify-center py-12">
-      <LoadingSpinner size="lg" />
-      <p className="text-muted-foreground mt-4">{message}</p>
+      {showMascot ? (
+        <Mascot variant="default" size="lg" />
+      ) : (
+        <LoadingSpinner size="lg" />
+      )}
+      <p className="text-body-sm text-muted-foreground mt-4 animate-pulse">
+        {randomMessage}
+      </p>
     </div>
   );
 }

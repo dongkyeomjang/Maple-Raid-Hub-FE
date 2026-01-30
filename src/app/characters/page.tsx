@@ -174,6 +174,7 @@ export default function CharactersPage() {
                                     <Button
                                         onClick={handleClaimCharacter}
                                         disabled={claimMutation.isPending}
+                                        className="btn-maple"
                                     >
                                         {claimMutation.isPending ? (
                                             <>

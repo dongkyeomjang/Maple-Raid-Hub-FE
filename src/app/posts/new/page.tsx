@@ -187,11 +187,16 @@ export default function NewPostPage() {
               />
             </div>
 
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && (
+              <div className="p-3 rounded-lg bg-error-bg text-error-text text-body-sm flex items-center gap-2">
+                <span>😢</span>
+                {error}
+              </div>
+            )}
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full h-12 text-body btn-maple"
               disabled={createMutation.isPending || verifiedCharacters.length === 0}
             >
               {createMutation.isPending ? (
@@ -200,7 +205,7 @@ export default function NewPostPage() {
                   작성 중...
                 </>
               ) : (
-                "모집글 작성"
+                "모집글 작성하기"
               )}
             </Button>
           </form>

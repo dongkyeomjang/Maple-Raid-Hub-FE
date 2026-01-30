@@ -5,70 +5,73 @@
 /* Pretendard 폰트 - CDN */
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
 
+/* Noto Serif KR - 한자 브랜딩용 (力 - 힘 력) */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700;900&display=swap');
+
 @layer base {
   :root {
     --font-pretendard: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 
-    /* Light Mode */
-    --background: 0 0% 100%;
-    --foreground: 220 13% 13%;
+    /* Light Mode - Warm Orange Theme */
+    --background: 30 50% 99%;
+    --foreground: 20 14% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 13% 13%;
+    --card-foreground: 20 14% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 13%;
+    --popover-foreground: 20 14% 11%;
 
-    --primary: 217 91% 60%;
+    --primary: 25 95% 53%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 13% 13%;
+    --secondary: 30 33% 96%;
+    --secondary-foreground: 20 14% 11%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 30 33% 96%;
+    --muted-foreground: 25 10% 42%;
 
-    --accent: 220 14% 96%;
-    --accent-foreground: 220 13% 13%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 91% 60%;
+    --border: 30 20% 90%;
+    --input: 30 20% 90%;
+    --ring: 25 95% 53%;
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 220 13% 9%;
-    --foreground: 220 14% 96%;
+    --background: 20 14% 7%;
+    --foreground: 30 33% 96%;
 
-    --card: 220 13% 13%;
-    --card-foreground: 220 14% 96%;
+    --card: 20 14% 11%;
+    --card-foreground: 30 33% 96%;
 
-    --popover: 220 13% 13%;
-    --popover-foreground: 220 14% 96%;
+    --popover: 20 14% 11%;
+    --popover-foreground: 30 33% 96%;
 
-    --primary: 217 91% 60%;
+    --primary: 25 95% 53%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 13% 18%;
-    --secondary-foreground: 220 14% 96%;
+    --secondary: 20 14% 16%;
+    --secondary-foreground: 30 33% 96%;
 
-    --muted: 220 13% 18%;
-    --muted-foreground: 220 9% 56%;
+    --muted: 20 14% 16%;
+    --muted-foreground: 25 10% 56%;
 
-    --accent: 220 13% 18%;
-    --accent-foreground: 220 14% 96%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 20%;
-    --input: 220 13% 20%;
-    --ring: 217 91% 60%;
+    --border: 20 14% 18%;
+    --input: 20 14% 18%;
+    --ring: 25 95% 53%;
   }
 }
 
@@ -123,6 +126,11 @@
     @apply active:scale-[0.98];
   }
 
+  /* Maple Gradient Card */
+  .card-maple {
+    @apply bg-gradient-to-br from-primary-50 to-primary-100/50 rounded-lg border border-primary-200/50;
+  }
+
   /* Button Base */
   .btn-base {
     @apply inline-flex items-center justify-center gap-2;
@@ -130,6 +138,20 @@
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
     @apply disabled:pointer-events-none disabled:opacity-50;
     @apply active:scale-[0.97];
+  }
+
+  /* Feature Cards */
+  .feature-card {
+    @apply relative overflow-hidden rounded-xl p-6 transition-all duration-300;
+    @apply hover:shadow-elevated;
+  }
+
+  .feature-card-chat {
+    @apply bg-gradient-to-br from-chat-bg to-purple-50 border border-chat/20;
+  }
+
+  .feature-card-schedule {
+    @apply bg-gradient-to-br from-schedule-bg to-cyan-50 border border-schedule/20;
   }
 
   /* World Group Badges */
@@ -200,6 +222,18 @@
   .empty-state-description {
     @apply text-body-sm text-gray-500;
   }
+
+  /* Highlight Badge */
+  .highlight-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-caption font-semibold;
+    @apply bg-gradient-maple text-white shadow-glow;
+  }
+
+  /* Value Proposition Cards */
+  .value-card {
+    @apply relative p-6 rounded-2xl border transition-all duration-300;
+    @apply hover:-translate-y-1 hover:shadow-elevated;
+  }
 }
 
 @layer utilities {
@@ -242,7 +276,11 @@
 
   /* Gradient text */
   .text-gradient-primary {
-    @apply bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-maple {
+    @apply bg-gradient-maple bg-clip-text text-transparent;
   }
 }
 
@@ -282,4 +320,455 @@
 /* Focus visible only for keyboard navigation */
 .focus-ring {
   @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+}
+
+/* Maple Leaf Pattern Background */
+.bg-maple-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 L35 15 L45 15 L37 22 L40 32 L30 26 L20 32 L23 22 L15 15 L25 15 Z' fill='%23F9731610'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* ===== 메-력소 확장 스타일 ===== */
+/* Context7 참조: Tailwind CSS v3 애니메이션 & Radix UI CSS 변수 활용 */
+
+@layer components {
+  /* 따뜻한 글로우 버튼 - 메인 CTA */
+  .btn-maple {
+    @apply btn-base px-5 py-2.5 rounded-xl;
+    @apply bg-gradient-maple text-white font-semibold;
+    @apply shadow-glow hover:shadow-glow-lg;
+    @apply transition-all duration-300;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-maple::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn-maple:hover::before {
+    left: 100%;
+  }
+
+  .btn-maple:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn-maple:active {
+    transform: translateY(0);
+  }
+
+  /* 세컨더리 버튼 - 아웃라인 스타일 */
+  .btn-maple-outline {
+    @apply btn-base px-5 py-2.5 rounded-xl;
+    @apply bg-transparent border-2 border-primary text-primary font-semibold;
+    @apply hover:bg-primary hover:text-white;
+    @apply transition-all duration-300;
+  }
+
+  /* 고스트 버튼 - 텍스트만 */
+  .btn-maple-ghost {
+    @apply btn-base px-4 py-2 rounded-lg;
+    @apply bg-transparent text-primary font-medium;
+    @apply hover:bg-primary/10;
+    @apply transition-all duration-200;
+  }
+
+  /* 귀여운 카드 호버 효과 */
+  .card-cute {
+    @apply bg-card rounded-2xl border border-border/50 p-5;
+    @apply shadow-card transition-all duration-300;
+  }
+
+  .card-cute:hover {
+    @apply shadow-elevated border-primary/20;
+    transform: translateY(-4px);
+  }
+
+  /* 단풍잎 장식 배경 */
+  .bg-maple-decorative {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bg-maple-decorative::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(249, 115, 22, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .bg-maple-decorative::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -10%;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* 통통한 뱃지 */
+  .badge-puffy {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full;
+    @apply font-semibold text-caption;
+    @apply shadow-sm transition-all duration-200;
+  }
+
+  .badge-puffy:hover {
+    transform: scale(1.05);
+  }
+
+  /* 따뜻한 인풋 */
+  .input-warm {
+    @apply input-base rounded-xl;
+    @apply border-2 border-gray-200;
+    @apply focus:border-primary focus:ring-primary/20;
+    @apply placeholder:text-gray-400;
+  }
+
+  .input-warm:focus {
+    @apply shadow-[0_0_0_4px_rgba(249,115,22,0.1)];
+  }
+
+  /* 귀여운 툴팁 */
+  .tooltip-cute {
+    @apply bg-gray-900 text-white text-tiny px-3 py-2 rounded-lg;
+    @apply shadow-lg;
+  }
+
+  .tooltip-cute::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 6px 0 6px;
+    border-style: solid;
+    border-color: #1C1917 transparent transparent transparent;
+  }
+
+  /* 마스코트 컨테이너 */
+  .mascot-container {
+    @apply relative inline-flex;
+    filter: drop-shadow(0 8px 16px rgba(249, 115, 22, 0.2));
+  }
+
+  /* 피쳐 섹션 카드 */
+  .feature-section {
+    @apply relative overflow-hidden rounded-3xl p-8;
+    @apply bg-gradient-to-br from-white to-gray-50;
+    @apply border border-gray-100;
+  }
+
+  /* 소셜 프루프 바 */
+  .social-proof-bar {
+    @apply flex flex-wrap items-center justify-center gap-4 py-4 px-6;
+    @apply bg-gradient-to-r from-primary-50/50 via-white to-accent-50/50;
+    @apply border-y border-primary-100/50;
+  }
+
+  /* 푸터 링크 스타일 */
+  .footer-link {
+    @apply text-body-sm text-muted-foreground;
+    @apply hover:text-primary transition-colors;
+  }
+
+  /* CTA 섹션 */
+  .cta-section {
+    @apply relative py-16 px-8 rounded-3xl;
+    @apply bg-gradient-maple text-white text-center;
+    @apply overflow-hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 L35 15 L45 15 L37 22 L40 32 L30 26 L20 32 L23 22 L15 15 L25 15 Z' fill='%23ffffff10'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  /* ===== Radix UI 컴포넌트 스타일링 (Context7 참조) ===== */
+
+  /* Dialog 오버레이 - 스크롤 가능 */
+  .dialog-overlay {
+    @apply fixed inset-0 bg-black/50 backdrop-blur-sm;
+    @apply grid place-items-center overflow-y-auto;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .dialog-content {
+    @apply bg-card rounded-2xl shadow-elevated p-6;
+    @apply border border-border/50;
+    animation: scaleIn 0.2s ease-out;
+    transform-origin: var(--radix-dialog-content-transform-origin, center);
+  }
+
+  /* Toast 스타일 - Radix CSS 변수 활용 */
+  .toast-root {
+    @apply bg-card rounded-xl shadow-elevated border border-border/50 p-4;
+  }
+
+  .toast-root[data-swipe="move"] {
+    transform: translateX(var(--radix-toast-swipe-move-x));
+  }
+
+  .toast-root[data-swipe="cancel"] {
+    transform: translateX(0);
+    transition: transform 200ms ease-out;
+  }
+
+  .toast-root[data-swipe="end"] {
+    animation: slideOutRight 100ms ease-out;
+  }
+
+  /* Tooltip 스타일 - origin-aware 애니메이션 */
+  .tooltip-content {
+    @apply bg-gray-900 text-white text-tiny px-3 py-2 rounded-lg shadow-lg;
+    transform-origin: var(--radix-tooltip-content-transform-origin);
+    animation: tooltipIn 0.15s ease-out;
+  }
+
+  /* Select 드롭다운 */
+  .select-content {
+    @apply bg-card rounded-xl shadow-elevated border border-border/50 overflow-hidden;
+    transform-origin: var(--radix-select-content-transform-origin);
+    animation: scaleIn 0.15s ease-out;
+  }
+
+  .select-item {
+    @apply px-3 py-2 text-body-sm cursor-pointer outline-none;
+    @apply hover:bg-primary/10 focus:bg-primary/10;
+    @apply data-[highlighted]:bg-primary/10;
+  }
+
+  /* Dropdown Menu */
+  .dropdown-content {
+    @apply bg-card rounded-xl shadow-elevated border border-border/50 p-1.5 min-w-[180px];
+    animation: slideDown 0.15s ease-out;
+  }
+
+  .dropdown-item {
+    @apply flex items-center gap-2 px-3 py-2 rounded-lg text-body-sm cursor-pointer outline-none;
+    @apply hover:bg-muted focus:bg-muted;
+    @apply data-[highlighted]:bg-muted;
+  }
+
+  /* ===== 인터랙티브 카드 효과 (참고 사이트 분석 반영) ===== */
+
+  /* 3D 틸트 효과 카드 */
+  .card-tilt {
+    @apply card-cute;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+  }
+
+  .card-tilt:hover {
+    transform: rotateX(2deg) rotateY(2deg);
+  }
+
+  /* 플로팅 카드 */
+  .card-floating {
+    @apply card-cute;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* 글래스모피즘 카드 */
+  .card-glass {
+    @apply rounded-2xl p-5;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark .card-glass {
+    background: rgba(30, 30, 30, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* 네온 글로우 카드 */
+  .card-glow {
+    @apply card-cute;
+    @apply hover:shadow-glow-lg hover:border-primary/40;
+    transition: all 0.3s ease;
+  }
+}
+
+@layer utilities {
+  /* 부드러운 스크롤 스냅 */
+  .snap-y-mandatory {
+    scroll-snap-type: y mandatory;
+  }
+
+  .snap-start {
+    scroll-snap-align: start;
+  }
+
+  /* 텍스트 밸런스 (긴 제목용) */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* 귀여운 언더라인 효과 */
+  .underline-cute {
+    position: relative;
+    text-decoration: none;
+  }
+
+  .underline-cute::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #F97316, #FBBF24);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+  }
+
+  .underline-cute:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* 부드러운 페이드 인 */
+  .fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* 스태거드 애니메이션 */
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.2s; }
+  .stagger-3 { animation-delay: 0.3s; }
+  .stagger-4 { animation-delay: 0.4s; }
+
+  /* 그라데이션 텍스트 애니메이션 */
+  .text-shimmer {
+    background: linear-gradient(
+      90deg,
+      #F97316 0%,
+      #FBBF24 25%,
+      #F97316 50%,
+      #FBBF24 75%,
+      #F97316 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmerText 3s linear infinite;
+  }
+
+  @keyframes shimmerText {
+    to {
+      background-position: 200% center;
+    }
+  }
+
+  /* Radix UI 컴포넌트 애니메이션 (Context7 참조) */
+  @keyframes tooltipIn {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slideOutRight {
+    from {
+      transform: translateX(var(--radix-toast-swipe-end-x));
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* 부드러운 펄스 효과 */
+  @keyframes gentlePulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.85;
+      transform: scale(1.02);
+    }
+  }
+
+  .animate-gentle-pulse {
+    animation: gentlePulse 2s ease-in-out infinite;
+  }
+
+  /* 반짝이 효과 */
+  @keyframes sparkle {
+    0%, 100% {
+      opacity: 0;
+      transform: scale(0) rotate(0deg);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1) rotate(180deg);
+    }
+  }
+
+  .animate-sparkle {
+    animation: sparkle 1.5s ease-in-out infinite;
+  }
 }

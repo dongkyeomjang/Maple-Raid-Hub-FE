@@ -1,0 +1,30 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 메-력소 파비콘 - 동글동글 귀여운 버전 -->
+  <defs>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B35"/>
+      <stop offset="100%" stop-color="#F97316"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 배경 -->
+  <rect width="32" height="32" rx="8" fill="url(#orangeGrad)"/>
+
+  <!-- "메-" 동글동글 -->
+  <g fill="white" transform="translate(3, 7)">
+    <!-- ㅁ -->
+    <rect x="0" y="0" width="9" height="3" rx="1.5"/>
+    <rect x="0" y="0" width="3" height="9" rx="1.5"/>
+    <rect x="6" y="0" width="3" height="9" rx="1.5"/>
+    <rect x="0" y="6" width="9" height="3" rx="1.5"/>
+    <!-- ㅔ -->
+    <rect x="10" y="3" width="4" height="3" rx="1.5"/>
+    <rect x="11.5" y="0" width="3" height="9" rx="1.5"/>
+    <rect x="16" y="0" width="3" height="9" rx="1.5"/>
+    <!-- - -->
+    <rect x="20" y="3" width="6" height="3" rx="1.5"/>
+  </g>
+
+  <!-- 장식 점 -->
+  <circle cx="16" cy="24" r="1.5" fill="white" opacity="0.6"/>
+</svg>

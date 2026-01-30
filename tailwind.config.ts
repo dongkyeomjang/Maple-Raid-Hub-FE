@@ -29,17 +29,33 @@ const config: Config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
 
-        // Primary Blue - 메-력소 브랜드 컬러
+        // Primary Maple Orange - 메-력소 브랜드 컬러 (단풍/메이플 테마)
         primary: {
-          DEFAULT: "#3B82F6",
-          50: "#EFF6FF",
-          100: "#DBEAFE",
-          200: "#BFDBFE",
-          300: "#93C5FD",
-          400: "#60A5FA",
-          500: "#3B82F6",
-          600: "#2563EB",
-          700: "#1D4ED8",
+          DEFAULT: "#F97316",
+          50: "#FFF7ED",
+          100: "#FFEDD5",
+          200: "#FED7AA",
+          300: "#FDBA74",
+          400: "#FB923C",
+          500: "#F97316",
+          600: "#EA580C",
+          700: "#C2410C",
+          800: "#9A3412",
+          900: "#7C2D12",
+          foreground: "#FFFFFF",
+        },
+
+        // Accent Amber - 보조 강조색
+        accent: {
+          DEFAULT: "#F59E0B",
+          50: "#FFFBEB",
+          100: "#FEF3C7",
+          200: "#FDE68A",
+          300: "#FCD34D",
+          400: "#FBBF24",
+          500: "#F59E0B",
+          600: "#D97706",
+          700: "#B45309",
           foreground: "#FFFFFF",
         },
 
@@ -55,10 +71,6 @@ const config: Config = {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
@@ -68,27 +80,27 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
 
-        // Neutral Gray Scale
+        // Neutral Warm Gray Scale - 따뜻한 뉴트럴 톤
         gray: {
-          50: "#F9FAFB",
-          100: "#F3F4F6",
-          200: "#E5E7EB",
-          300: "#D1D5DB",
-          400: "#9CA3AF",
-          500: "#6B7280",
-          600: "#4B5563",
-          700: "#374151",
-          800: "#1F2937",
-          900: "#111827",
+          50: "#FAFAF9",
+          100: "#F5F5F4",
+          200: "#E7E5E4",
+          300: "#D6D3D1",
+          400: "#A8A29E",
+          500: "#78716C",
+          600: "#57534E",
+          700: "#44403C",
+          800: "#292524",
+          900: "#1C1917",
         },
 
         // World Group Colors - 월드 그룹 구분
         world: {
           challenger: {
-            DEFAULT: "#F97316",
-            bg: "#FFF7ED",
-            border: "#FDBA74",
-            text: "#C2410C",
+            DEFAULT: "#EF4444",
+            bg: "#FEF2F2",
+            border: "#FECACA",
+            text: "#B91C1C",
           },
           eosHelios: {
             DEFAULT: "#8B5CF6",
@@ -131,9 +143,21 @@ const config: Config = {
           text: "#B91C1C",
         },
         info: {
-          DEFAULT: "#3B82F6",
-          bg: "#EFF6FF",
-          text: "#1D4ED8",
+          DEFAULT: "#0EA5E9",
+          bg: "#F0F9FF",
+          text: "#0369A1",
+        },
+
+        // Feature Highlight Colors
+        chat: {
+          DEFAULT: "#8B5CF6",
+          bg: "#F5F3FF",
+          text: "#6D28D9",
+        },
+        schedule: {
+          DEFAULT: "#06B6D4",
+          bg: "#ECFEFF",
+          text: "#0E7490",
         },
       },
 
@@ -170,6 +194,8 @@ const config: Config = {
         "card": "0 2px 8px 0 rgb(0 0 0 / 0.08)",
         "elevated": "0 4px 16px 0 rgb(0 0 0 / 0.12)",
         "float": "0 8px 24px 0 rgb(0 0 0 / 0.16)",
+        "glow": "0 0 20px 0 rgb(249 115 22 / 0.3)",
+        "glow-lg": "0 0 40px 0 rgb(249 115 22 / 0.4)",
       },
 
       keyframes: {
@@ -205,6 +231,62 @@ const config: Config = {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        "bounce-subtle": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-5px)" },
+        },
+        wave: {
+          "0%, 100%": { transform: "rotate(-10deg)" },
+          "50%": { transform: "rotate(20deg)" },
+        },
+        wiggle: {
+          "0%, 100%": { transform: "rotate(-3deg)" },
+          "50%": { transform: "rotate(3deg)" },
+        },
+        "pop-in": {
+          "0%": { transform: "scale(0)", opacity: "0" },
+          "50%": { transform: "scale(1.1)" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        "heart-beat": {
+          "0%, 100%": { transform: "scale(1)" },
+          "25%": { transform: "scale(1.1)" },
+          "50%": { transform: "scale(1)" },
+          "75%": { transform: "scale(1.1)" },
+        },
+        // Radix UI 컴포넌트 애니메이션 (Context7 참조)
+        "tooltip-in": {
+          from: { opacity: "0", transform: "scale(0.96)" },
+          to: { opacity: "1", transform: "scale(1)" },
+        },
+        "dialog-in": {
+          from: { opacity: "0", transform: "scale(0.95) translateY(10px)" },
+          to: { opacity: "1", transform: "scale(1) translateY(0)" },
+        },
+        "dropdown-in": {
+          from: { opacity: "0", transform: "translateY(-8px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "toast-in": {
+          from: { opacity: "0", transform: "translateX(100%)" },
+          to: { opacity: "1", transform: "translateX(0)" },
+        },
+        "gentle-pulse": {
+          "0%, 100%": { opacity: "1", transform: "scale(1)" },
+          "50%": { opacity: "0.85", transform: "scale(1.02)" },
+        },
+        "sparkle": {
+          "0%, 100%": { opacity: "0", transform: "scale(0) rotate(0deg)" },
+          "50%": { opacity: "1", transform: "scale(1) rotate(180deg)" },
+        },
+        "glow-pulse": {
+          "0%, 100%": { boxShadow: "0 0 20px 0 rgb(249 115 22 / 0.3)" },
+          "50%": { boxShadow: "0 0 30px 5px rgb(249 115 22 / 0.5)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -215,10 +297,30 @@ const config: Config = {
         "fade-in": "fade-in 0.2s ease-out",
         "scale-in": "scale-in 0.2s ease-out",
         shimmer: "shimmer 1.5s infinite",
+        float: "float 3s ease-in-out infinite",
+        "bounce-subtle": "bounce-subtle 2s ease-in-out infinite",
+        wave: "wave 1s ease-in-out infinite",
+        wiggle: "wiggle 0.5s ease-in-out infinite",
+        "pop-in": "pop-in 0.3s ease-out",
+        "heart-beat": "heart-beat 1.5s ease-in-out infinite",
+        // Radix UI 컴포넌트 애니메이션
+        "tooltip-in": "tooltip-in 0.15s ease-out",
+        "dialog-in": "dialog-in 0.2s ease-out",
+        "dropdown-in": "dropdown-in 0.15s ease-out",
+        "toast-in": "toast-in 0.3s ease-out",
+        "gentle-pulse": "gentle-pulse 2s ease-in-out infinite",
+        "sparkle": "sparkle 1.5s ease-in-out infinite",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
       },
 
       transitionTimingFunction: {
         "ease-spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+      },
+
+      backgroundImage: {
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-maple": "linear-gradient(135deg, #F97316 0%, #F59E0B 50%, #FBBF24 100%)",
+        "gradient-warm": "linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%)",
       },
     },
   },

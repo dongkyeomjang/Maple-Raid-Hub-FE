@@ -7,6 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Mascot } from "@/components/brand/Mascot";
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
 
@@ -26,6 +27,8 @@ interface EmptyStateProps {
     onClick: () => void;
   };
   size?: "sm" | "md" | "lg";
+  showMascot?: boolean;
+  mascotVariant?: "default" | "thinking" | "happy";
   className?: string;
 }
 
@@ -36,6 +39,8 @@ export function EmptyState({
   action,
   secondaryAction,
   size = "md",
+  showMascot = true,
+  mascotVariant = "thinking",
   className,
 }: EmptyStateProps) {
   const sizeConfig = {
@@ -45,6 +50,7 @@ export function EmptyState({
       iconSize: "h-6 w-6",
       title: "text-body font-medium",
       description: "text-caption",
+      mascotSize: "sm" as const,
     },
     md: {
       container: "py-12",
@@ -52,6 +58,7 @@ export function EmptyState({
       iconSize: "h-8 w-8",
       title: "text-h3 font-semibold",
       description: "text-body-sm",
+      mascotSize: "md" as const,
     },
     lg: {
       container: "py-16",
@@ -59,6 +66,7 @@ export function EmptyState({
       iconSize: "h-10 w-10",
       title: "text-h2 font-semibold",
       description: "text-body",
+      mascotSize: "lg" as const,
     },
   };
 
@@ -85,7 +93,11 @@ export function EmptyState({
         className
       )}
     >
-      {IconProp && (
+      {showMascot ? (
+        <div className="mb-4">
+          <Mascot variant={mascotVariant} size={config.mascotSize} animate={false} />
+        </div>
+      ) : IconProp ? (
         <div
           className={cn(
             "rounded-full bg-muted/80 flex items-center justify-center mb-4",
@@ -94,7 +106,7 @@ export function EmptyState({
         >
           {renderIcon()}
         </div>
-      )}
+      ) : null}
 
       <h3 className={cn("mb-2 text-foreground", config.title)}>{title}</h3>
 
@@ -137,6 +149,7 @@ export function EmptyState({
                 variant={action.variant || "default"}
                 size={size === "sm" ? "sm" : "default"}
                 disabled={action.disabled}
+                className={action.variant === "default" ? "btn-maple" : ""}
               >
                 {action.label}
               </Button>

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { TemperatureBadge } from "@/components/domain/TemperatureBadge";
+import { LogoIcon } from "@/components/ui/Logo";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import {
@@ -14,7 +15,6 @@ import {
   X,
   Swords,
   Users,
-  Home,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -29,6 +29,11 @@ export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // 온보딩, 로그인 페이지에서는 헤더 숨김
+  if (pathname === "/onboarding" || pathname === "/login") {
+    return null;
+  }
+
   const handleLogout = async () => {
     await logout();
     setMobileMenuOpen(false);
@@ -36,15 +41,18 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80">
-      <div className="container flex h-14 items-center">
+      <div className="container flex h-16 items-center">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 mr-8 tap-highlight-none">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-white">
-            <Swords className="h-5 w-5" />
+        <Link href="/" className="flex items-center gap-1 mr-8 tap-highlight-none">
+          <LogoIcon size="lg" />
+          <div className="hidden sm:flex flex-col">
+            <span className="text-body font-bold tracking-tight text-foreground leading-none">
+              력소
+            </span>
+            <span className="text-tiny text-muted-foreground mt-0.5">
+              메이플의 힘이 모이는 곳
+            </span>
           </div>
-          <span className="font-bold text-h3 hidden sm:inline tracking-tight">
-            메-력소
-          </span>
         </Link>
 
         {/* Desktop Nav */}
