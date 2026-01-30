@@ -34,10 +34,14 @@ export default function OnboardingPage() {
   const [error, setError] = useState<string | null>(null);
 
   // Account form state
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [nickname, setNickname] = useState("");
+
+  // 아이디 유효성 검사
+  const isValidUsername = (text: string) => /^[a-z][a-z0-9_]{3,19}$/.test(text);
+  const usernameError = username && !isValidUsername(username);
 
   // 한글 포함 여부 체크
   const hasKorean = (text: string) => /[\uAC00-\uD7AF\u3131-\u318E]/.test(text);
@@ -46,6 +50,11 @@ export default function OnboardingPage() {
   const handleAccountSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (!isValidUsername(username)) {
+      setError("아이디는 영문 소문자로 시작하고, 영문 소문자/숫자/밑줄만 사용하여 4~20자로 입력해주세요.");
+      return;
+    }
 
     if (passwordHasKorean) {
       setError("비밀번호에 한글이 포함되어 있습니다. 영문/숫자/특수문자만 사용해주세요.");
@@ -64,7 +73,7 @@ export default function OnboardingPage() {
 
     setIsLoading(true);
     try {
-      const success = await signup(email, password, nickname);
+      const success = await signup(username, password, nickname);
       if (success) {
         await queryClient.invalidateQueries();
         setCurrentStep("complete");
@@ -220,16 +229,21 @@ export default function OnboardingPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email">이메일</Label>
+                    <Label htmlFor="username">아이디</Label>
                     <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="email@example.com"
+                      id="username"
+                      type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value.toLowerCase())}
+                      placeholder="영문 소문자, 숫자, 밑줄 (4~20자)"
                       required
                       className="h-12 input-warm"
                     />
+                    {usernameError && (
+                      <p className="text-sm text-destructive">
+                        영문 소문자로 시작, 영문 소문자/숫자/밑줄만 사용 (4~20자)
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">

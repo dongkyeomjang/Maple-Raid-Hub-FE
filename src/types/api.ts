@@ -45,13 +45,13 @@ export interface PageResponse<T> {
 // ============================================
 
 export interface SignupRequest {
-  email: string;
+  username: string;
   password: string;
   nickname: string;
 }
 
 export interface LoginRequest {
-  email: string;
+  username: string;
   password: string;
 }
 
@@ -64,7 +64,7 @@ export interface AuthTokenResponse {
 
 export interface UserResponse {
   id: string;
-  email: string;
+  username: string;
   nickname: string;
   temperature: number;
   completedParties: number;

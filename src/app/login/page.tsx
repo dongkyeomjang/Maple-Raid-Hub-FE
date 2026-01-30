@@ -17,7 +17,7 @@ export default function LoginPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,12 +37,12 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const success = await login(email, password);
+      const success = await login(username, password);
       if (success) {
         await queryClient.invalidateQueries();
         router.push("/posts");
       } else {
-        setError("이메일 또는 비밀번호가 올바르지 않습니다.");
+        setError("아이디 또는 비밀번호가 올바르지 않습니다.");
       }
     } catch (err) {
       setError("로그인 중 오류가 발생했습니다.");
@@ -92,13 +92,13 @@ export default function LoginPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">이메일</Label>
+                <Label htmlFor="username">아이디</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@example.com"
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.toLowerCase())}
+                  placeholder="아이디를 입력하세요"
                   required
                   className="h-12 input-warm"
                 />

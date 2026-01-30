@@ -157,13 +157,13 @@ async function fetchApiWithRefresh<T>(
 export const api = {
   // Auth
   auth: {
-    signup: (data: { email: string; password: string; nickname: string }) =>
+    signup: (data: { username: string; password: string; nickname: string }) =>
       fetchApi("/api/auth/signup", {
         method: "POST",
         body: JSON.stringify(data),
       }),
 
-    login: (data: { email: string; password: string }) =>
+    login: (data: { username: string; password: string }) =>
       fetchApi("/api/auth/login", {
         method: "POST",
         body: JSON.stringify(data),

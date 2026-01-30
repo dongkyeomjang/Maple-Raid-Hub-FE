@@ -9,8 +9,8 @@ interface AuthState {
   user: UserResponse | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  signup: (email: string, password: string, nickname: string) => Promise<boolean>;
+  login: (username: string, password: string) => Promise<boolean>;
+  signup: (username: string, password: string, nickname: string) => Promise<boolean>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
   setUser: (user: UserResponse | null) => void;
@@ -23,8 +23,8 @@ export const useAuth = create<AuthState>()(
       isAuthenticated: false,
       isLoading: true,
 
-      login: async (email: string, password: string) => {
-        const result = await apiClient.auth.login({ email, password });
+      login: async (username: string, password: string) => {
+        const result = await apiClient.auth.login({ username, password });
         if (result.success) {
           const data = result.data as AuthTokenResponse;
           setTokens(data.accessToken, data.refreshToken);
@@ -39,11 +39,11 @@ export const useAuth = create<AuthState>()(
         return false;
       },
 
-      signup: async (email: string, password: string, nickname: string) => {
-        const result = await apiClient.auth.signup({ email, password, nickname });
+      signup: async (username: string, password: string, nickname: string) => {
+        const result = await apiClient.auth.signup({ username, password, nickname });
         if (result.success) {
           // 회원가입 성공 후 로그인 진행
-          return get().login(email, password);
+          return get().login(username, password);
         }
         return false;
       },

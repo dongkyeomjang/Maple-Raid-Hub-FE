@@ -59,6 +59,8 @@ export default function HomePage() {
               <br className="hidden sm:block" />
               <strong className="text-foreground">실시간 채팅</strong>과{" "}
               <strong className="text-foreground">일정 조율</strong>로 쉽게 파티를 구성하세요.
+              <br className="hidden sm:block" />
+              <strong className="text-foreground">노림발익검?</strong> 묶어서 한 번에 모집하세요.
             </p>
 
             <p className="text-body text-muted-foreground mb-5">
