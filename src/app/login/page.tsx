@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/ui/Logo";
 import { BRAND_SLOGANS } from "@/components/brand/brand-constants";
-import { MuscleMushroomMascot } from "@/components/brand/Mascot";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { Loader2, MessageCircle, CalendarClock, Sparkles, ArrowLeft } from "lucide-react";
 
@@ -73,9 +72,8 @@ export default function LoginPage() {
           뒤로
         </Button>
 
-        {/* 근육 주황버섯 마스코트 + 로고 */}
+        {/* 로고 */}
         <div className="flex flex-col items-center mb-6">
-          <MuscleMushroomMascot size="lg" className="-mb-2" />
           <Link href="/">
             <Logo size="lg" />
           </Link>

@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/ui/Logo";
 import { BRAND_SLOGANS } from "@/components/brand/brand-constants";
-import { MuscleMushroomMascot } from "@/components/brand/Mascot";
 import { useAuth } from "@/lib/hooks/use-auth";
 import {
   Check,
@@ -20,6 +19,7 @@ import {
   Globe,
   Shield,
   ArrowRight,
+  Home,
   Sparkles,
 } from "lucide-react";
 
@@ -94,20 +94,24 @@ export default function OnboardingPage() {
 
       <div className="relative container max-w-6xl mx-auto px-4 py-8 sm:py-12">
         {/* Header */}
-        <div className="flex justify-center mb-8">
+        <div className="flex items-center justify-between mb-8">
+          <Link href="/">
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+              <Home className="h-4 w-4 mr-1" />
+              홈으로
+            </Button>
+          </Link>
           <Link href="/">
             <Logo size="lg" />
           </Link>
+          <div className="w-[72px]" /> {/* 로고 중앙 정렬을 위한 spacer */}
         </div>
 
         {/* Step Content */}
         {currentStep === "intro" && (
           <div className="animate-fade-in">
-            {/* Hero with 근육 주황버섯 */}
+            {/* Hero */}
             <div className="text-center mb-12">
-              <div className="flex justify-center mb-4">
-                <MuscleMushroomMascot size="xl" />
-              </div>
               <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-gradient-maple text-white text-caption font-semibold shadow-glow">
                 <Sparkles className="h-4 w-4" />
                 {BRAND_SLOGANS.main}
@@ -195,9 +199,6 @@ export default function OnboardingPage() {
 
             <Card className="shadow-elevated border-0 card-cute">
               <CardHeader className="text-center pb-2">
-                <div className="flex justify-center mb-2">
-                  <MuscleMushroomMascot size="md" />
-                </div>
                 <CardTitle className="text-h1">계정 만들기</CardTitle>
                 <CardDescription className="text-body">
                   파티원들과 소통하기 위한 계정을 만드세요
@@ -320,10 +321,7 @@ export default function OnboardingPage() {
               <div className="bg-gradient-maple p-8 text-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-maple-pattern opacity-20" />
                 <div className="relative">
-                  <div className="flex justify-center mb-4">
-                    <MuscleMushroomMascot size="lg" />
-                  </div>
-                  <h2 className="text-h1 text-white font-bold mb-2">환영합니다! 💪</h2>
+                  <h2 className="text-h1 text-white font-bold mb-2">환영합니다!</h2>
                   <p className="text-white/90">
                     이제 당신의 메이플力을 보여줄 준비가 되었어요
                   </p>
