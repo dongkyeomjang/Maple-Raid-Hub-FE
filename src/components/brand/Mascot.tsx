@@ -42,7 +42,7 @@ export function MuscleMushroomMascot({ size = "lg", className }: MuscleMushroomP
       style={{ width: pixelSize, height: pixelSize }}
     >
       <Image
-        src="/근육주황버섯.gif"
+        src="/mascot.gif"
         alt="메-력소 마스코트 - 근육 주황버섯"
         width={pixelSize}
         height={pixelSize}
@@ -309,7 +309,7 @@ export function MascotMini({ className }: { className?: string }) {
   return (
     <div className={cn("inline-block", className)}>
       <Image
-        src="/근육주황버섯.gif"
+        src="/mascot.gif"
         alt="메-력소"
         width={24}
         height={24}
@@ -325,7 +325,7 @@ export function MascotMedium({ className }: { className?: string }) {
   return (
     <div className={cn("inline-block", className)}>
       <Image
-        src="/근육주황버섯.gif"
+        src="/mascot.gif"
         alt="메-력소 마스코트"
         width={64}
         height={64}

@@ -312,7 +312,7 @@ export const MASCOT = {
   name: "근육 주황버섯",
   nickname: "근버",
   description: "바이킹 뿔과 쇠사슬로 무장한 메이플스토리의 힘센 주황버섯",
-  imagePath: "/근육주황버섯.gif",
+  imagePath: "/mascot.gif",
   quotes: [
     "당신의 메이플力을 보여주세요!",
     "함께라면 어떤 보스도 잡을 수 있어요!",
