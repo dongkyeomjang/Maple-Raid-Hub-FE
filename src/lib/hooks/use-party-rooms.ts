@@ -1,0 +1,201 @@
+"use client";
+
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api";
+import { useAuth } from "@/lib/hooks/use-auth";
+import type {
+  PartyRoomResponse,
+  ReviewResponse,
+  ReviewTag,
+} from "@/types/api";
+
+export const partyRoomKeys = {
+  all: ["partyRooms"] as const,
+  list: () => [...partyRoomKeys.all, "list"] as const,
+  detail: (id: string) => [...partyRoomKeys.all, "detail", id] as const,
+  reviews: (id: string) => [...partyRoomKeys.all, "reviews", id] as const,
+};
+
+export function usePartyRooms() {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: partyRoomKeys.list(),
+    queryFn: async () => {
+      const result = await apiClient.partyRooms.list();
+      if (!result.success) throw new Error(result.error.message);
+      return result.data as PartyRoomResponse[];
+    },
+    enabled: !!user,
+    staleTime: 0, // 항상 최신 데이터 fetch
+    refetchOnMount: "always", // 마운트 시 항상 refetch
+  });
+}
+
+export function usePartyRoom(id: string) {
+  return useQuery({
+    queryKey: partyRoomKeys.detail(id),
+    queryFn: async () => {
+      const result = await apiClient.partyRooms.get(id);
+      if (!result.success) throw new Error(result.error.message);
+      return result.data as PartyRoomResponse;
+    },
+    enabled: !!id,
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+}
+
+export function useToggleReady() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (roomId: string) => {
+      const result = await apiClient.partyRooms.toggleReady(roomId);
+      if (!result.success) throw new Error(result.error.message);
+      return { roomId };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: partyRoomKeys.detail(data.roomId) });
+    },
+  });
+}
+
+export function useStartReadyCheck() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (roomId: string) => {
+      const result = await apiClient.partyRooms.startReadyCheck(roomId);
+      if (!result.success) throw new Error(result.error.message);
+      return { roomId };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: partyRoomKeys.detail(data.roomId) });
+    },
+  });
+}
+
+export function useKickMember() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ roomId, memberId }: { roomId: string; memberId: string }) => {
+      const result = await apiClient.partyRooms.kick(roomId, memberId);
+      if (!result.success) throw new Error(result.error.message);
+      return { roomId };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: partyRoomKeys.detail(data.roomId) });
+    },
+  });
+}
+
+export function useLeaveParty() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (roomId: string) => {
+      const result = await apiClient.partyRooms.leave(roomId);
+      if (!result.success) throw new Error(result.error.message);
+      return { roomId };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: partyRoomKeys.list() });
+    },
+  });
+}
+
+export function useCompleteParty() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (roomId: string) => {
+      const result = await apiClient.partyRooms.complete(roomId);
+      if (!result.success) throw new Error(result.error.message);
+      return { roomId };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: partyRoomKeys.detail(data.roomId) });
+      queryClient.invalidateQueries({ queryKey: partyRoomKeys.list() });
+    },
+  });
+}
+
+export function useDisbandParty() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (roomId: string) => {
+      const result = await apiClient.partyRooms.disband(roomId);
+      if (!result.success) throw new Error(result.error.message);
+      return { roomId };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: partyRoomKeys.list() });
+    },
+  });
+}
+
+export function useReviews(roomId: string) {
+  return useQuery({
+    queryKey: partyRoomKeys.reviews(roomId),
+    queryFn: async () => {
+      const result = await apiClient.partyRooms.getReviews(roomId);
+      if (!result.success) throw new Error(result.error.message);
+      return result.data as ReviewResponse[];
+    },
+    enabled: !!roomId,
+  });
+}
+
+export function useSubmitReview() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      roomId,
+      targetMemberId,
+      tags,
+    }: {
+      roomId: string;
+      targetMemberId: string;
+      tags: ReviewTag[];
+    }) => {
+      const result = await apiClient.partyRooms.submitReview(roomId, { targetMemberId, tags });
+      if (!result.success) throw new Error(result.error.message);
+      return { roomId };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: partyRoomKeys.reviews(data.roomId) });
+    },
+  });
+}
+
+export function useCreatePoll() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ roomId, options }: { roomId: string; options: string[] }) => {
+      const result = await apiClient.partyRooms.createPoll(roomId, options);
+      if (!result.success) throw new Error(result.error.message);
+      return { roomId };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: partyRoomKeys.detail(data.roomId) });
+    },
+  });
+}
+
+export function useVotePoll() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ roomId, optionIndex }: { roomId: string; optionIndex: number }) => {
+      const result = await apiClient.partyRooms.votePoll(roomId, optionIndex);
+      if (!result.success) throw new Error(result.error.message);
+      return { roomId };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: partyRoomKeys.detail(data.roomId) });
+    },
+  });
+}
