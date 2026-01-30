@@ -18,20 +18,11 @@ export const metadata: Metadata = {
     siteName: "메-력소",
     url: "https://mapleraid.com",
     locale: "ko_KR",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "메-력소 - 월드통합 보스 파티 매칭",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "메-력소 | 월드통합 보스 파티 매칭",
     description: "서로 다른 월드 유저들과 실시간 채팅하고 일정을 조율하세요.",
-    images: ["/og-image.png"],
   },
 };
 
