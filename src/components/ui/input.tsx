@@ -14,7 +14,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           className
         )}
         ref={ref}
-        inputMode={type === "password" ? "latin" : undefined}
         {...props}
       />
     );
