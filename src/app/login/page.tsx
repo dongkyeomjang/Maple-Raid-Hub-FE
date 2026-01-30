@@ -21,9 +21,18 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // 한글 포함 여부 체크
+  const hasKorean = (text: string) => /[\uAC00-\uD7AF\u3131-\u318E]/.test(text);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (hasKorean(password)) {
+      setError("비밀번호에 한글이 포함되어 있습니다. 영문으로 입력해주세요.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -75,6 +84,11 @@ export default function LoginPage() {
                 placeholder="비밀번호를 입력하세요"
                 required
               />
+              {hasKorean(password) && (
+                <p className="text-sm text-destructive">
+                  한글이 입력되었습니다. 영문으로 전환해주세요.
+                </p>
+              )}
             </div>
 
             {error && (

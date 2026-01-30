@@ -28,9 +28,18 @@ export default function OnboardingPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [nickname, setNickname] = useState("");
 
+  // 한글 포함 여부 체크
+  const hasKorean = (text: string) => /[\uAC00-\uD7AF\u3131-\u318E]/.test(text);
+  const passwordHasKorean = hasKorean(password) || hasKorean(confirmPassword);
+
   const handleAccountSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (passwordHasKorean) {
+      setError("비밀번호에 한글이 포함되어 있습니다. 영문/숫자/특수문자만 사용해주세요.");
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError("비밀번호가 일치하지 않습니다.");
@@ -152,6 +161,11 @@ export default function OnboardingPage() {
                   placeholder="8자 이상"
                   required
                 />
+                {hasKorean(password) && (
+                  <p className="text-sm text-destructive">
+                    한글이 입력되었습니다. 영문으로 전환해주세요.
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -164,6 +178,11 @@ export default function OnboardingPage() {
                   placeholder="비밀번호를 다시 입력하세요"
                   required
                 />
+                {hasKorean(confirmPassword) && (
+                  <p className="text-sm text-destructive">
+                    한글이 입력되었습니다. 영문으로 전환해주세요.
+                  </p>
+                )}
               </div>
 
               {error && (
