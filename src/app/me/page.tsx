@@ -59,7 +59,7 @@ export default function MyPage() {
             </Avatar>
             <div className="flex-1 text-center sm:text-left">
               <h2 className="text-h2 font-bold">{user.nickname}</h2>
-              <p className="text-body-sm text-muted-foreground">{user.email}</p>
+              <p className="text-body-sm text-muted-foreground">{user.username}</p>
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-2">
                 <TemperatureBadge temperature={user.temperature} showLabel />
                 <span className="text-tiny text-muted-foreground">
