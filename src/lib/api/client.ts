@@ -126,8 +126,8 @@ async function fetchApiWithRefresh<T>(
 ): Promise<ApiResponse<T>> {
   let result = await fetchApi<T>(endpoint, options);
 
-  // If unauthorized and we have a refresh token, try to refresh
-  if (!result.success && result.error.code === "UNAUTHORIZED") {
+  // If token expired and we have a refresh token, try to refresh
+  if (!result.success && result.error.code === "TOKEN_EXPIRED") {
     const currentRefreshToken = getRefreshToken();
     if (currentRefreshToken) {
       const refreshResult = await fetchApi<{
