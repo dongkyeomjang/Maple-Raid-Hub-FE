@@ -12,6 +12,7 @@ import type {
   PostDetailResponse,
   PublicCharacterResponse,
   CreatePostRequest,
+  UpdatePostRequest,
   ApplyRequest,
 } from "@/types/api";
 
@@ -71,6 +72,23 @@ export function useCreatePost() {
   });
 }
 
+export function useUpdatePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ postId, data }: { postId: string; data: UpdatePostRequest }) => {
+      const result = await apiClient.posts.update(postId, data);
+      if (!result.success) throw new Error(result.error.message);
+      return result.data as PostResponse;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: postKeys.detail(variables.postId) });
+      queryClient.invalidateQueries({ queryKey: postKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: postKeys.myPosts() });
+    },
+  });
+}
+
 export function useClosePost() {
   const queryClient = useQueryClient();
 
@@ -83,6 +101,23 @@ export function useClosePost() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: postKeys.detail(data.postId) });
       queryClient.invalidateQueries({ queryKey: postKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: postKeys.myPosts() });
+    },
+  });
+}
+
+export function useCancelPost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (postId: string) => {
+      const result = await apiClient.posts.cancel(postId);
+      if (!result.success) throw new Error(result.error.message);
+      return { postId };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: postKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: postKeys.myPosts() });
     },
   });
 }

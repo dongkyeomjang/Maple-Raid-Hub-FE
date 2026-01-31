@@ -202,8 +202,17 @@ export interface CreatePostRequest {
   characterId: string;
   bossIds: string[];
   requiredMembers: number;
-  preferredTime: string;
+  preferredTime: string | null;
   description: string | null;
+}
+
+export interface UpdatePostRequest {
+  bossIds?: string[];
+  requiredMembers?: number;
+  preferredTime?: string;
+  clearPreferredTime?: boolean;
+  description?: string;
+  clearDescription?: boolean;
 }
 
 export interface PostResponse {
@@ -214,7 +223,7 @@ export interface PostResponse {
   bossIds: string[];
   requiredMembers: number;
   currentMembers: number;
-  preferredTime: string;
+  preferredTime: string | null;
   description: string | null;
   status: PostStatus;
   partyRoomId: string | null;

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,38 +18,88 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BossMultiSelector } from "@/components/domain/BossMultiSelector";
-import { WorldGroupBadge } from "@/components/domain/WorldGroupBadge";
-import { useCharacters } from "@/lib/hooks/use-characters";
-import { useCreatePost } from "@/lib/hooks/use-posts";
+import { usePost, useUpdatePost } from "@/lib/hooks/use-posts";
+import { useAuth } from "@/lib/hooks/use-auth";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
-export default function NewPostPage() {
+export default function EditPostPage() {
   const router = useRouter();
-  const { data: charactersData } = useCharacters();
-  const createMutation = useCreatePost();
+  const params = useParams();
+  const postId = params.id as string;
 
-  const [selectedCharacterId, setSelectedCharacterId] = useState("");
+  const { user } = useAuth();
+  const { data: postDetail, isLoading: isLoadingPost } = usePost(postId);
+  const updateMutation = useUpdatePost();
+
   const [selectedBossIds, setSelectedBossIds] = useState<string[]>([]);
   const [requiredMembers, setRequiredMembers] = useState(2);
   const [scheduledAt, setScheduledAt] = useState("");
   const [isScheduleTbd, setIsScheduleTbd] = useState(false);
   const [memo, setMemo] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [initialized, setInitialized] = useState(false);
 
-  // Only show verified characters
-  const verifiedCharacters =
-    charactersData?.filter((c) => c.verificationStatus === "VERIFIED_OWNER") || [];
+  const post = postDetail?.post;
+  const currentMembers = post?.currentMembers ?? 1;
 
-  const selectedCharacter = verifiedCharacters.find((c) => c.id === selectedCharacterId);
+  // Initialize form with existing data
+  useEffect(() => {
+    if (post && !initialized) {
+      setSelectedBossIds(post.bossIds);
+      setRequiredMembers(post.requiredMembers);
+      if (post.preferredTime) {
+        // ISO string to date input format (YYYY-MM-DD)
+        const date = new Date(post.preferredTime);
+        setScheduledAt(date.toISOString().slice(0, 10));
+        setIsScheduleTbd(false);
+      } else {
+        setScheduledAt("");
+        setIsScheduleTbd(true);
+      }
+      setMemo(post.description || "");
+      setInitialized(true);
+    }
+  }, [post, initialized]);
+
+  // Check authorization
+  if (postDetail && user && post?.authorId !== user.id) {
+    router.replace(`/posts/${postId}`);
+    return null;
+  }
+
+  if (isLoadingPost) {
+    return (
+      <PageContainer className="max-w-2xl mx-auto">
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (!post) {
+    return (
+      <PageContainer className="max-w-2xl mx-auto">
+        <div className="text-center py-12 text-muted-foreground">
+          모집글을 찾을 수 없습니다.
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (post.status !== "RECRUITING") {
+    return (
+      <PageContainer className="max-w-2xl mx-auto">
+        <div className="text-center py-12 text-muted-foreground">
+          모집 중인 모집글만 수정할 수 있습니다.
+        </div>
+      </PageContainer>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    if (!selectedCharacterId) {
-      setError("캐릭터를 선택해주세요.");
-      return;
-    }
 
     if (selectedBossIds.length === 0) {
       setError("최소 1개 이상의 보스를 선택해주세요.");
@@ -61,81 +111,57 @@ export default function NewPostPage() {
       return;
     }
 
+    if (requiredMembers < currentMembers) {
+      setError(`현재 파티원 수(${currentMembers}명)보다 적은 인원으로 변경할 수 없습니다.`);
+      return;
+    }
+
     try {
-      const result = await createMutation.mutateAsync({
-        characterId: selectedCharacterId,
-        bossIds: selectedBossIds,
-        requiredMembers,
-        preferredTime: isScheduleTbd ? null : new Date(scheduledAt).toISOString(),
-        description: memo || null,
+      await updateMutation.mutateAsync({
+        postId,
+        data: {
+          bossIds: selectedBossIds,
+          requiredMembers,
+          ...(isScheduleTbd
+            ? { clearPreferredTime: true }
+            : { preferredTime: new Date(scheduledAt).toISOString() }),
+          ...(memo ? { description: memo } : { clearDescription: true }),
+        },
       });
 
-      router.push(`/posts/${result.id}`);
+      router.push(`/posts/${postId}`);
     } catch (err) {
-      setError("모집글 작성에 실패했습니다. 다시 시도해주세요.");
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("모집글 수정에 실패했습니다. 다시 시도해주세요.");
+      }
     }
   };
+
+  // Generate available member count options (can't go below current members)
+  const memberOptions = [2, 3, 4, 5, 6].filter((n) => n >= currentMembers);
 
   return (
     <PageContainer className="max-w-2xl mx-auto">
       <div className="mb-6">
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/posts">
+          <Link href={`/posts/${postId}`}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            모집글 목록
+            모집글로 돌아가기
           </Link>
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>파티 모집글 작성</CardTitle>
+          <CardTitle>모집글 수정</CardTitle>
           <CardDescription>
-            보스 레이드 파티를 모집합니다. 인증된 캐릭터만 사용할 수 있습니다.
+            모집글 내용을 수정합니다. 현재 파티원 수({currentMembers}명)보다 적은 인원으로는 변경할 수 없습니다.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Character Selection */}
-            <div className="space-y-2">
-              <Label>캐릭터 선택</Label>
-              {verifiedCharacters.length === 0 ? (
-                <div className="p-4 bg-muted rounded-lg text-sm text-muted-foreground">
-                  인증된 캐릭터가 없습니다.{" "}
-                  <Link href="/characters" className="text-primary hover:underline">
-                    캐릭터를 인증
-                  </Link>
-                  해주세요.
-                </div>
-              ) : (
-                <Select value={selectedCharacterId} onValueChange={setSelectedCharacterId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="캐릭터를 선택하세요" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {verifiedCharacters.map((char) => (
-                      <SelectItem key={char.id} value={char.id}>
-                        <div className="flex items-center gap-2">
-                          <span>{char.characterName}</span>
-                          <span className="text-xs text-muted-foreground">
-                            (Lv.{char.characterLevel} {char.characterClass})
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-              {selectedCharacter && (
-                <div className="mt-2">
-                  <WorldGroupBadge worldGroup={selectedCharacter.worldGroup} />
-                  <span className="text-xs text-muted-foreground ml-2">
-                    같은 월드 그룹의 캐릭터만 지원할 수 있습니다
-                  </span>
-                </div>
-              )}
-            </div>
-
             {/* Boss Selection */}
             <div className="space-y-2">
               <Label>보스 선택</Label>
@@ -153,13 +179,18 @@ export default function NewPostPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {[2, 3, 4, 5, 6].map((n) => (
+                  {memberOptions.map((n) => (
                     <SelectItem key={n} value={n.toString()}>
                       {n}명
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              {currentMembers > 1 && (
+                <p className="text-xs text-muted-foreground">
+                  현재 {currentMembers}명이 파티에 참여 중입니다.
+                </p>
+              )}
             </div>
 
             {/* Scheduled Date */}
@@ -208,26 +239,36 @@ export default function NewPostPage() {
             </div>
 
             {error && (
-              <div className="p-3 rounded-lg bg-error-bg text-error-text text-body-sm flex items-center gap-2">
-                <span>😢</span>
+              <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm flex items-center gap-2">
+                <span>⚠️</span>
                 {error}
               </div>
             )}
 
-            <Button
-              type="submit"
-              className="w-full h-12 text-body btn-maple"
-              disabled={createMutation.isPending || verifiedCharacters.length === 0}
-            >
-              {createMutation.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  작성 중...
-                </>
-              ) : (
-                "모집글 작성하기"
-              )}
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={() => router.back()}
+              >
+                취소
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 btn-maple"
+                disabled={updateMutation.isPending}
+              >
+                {updateMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    수정 중...
+                  </>
+                ) : (
+                  "수정하기"
+                )}
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>

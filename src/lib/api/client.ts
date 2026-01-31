@@ -242,7 +242,7 @@ export const api = {
       characterId: string;
       bossIds: string[];
       requiredMembers: number;
-      preferredTime: string;
+      preferredTime: string | null;
       description?: string | null;
     }) =>
       fetchApiWithRefresh("/api/posts", {
@@ -250,9 +250,30 @@ export const api = {
         body: JSON.stringify(data),
       }),
 
+    update: (
+      id: string,
+      data: {
+        bossIds?: string[];
+        requiredMembers?: number;
+        preferredTime?: string;
+        clearPreferredTime?: boolean;
+        description?: string;
+        clearDescription?: boolean;
+      }
+    ) =>
+      fetchApiWithRefresh(`/api/posts/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
+
     close: (id: string) =>
       fetchApiWithRefresh(`/api/posts/${id}/close`, {
         method: "POST",
+      }),
+
+    cancel: (id: string) =>
+      fetchApiWithRefresh(`/api/posts/${id}`, {
+        method: "DELETE",
       }),
 
     apply: (

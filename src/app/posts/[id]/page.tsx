@@ -31,7 +31,7 @@ import { VerificationBadge } from "@/components/domain/VerificationBadge";
 import { CharacterDetailDialog } from "@/components/domain/CharacterDetailDialog";
 import { ErrorState } from "@/components/common/ErrorState";
 import { LoadingPage } from "@/components/common/LoadingSpinner";
-import { usePost, useApplyToPost, useClosePost } from "@/lib/hooks/use-posts";
+import { usePost, useApplyToPost, useClosePost, useCancelPost } from "@/lib/hooks/use-posts";
 import { useCharacters } from "@/lib/hooks/use-characters";
 import { useBossNames } from "@/lib/hooks/use-boss-names";
 import { useAuth } from "@/lib/hooks/use-auth";
@@ -51,6 +51,9 @@ import {
   User,
   Swords,
   MessageCircle,
+  Pencil,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 import type { PublicCharacterResponse } from "@/types/api";
 
@@ -69,8 +72,10 @@ export default function PostDetailPage() {
   const { user } = useAuth();
   const applyMutation = useApplyToPost();
   const closeMutation = useClosePost();
+  const cancelMutation = useCancelPost();
 
   const [applyDialogOpen, setApplyDialogOpen] = useState(false);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [selectedCharacterId, setSelectedCharacterId] = useState("");
   const [applyMessage, setApplyMessage] = useState("");
   const [selectedMemberInfo, setSelectedMemberInfo] = useState<SelectedMemberInfo | null>(null);
@@ -116,10 +121,16 @@ export default function PostDetailPage() {
   };
 
   const handleClosePost = async () => {
-    if (confirm("정말 이 모집글을 마감하시겠습니까?")) {
+    const currentCount = post?.currentMembers ?? 1;
+    if (confirm(`현재 ${currentCount}명으로 파티를 결성하시겠습니까?\n\n• 파티룸이 생성됩니다\n• 대기 중인 지원자는 자동으로 거절됩니다\n• 이 모집글은 마이페이지에서 사라집니다`)) {
       await closeMutation.mutateAsync(postId);
       refetch();
     }
+  };
+
+  const handleCancelPost = async () => {
+    await cancelMutation.mutateAsync(postId);
+    router.push("/posts");
   };
 
   if (isLoading) {
@@ -203,7 +214,7 @@ export default function PostDetailPage() {
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-muted-foreground" />
                 <span className="font-medium">
-                  {post.preferredTime ? post.preferredTime.split("T")[0] : "날짜 미정"}
+                  {post.preferredTime ? post.preferredTime.split("T")[0] : "상의 후 결정"}
                 </span>
               </div>
 
@@ -298,19 +309,49 @@ export default function PostDetailPage() {
                   </Button>
 
                   {post.status === "RECRUITING" && (
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={handleClosePost}
-                      disabled={closeMutation.isPending}
-                    >
-                      {closeMutation.isPending ? (
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      ) : (
-                        <XCircle className="h-4 w-4 mr-2" />
+                    <>
+                      <Button variant="outline" className="w-full" asChild>
+                        <Link href={`/posts/${postId}/edit`}>
+                          <Pencil className="h-4 w-4 mr-2" />
+                          모집글 수정
+                        </Link>
+                      </Button>
+                      <div className="space-y-1">
+                        <Button
+                          variant="outline"
+                          className="w-full border-green-500/50 text-green-600 hover:bg-green-50 hover:text-green-700 disabled:border-muted disabled:text-muted-foreground disabled:hover:bg-transparent"
+                          onClick={handleClosePost}
+                          disabled={closeMutation.isPending || post.currentMembers < 2}
+                        >
+                          {closeMutation.isPending ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                          )}
+                          현재 인원으로 파티 결성
+                        </Button>
+                        <p className="text-xs text-muted-foreground text-center">
+                          {post.currentMembers < 2
+                            ? "파티원이 1명 이상 필요합니다"
+                            : `${post.currentMembers}명으로 파티를 시작합니다`}
+                        </p>
+                      </div>
+                      {!post.partyRoomId && (
+                        <div className="space-y-1 pt-2 border-t">
+                          <Button
+                            variant="ghost"
+                            className="w-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            onClick={() => setCancelDialogOpen(true)}
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            모집 취소
+                          </Button>
+                          <p className="text-xs text-muted-foreground text-center">
+                            모집글을 삭제합니다
+                          </p>
+                        </div>
                       )}
-                      모집 마감
-                    </Button>
+                    </>
                   )}
                 </CardContent>
               </Card>
@@ -449,6 +490,63 @@ export default function PostDetailPage() {
         open={!!selectedMemberInfo}
         onOpenChange={(open) => !open && setSelectedMemberInfo(null)}
       />
+
+      {/* 모집 취소 확인 다이얼로그 */}
+      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <AlertTriangle className="h-5 w-5" />
+              모집글 삭제
+            </DialogTitle>
+            <DialogDescription className="pt-2">
+              이 모집글을 완전히 삭제합니다.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4 space-y-3">
+            <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg space-y-2">
+              <p className="text-sm font-medium text-destructive">
+                삭제하면 다음과 같이 처리됩니다:
+              </p>
+              <ul className="text-sm text-destructive/80 space-y-1 ml-4 list-disc">
+                <li>모집글이 영구적으로 삭제됩니다</li>
+                <li>대기 중인 모든 지원이 취소됩니다</li>
+                <li>파티가 결성되지 않습니다</li>
+              </ul>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              파티를 구성하려면 "현재 인원으로 파티 결성"을 사용하세요.
+            </p>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setCancelDialogOpen(false)}
+            >
+              돌아가기
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleCancelPost}
+              disabled={cancelMutation.isPending}
+            >
+              {cancelMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  삭제 중...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  모집글 삭제
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* DM 캐릭터 선택 다이얼로그 */}
       <Dialog open={dmCharacterSelectOpen} onOpenChange={setDmCharacterSelectOpen}>
