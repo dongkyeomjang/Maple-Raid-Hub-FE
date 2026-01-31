@@ -16,7 +16,9 @@ import { useAuth } from "@/lib/hooks/use-auth";
 // DM 방 목록 훅
 export function useDmRooms() {
   const { user } = useAuth();
+  const { connected } = useWebSocket();
   const setDmRooms = useChatStore((s) => s.setDmRooms);
+  const prevConnectedRef = useRef(false);
 
   const query = useQuery({
     queryKey: ["dm", "rooms"],
@@ -31,8 +33,16 @@ export function useDmRooms() {
       return [];
     },
     enabled: !!user,
-    refetchInterval: 30000,
   });
+
+  // WebSocket 재연결 시 방 목록 새로고침
+  useEffect(() => {
+    if (prevConnectedRef.current === false && connected === true) {
+      // 끊어졌다가 다시 연결됨 -> refetch
+      query.refetch();
+    }
+    prevConnectedRef.current = connected;
+  }, [connected, query]);
 
   useEffect(() => {
     if (query.data) {
