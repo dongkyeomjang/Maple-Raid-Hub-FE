@@ -144,7 +144,7 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
             !isOwner && "group-hover:bg-primary group-hover:text-white group-hover:border-primary"
           )}
         >
-          <Link href={isOwner ? `/posts/${post.id}/manage` : `/posts/${post.id}`}>
+          <Link href={`/posts/${post.id}`}>
             {isOwner ? "관리하기" : "자세히 보기"}
             <ChevronRight className="h-4 w-4 ml-1" />
           </Link>
