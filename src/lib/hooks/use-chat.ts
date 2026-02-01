@@ -12,6 +12,7 @@ import {
 } from "@/lib/stores/chat-store";
 import { api } from "@/lib/api/client";
 import { useAuth } from "@/lib/hooks/use-auth";
+import { playNotificationSound } from "@/lib/utils/notification-sound";
 
 // DM 방 목록 훅
 export function useDmRooms() {
@@ -445,6 +446,9 @@ export function useNotificationSubscription() {
 
       // 현재 보고 있는 방이 아니면 방 목록 새로고침 (새 메시지 미리보기, unread count 업데이트)
       if (selectedRoomIdRef.current !== notification.roomId) {
+        // 알림 소리 재생
+        playNotificationSound();
+
         try {
           const result = await api.dm.getRooms();
           if (result.success && result.data) {
@@ -527,6 +531,9 @@ export function usePartyChatNotificationSubscription() {
 
       // 현재 보고 있는 방이 아닐 때만 처리
       if (selectedRoomIdRef.current !== notification.roomId) {
+        // 알림 소리 재생
+        playNotificationSound();
+
         incrementPartyUnread(notification.roomId);
 
         addNotification({
