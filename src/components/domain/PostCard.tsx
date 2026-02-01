@@ -41,7 +41,7 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
           <CardContent className="p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1 min-h-[20px]">
                   {isOwner && (
                     <Badge variant="default" size="sm" className="bg-primary/10 text-primary border-primary/20">
                       <Crown className="h-3 w-3 mr-1" />
@@ -115,7 +115,7 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0 space-y-2">
-            <div className="flex items-center flex-wrap gap-2">
+            <div className="flex items-center flex-wrap gap-2 min-h-[22px]">
               {isOwner && (
                 <Badge variant="default" className="bg-primary/10 text-primary border-primary/20">
                   <Crown className="h-3 w-3 mr-1" />
