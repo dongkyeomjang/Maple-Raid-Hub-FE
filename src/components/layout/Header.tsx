@@ -50,7 +50,7 @@ export function Header() {
               력소
             </span>
             <span className="text-tiny text-muted-foreground mt-0.5">
-              메이플의 힘이 모이는 곳
+              당신만을 위한 메이플 인력소
             </span>
           </div>
         </Link>

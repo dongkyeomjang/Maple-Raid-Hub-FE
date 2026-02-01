@@ -30,7 +30,7 @@ export const BRAND_SLOGANS = {
 
   // 파워/힘 강조 (메이플력) - 근육 주황버섯 테마
   power: "당신의 메이플力을 보여주세요 💪",
-  powerShort: "메이플의 힘이 모이는 곳",
+  powerShort: "당신만을 위한 메이플 인력소",
   powerAction: "메이플力 충전 완료!",
   powerUp: "파티원들과 함께라면 더 강해져요",
   powerMuscle: "근육 주황버섯처럼 강해지자!",
@@ -54,7 +54,7 @@ export const BRAND_SLOGANS = {
   easy: "30초 만에 파티 매칭",
 
   // 짧은 버전
-  short: "메이플의 힘이 모이는 곳",
+  short: "당신만을 위한 메이플 인력소",
   mini: "파티 매칭의 새로운 기준",
   tiny: "함께라서 강하다 💪",
 
@@ -286,7 +286,7 @@ export const MARKETING_BADGES = {
 // 페이지별 메타 정보
 export const PAGE_META = {
   home: {
-    title: "메-력소 | 메이플의 힘이 모이는 곳 💪",
+    title: "메-력소 | 당신만을 위한 메이플 인력소 💪",
     description: "서로 다른 월드의 유저들과 실시간 채팅, 일정 조율로 보스 파티를 구성하세요. 근육 주황버섯과 함께하는 크로스 월드 파티 매칭!",
   },
   posts: {
