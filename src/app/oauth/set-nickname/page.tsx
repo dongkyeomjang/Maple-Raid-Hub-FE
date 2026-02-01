@@ -35,17 +35,24 @@ export default function SetNicknamePage() {
     try {
       // OAuth 신규 가입 완료 API 호출 (쿠키의 임시 토큰 사용)
       const result = await api.auth.oauthComplete(nickname);
+      console.log("[OAuth Complete] result:", result);
 
       if (result.success) {
         // 서버가 쿠키에 정상 토큰 설정함 - 사용자 정보 가져오기
         const meResult = await api.auth.me();
+        console.log("[OAuth Complete] meResult:", meResult);
+
         if (meResult.success && meResult.data) {
           setUser(meResult.data as UserResponse);
           await queryClient.invalidateQueries();
           // 신규 가입과 동일하게 환영 페이지로 이동
           router.push("/onboarding?step=complete");
+        } else {
+          // /api/auth/me 호출 실패
+          console.error("[OAuth Complete] Failed to get user info:", meResult);
+          setError("사용자 정보를 가져오는데 실패했습니다. 다시 로그인해주세요.");
         }
-      } else if (!result.success) {
+      } else {
         if (result.error.code === "AUTH_NICKNAME_DUPLICATE") {
           setError("이미 사용 중인 닉네임입니다.");
         } else if (result.error.code === "AUTH_INVALID_TOKEN") {
@@ -56,6 +63,7 @@ export default function SetNicknamePage() {
         }
       }
     } catch (err) {
+      console.error("[OAuth Complete] Exception:", err);
       setError("닉네임 설정 중 오류가 발생했습니다.");
     } finally {
       setIsLoading(false);

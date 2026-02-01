@@ -5,18 +5,13 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/lib/hooks/use-auth";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { checkAuth, clearAuthState, user, isAuthenticated, isLoading } = useAuth();
+  const { checkAuth, user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    // localStorage에 인증 정보가 있을 때만 서버에 확인
-    // 인증 정보가 없으면 불필요한 401 에러 방지
-    if (isAuthenticated) {
-      checkAuth();
-    } else {
-      clearAuthState();
-    }
+    // 항상 서버에서 인증 상태 확인 (OAuth 리다이렉트 후에도 동작하도록)
+    checkAuth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
