@@ -39,7 +39,7 @@ export function Logo({ size = "md", showText = true, variant = "default", classN
           </span>
           {variant === "tagline" && (
             <span className="text-tiny text-muted-foreground mt-0.5">
-              메이플의 힘이 모이는 곳
+              당신만을 위한 메이플 인력소
             </span>
           )}
         </div>
@@ -109,7 +109,7 @@ export function LogoAnimated({ className }: { className?: string }) {
           메-력소
         </span>
         <span className="text-body text-muted-foreground">
-          메이플의 힘이 모이는 곳 💪
+          당신만을 위한 메이플 인력소 💪
         </span>
       </div>
     </div>

@@ -186,7 +186,7 @@ export default async function Image() {
             marginBottom: 16,
           }}
         >
-          메이플 인력소 · 메이플의 힘
+          당신만을 위한 메이플 인력소
         </div>
 
         {/* 메인 슬로건 */}
