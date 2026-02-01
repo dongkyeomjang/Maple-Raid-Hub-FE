@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { WorldGroupBadge } from "./WorldGroupBadge";
-import type { PostResponse } from "@/types/api";
-import { formatDateTime, formatRelativeTime, cn } from "@/lib/utils";
-import { useBossNames } from "@/lib/hooks/use-boss-names";
-import { Calendar, Clock, ChevronRight, Crown } from "lucide-react";
+import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
+import {Badge} from "@/components/ui/badge";
+import {Button} from "@/components/ui/button";
+import {WorldGroupBadge} from "./WorldGroupBadge";
+import type {PostResponse} from "@/types/api";
+import {cn, formatDateTime, formatRelativeTime} from "@/lib/utils";
+import {useBossNames} from "@/lib/hooks/use-boss-names";
+import {Calendar, ChevronRight, Clock, Crown, User} from "lucide-react";
 
 interface PostCardProps {
   post: PostResponse;
@@ -56,9 +56,40 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
                 <h3 className="font-semibold text-body truncate">
                   {displayName}
                 </h3>
-                <p className="text-caption text-muted-foreground">
-                  {formatDateTime(post.preferredTime)}
-                </p>
+                {/* 계정 닉네임 */}
+                <div className="flex items-center gap-1.5 text-caption text-muted-foreground mt-1">
+                  <User className="h-3 w-3" />
+                  {post.authorNickname && (
+                    <span className="font-medium text-foreground/70">{post.authorNickname}</span>
+                  )}
+                  {post.preferredTime && (
+                    <>
+                      <span>·</span>
+                      <span>{formatDateTime(post.preferredTime)}</span>
+                    </>
+                  )}
+                </div>
+                {/* 캐릭터 이미지 & 닉네임 */}
+                {(post.characterImageUrl || post.characterName) && (
+                  <div className="flex items-center gap-1.5 mt-2">
+                    <div className="relative h-6 w-6 rounded-full border border-border/50 overflow-hidden shrink-0">
+                      {post.characterImageUrl ? (
+                        <img
+                          src={post.characterImageUrl}
+                          alt={post.characterName || "캐릭터"}
+                          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300%] h-[300%] object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-[10px]">
+                          ?
+                        </div>
+                      )}
+                    </div>
+                    {post.characterName && (
+                      <span className="text-caption text-muted-foreground">{post.characterName}</span>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-2">
                 <div className="text-right">
@@ -131,9 +162,38 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
       </CardContent>
 
       <CardFooter className="flex justify-between items-center pt-3 border-t border-border/50">
-        <div className="flex items-center gap-1.5 text-caption text-muted-foreground">
-          <Clock className="h-3.5 w-3.5" />
-          {formatRelativeTime(post.createdAt)}
+        <div className="flex flex-col gap-2">
+          {/* 계정 닉네임 & 시간 (이전 뷰) */}
+          <div className="flex items-center gap-1.5 text-caption text-muted-foreground">
+            <User className="h-3.5 w-3.5" />
+            {post.authorNickname && (
+              <span className="font-medium text-foreground/70">{post.authorNickname}</span>
+            )}
+            <span>·</span>
+            <Clock className="h-3.5 w-3.5" />
+            <span>{formatRelativeTime(post.createdAt)}</span>
+          </div>
+          {/* 캐릭터 이미지 & 닉네임 */}
+          {(post.characterImageUrl || post.characterName) && (
+            <div className="flex items-center gap-2">
+              <div className="relative h-10 w-10 rounded-full border border-border/50 overflow-hidden shrink-0">
+                {post.characterImageUrl ? (
+                  <img
+                    src={post.characterImageUrl}
+                    alt={post.characterName || "캐릭터"}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300%] h-[300%] object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-xs">
+                    ?
+                  </div>
+                )}
+              </div>
+              {post.characterName && (
+                <span className="text-body-sm text-foreground">{post.characterName}</span>
+              )}
+            </div>
+          )}
         </div>
         <Button
           size="sm"

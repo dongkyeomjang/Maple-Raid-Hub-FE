@@ -218,7 +218,10 @@ export interface UpdatePostRequest {
 export interface PostResponse {
   id: string;
   authorId: string;
+  authorNickname: string | null;
   characterId: string;
+  characterName: string | null;
+  characterImageUrl: string | null;
   worldGroup: WorldGroup;
   bossIds: string[];
   requiredMembers: number;
