@@ -71,7 +71,7 @@ export default function SetNicknamePage() {
         <div className="absolute bottom-20 left-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-pulse-soft" />
       </div>
 
-      <div className="relative w-full max-w-md">
+      <div className="relative z-10 w-full max-w-md">
         {/* 로고 */}
         <div className="flex flex-col items-center mb-6">
           <Logo size="lg" />
