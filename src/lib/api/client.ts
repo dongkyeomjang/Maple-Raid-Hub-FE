@@ -76,28 +76,8 @@ async function fetchApi<T>(
   }
 }
 
-// Token refresh interceptor - 쿠키 기반 (서버가 토큰 관리)
-async function fetchApiWithRefresh<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<ApiResponse<T>> {
-  let result = await fetchApi<T>(endpoint, options);
-
-  // 토큰 만료 시 자동 갱신 시도 (쿠키의 refresh token 사용)
-  if (!result.success && result.error.code === "TOKEN_EXPIRED") {
-    const refreshResult = await fetchApi<void>("/api/auth/refresh", {
-      method: "POST",
-    });
-
-    if (refreshResult.success) {
-      // 서버가 새 토큰을 쿠키에 설정함 - 원래 요청 재시도
-      result = await fetchApi<T>(endpoint, options);
-    }
-    // refresh 실패 시 그냥 원래 에러 반환 (프론트에서 로그아웃 처리)
-  }
-
-  return result;
-}
+// 인증이 필요한 API 호출 (백엔드가 자동으로 토큰 갱신 처리)
+const fetchApiWithRefresh = fetchApi;
 
 // API client with methods for each endpoint
 export const api = {
@@ -120,12 +100,7 @@ export const api = {
         method: "POST",
       }),
 
-    refresh: () =>
-      fetchApi<void>("/api/auth/refresh", {
-        method: "POST",
-      }),
-
-    me: () => fetchApiWithRefresh("/api/auth/me"),
+    me: () => fetchApi("/api/auth/me"),
 
     updateNickname: (nickname: string) =>
       fetchApiWithRefresh("/api/auth/nickname", {
