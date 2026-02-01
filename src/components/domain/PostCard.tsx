@@ -161,7 +161,7 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
         )}
       </CardContent>
 
-      <CardFooter className="flex justify-between items-center pt-3 border-t border-border/50">
+      <CardFooter className="flex justify-between items-end pt-3 border-t border-border/50">
         <div className="flex flex-col gap-2">
           {/* 계정 닉네임 & 시간 (이전 뷰) */}
           <div className="flex items-center gap-1.5 text-caption text-muted-foreground">
@@ -173,27 +173,25 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
             <Clock className="h-3.5 w-3.5" />
             <span>{formatRelativeTime(post.createdAt)}</span>
           </div>
-          {/* 캐릭터 이미지 & 닉네임 */}
-          {(post.characterImageUrl || post.characterName) && (
-            <div className="flex items-center gap-2">
-              <div className="relative h-10 w-10 rounded-full border border-border/50 overflow-hidden shrink-0">
-                {post.characterImageUrl ? (
-                  <img
-                    src={post.characterImageUrl}
-                    alt={post.characterName || "캐릭터"}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300%] h-[300%] object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-xs">
-                    ?
-                  </div>
-                )}
-              </div>
-              {post.characterName && (
-                <span className="text-body-sm text-foreground">{post.characterName}</span>
+          {/* 캐릭터 이미지 & 닉네임 - 항상 공간 확보 */}
+          <div className="flex items-center gap-2 h-10">
+            <div className="relative h-10 w-10 rounded-full border border-border/50 overflow-hidden shrink-0">
+              {post.characterImageUrl ? (
+                <img
+                  src={post.characterImageUrl}
+                  alt={post.characterName || "캐릭터"}
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300%] h-[300%] object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-xs">
+                  ?
+                </div>
               )}
             </div>
-          )}
+            {post.characterName && (
+              <span className="text-body-sm text-foreground">{post.characterName}</span>
+            )}
+          </div>
         </div>
         <Button
           size="sm"
