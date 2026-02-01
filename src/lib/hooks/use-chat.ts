@@ -16,7 +16,7 @@ import { playNotificationSound } from "@/lib/utils/notification-sound";
 
 // DM 방 목록 훅
 export function useDmRooms() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const { connected } = useWebSocket();
   const setDmRooms = useChatStore((s) => s.setDmRooms);
   const prevConnectedRef = useRef(false);
@@ -33,7 +33,8 @@ export function useDmRooms() {
       }
       return [];
     },
-    enabled: !!user,
+    // 인증 확인이 완료되고 user가 있을 때만 활성화
+    enabled: !!user && !isLoading,
   });
 
   // WebSocket 재연결 시 방 목록 새로고침
@@ -85,7 +86,7 @@ function transformDmMessage(msg: DmMessageApiResponse): DmChatMessage {
 
 // DM 메시지 훅 (무한 스크롤 지원)
 export function useDmMessages(roomId: string | null) {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const setDmMessages = useChatStore((s) => s.setDmMessages);
   const dmMessages = useChatStore((s) => s.dmMessages);
 
@@ -108,7 +109,8 @@ export function useDmMessages(roomId: string | null) {
       }
       return { messages: [], hasMore: false, nextCursor: null };
     },
-    enabled: !!user && !!roomId,
+    // 인증 확인이 완료되고 user가 있을 때만 활성화
+    enabled: !!user && !isLoading && !!roomId,
   });
 
   // 초기 메시지 설정 및 페이지네이션 상태 초기화
@@ -243,7 +245,7 @@ interface PartyChatMessagesPage {
 
 // 파티 채팅 메시지 조회 훅 (무한 스크롤 지원)
 export function usePartyMessages(roomId: string | null) {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const setPartyMessages = useChatStore((s) => s.setPartyMessages);
   const partyMessages = useChatStore((s) => s.partyMessages);
 
@@ -266,7 +268,8 @@ export function usePartyMessages(roomId: string | null) {
       }
       return { messages: [], hasMore: false, nextCursor: null };
     },
-    enabled: !!user && !!roomId,
+    // 인증 확인이 완료되고 user가 있을 때만 활성화
+    enabled: !!user && !isLoading && !!roomId,
   });
 
   // 초기 메시지 설정 및 페이지네이션 상태 초기화

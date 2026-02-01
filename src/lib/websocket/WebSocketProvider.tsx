@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { useAuth } from "@/lib/hooks/use-auth";
-import { getAccessToken } from "@/lib/api/client";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -121,9 +120,6 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   const connect = useCallback(() => {
     if (!user || wsRef.current?.readyState === WebSocket.OPEN) return;
 
-    const token = getAccessToken();
-    if (!token) return;
-
     setConnecting(true);
 
     // SockJS 스타일 WebSocket URL
@@ -134,11 +130,10 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
       wsRef.current = ws;
 
       ws.onopen = () => {
-        // STOMP CONNECT 프레임 전송
+        // STOMP CONNECT 프레임 전송 (인증은 쿠키로 핸드셰이크 시 처리됨)
         const connectFrame = serializeStompFrame("CONNECT", {
           "accept-version": "1.2",
           "heart-beat": "10000,10000",
-          Authorization: `Bearer ${token}`,
         });
         ws.send(connectFrame);
       };

@@ -11,6 +11,7 @@ export const configKeys = {
   bundles: () => [...configKeys.all, "bundles"] as const,
 };
 
+// 공개 설정 데이터 - 인증 없이 항상 조회 가능
 export function useWorldGroups() {
   return useQuery({
     queryKey: configKeys.worldGroups(),
