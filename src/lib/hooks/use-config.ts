@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
+import { useAuth } from "@/lib/hooks/use-auth";
 import type { WorldGroupConfig, BossConfig, BossBundleConfig } from "@/types/api";
 
 export const configKeys = {
@@ -12,6 +13,7 @@ export const configKeys = {
 };
 
 export function useWorldGroups() {
+  const { user, isLoading } = useAuth();
   return useQuery({
     queryKey: configKeys.worldGroups(),
     queryFn: async () => {
@@ -20,10 +22,12 @@ export function useWorldGroups() {
       return result.data as WorldGroupConfig[];
     },
     staleTime: Infinity, // Config rarely changes
+    enabled: !!user && !isLoading,
   });
 }
 
 export function useBosses() {
+  const { user, isLoading } = useAuth();
   return useQuery({
     queryKey: configKeys.bosses(),
     queryFn: async () => {
@@ -32,10 +36,12 @@ export function useBosses() {
       return result.data as BossConfig[];
     },
     staleTime: Infinity,
+    enabled: !!user && !isLoading,
   });
 }
 
 export function useBundles() {
+  const { user, isLoading } = useAuth();
   return useQuery({
     queryKey: configKeys.bundles(),
     queryFn: async () => {
@@ -44,5 +50,6 @@ export function useBundles() {
       return result.data as BossBundleConfig[];
     },
     staleTime: Infinity,
+    enabled: !!user && !isLoading,
   });
 }

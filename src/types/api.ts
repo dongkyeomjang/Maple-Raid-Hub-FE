@@ -66,6 +66,7 @@ export interface UserResponse {
   id: string;
   username: string;
   nickname: string;
+  nicknameSet: boolean;
   temperature: number;
   completedParties: number;
   createdAt: string;

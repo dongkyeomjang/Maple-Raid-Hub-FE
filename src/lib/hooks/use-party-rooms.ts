@@ -17,7 +17,7 @@ export const partyRoomKeys = {
 };
 
 export function usePartyRooms() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   return useQuery({
     queryKey: partyRoomKeys.list(),
     queryFn: async () => {
@@ -25,7 +25,8 @@ export function usePartyRooms() {
       if (!result.success) throw new Error(result.error.message);
       return result.data as PartyRoomResponse[];
     },
-    enabled: !!user,
+    // 인증 확인이 완료되고 user가 있을 때만 활성화
+    enabled: !!user && !isLoading,
     staleTime: 0, // 항상 최신 데이터 fetch
     refetchOnMount: "always", // 마운트 시 항상 refetch
   });

@@ -195,7 +195,7 @@ export function useWithdrawApplication() {
 }
 
 export function useMyApplications() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   return useQuery({
     queryKey: postKeys.myApplications(),
     queryFn: async () => {
@@ -203,12 +203,13 @@ export function useMyApplications() {
       if (!result.success) throw new Error(result.error.message);
       return result.data as ApplicationResponse[];
     },
-    enabled: !!user,
+    // 인증 확인이 완료되고 user가 있을 때만 활성화
+    enabled: !!user && !isLoading,
   });
 }
 
 export function useMyPosts() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   return useQuery({
     queryKey: postKeys.myPosts(),
     queryFn: async () => {
@@ -216,6 +217,7 @@ export function useMyPosts() {
       if (!result.success) throw new Error(result.error.message);
       return result.data as PostResponse[];
     },
-    enabled: !!user,
+    // 인증 확인이 완료되고 user가 있을 때만 활성화
+    enabled: !!user && !isLoading,
   });
 }

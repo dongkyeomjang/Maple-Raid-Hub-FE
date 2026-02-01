@@ -4,44 +4,6 @@ import type { ApiResponse, ErrorResponse } from "@/types/api";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 const MOCK_MODE = process.env.NEXT_PUBLIC_MOCK_MODE === "true";
 
-// Token management
-let accessToken: string | null = null;
-let refreshToken: string | null = null;
-
-export function setTokens(access: string, refresh: string) {
-  accessToken = access;
-  refreshToken = refresh;
-  if (typeof window !== "undefined") {
-    localStorage.setItem("accessToken", access);
-    localStorage.setItem("refreshToken", refresh);
-  }
-}
-
-export function getAccessToken(): string | null {
-  if (accessToken) return accessToken;
-  if (typeof window !== "undefined") {
-    accessToken = localStorage.getItem("accessToken");
-  }
-  return accessToken;
-}
-
-export function getRefreshToken(): string | null {
-  if (refreshToken) return refreshToken;
-  if (typeof window !== "undefined") {
-    refreshToken = localStorage.getItem("refreshToken");
-  }
-  return refreshToken;
-}
-
-export function clearTokens() {
-  accessToken = null;
-  refreshToken = null;
-  if (typeof window !== "undefined") {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-  }
-}
-
 // Backend API response format
 interface BackendApiResponse<T> {
   success: boolean;
@@ -54,26 +16,21 @@ interface BackendApiResponse<T> {
   timestamp: string;
 }
 
-// Generic fetch wrapper
+// Generic fetch wrapper - 쿠키 기반 인증 (서버가 모든 토큰 관리)
 async function fetchApi<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
-  const token = getAccessToken();
-
   const headers: HeadersInit = {
     "Content-Type": "application/json",
     ...options.headers,
   };
 
-  if (token) {
-    (headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
-  }
-
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers,
+      credentials: "include", // 쿠키 자동 전송
     });
 
     // Handle empty response (204 No Content)
@@ -119,35 +76,24 @@ async function fetchApi<T>(
   }
 }
 
-// Token refresh interceptor
+// Token refresh interceptor - 쿠키 기반 (서버가 토큰 관리)
 async function fetchApiWithRefresh<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
   let result = await fetchApi<T>(endpoint, options);
 
-  // If token expired and we have a refresh token, try to refresh
+  // 토큰 만료 시 자동 갱신 시도 (쿠키의 refresh token 사용)
   if (!result.success && result.error.code === "TOKEN_EXPIRED") {
-    const currentRefreshToken = getRefreshToken();
-    if (currentRefreshToken) {
-      const refreshResult = await fetchApi<{
-        accessToken: string;
-        refreshToken: string;
-        expiresIn: number;
-      }>("/api/auth/refresh", {
-        method: "POST",
-        body: JSON.stringify({ refreshToken: currentRefreshToken }),
-      });
+    const refreshResult = await fetchApi<void>("/api/auth/refresh", {
+      method: "POST",
+    });
 
-      if (refreshResult.success && refreshResult.data) {
-        setTokens(refreshResult.data.accessToken, refreshResult.data.refreshToken);
-        // Retry the original request
-        result = await fetchApi<T>(endpoint, options);
-      } else {
-        // Refresh failed, clear tokens
-        clearTokens();
-      }
+    if (refreshResult.success) {
+      // 서버가 새 토큰을 쿠키에 설정함 - 원래 요청 재시도
+      result = await fetchApi<T>(endpoint, options);
     }
+    // refresh 실패 시 그냥 원래 에러 반환 (프론트에서 로그아웃 처리)
   }
 
   return result;
@@ -155,32 +101,44 @@ async function fetchApiWithRefresh<T>(
 
 // API client with methods for each endpoint
 export const api = {
-  // Auth
+  // Auth - 모든 토큰 관리는 서버가 쿠키로 처리
   auth: {
     signup: (data: { username: string; password: string; nickname: string }) =>
-      fetchApi("/api/auth/signup", {
+      fetchApi<void>("/api/auth/signup", {
         method: "POST",
         body: JSON.stringify(data),
       }),
 
     login: (data: { username: string; password: string }) =>
-      fetchApi("/api/auth/login", {
+      fetchApi<void>("/api/auth/login", {
         method: "POST",
         body: JSON.stringify(data),
       }),
 
     logout: () =>
-      fetchApiWithRefresh("/api/auth/logout", {
+      fetchApi<void>("/api/auth/logout", {
         method: "POST",
       }),
 
-    refresh: (refreshToken: string) =>
-      fetchApi("/api/auth/refresh", {
+    refresh: () =>
+      fetchApi<void>("/api/auth/refresh", {
         method: "POST",
-        body: JSON.stringify({ refreshToken }),
       }),
 
     me: () => fetchApiWithRefresh("/api/auth/me"),
+
+    updateNickname: (nickname: string) =>
+      fetchApiWithRefresh("/api/auth/nickname", {
+        method: "PATCH",
+        body: JSON.stringify({ nickname }),
+      }),
+
+    // OAuth 신규 가입 완료 (임시 토큰으로 닉네임 설정)
+    oauthComplete: (nickname: string) =>
+      fetchApi<void>("/api/auth/oauth/complete", {
+        method: "POST",
+        body: JSON.stringify({ nickname }),
+      }),
   },
 
   // Characters

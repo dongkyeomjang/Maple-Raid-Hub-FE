@@ -143,6 +143,30 @@ export default function LoginPage() {
                 )}
               </Button>
 
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border/50" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">또는</span>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-12 text-body bg-[#FEE500] hover:bg-[#FDD835] text-[#191919] border-0"
+                onClick={() => {
+                  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+                  window.location.href = `${apiUrl}/oauth2/authorization/kakao`;
+                }}
+              >
+                <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 3C6.477 3 2 6.463 2 10.69c0 2.745 1.814 5.157 4.548 6.507-.196.725-.713 2.628-.817 3.037-.123.483.178.476.374.346.154-.102 2.454-1.667 3.449-2.345.482.065.977.099 1.482.099 5.523 0 10-3.463 10-7.644C22 6.463 17.523 3 12 3z"/>
+                </svg>
+                카카오로 시작하기
+              </Button>
+
               <p className="text-center text-body-sm text-muted-foreground">
                 아직 계정이 없으신가요?{" "}
                 <Link href="/onboarding" className="text-primary hover:underline font-medium underline-cute">

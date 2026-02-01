@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,9 +27,18 @@ type Step = "intro" | "account" | "complete";
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const { signup } = useAuth();
   const [currentStep, setCurrentStep] = useState<Step>("intro");
+
+  // URL 파라미터에서 step 읽기 (OAuth 회원가입 완료 후 리다이렉트용)
+  useEffect(() => {
+    const stepParam = searchParams.get("step");
+    if (stepParam === "complete") {
+      setCurrentStep("complete");
+    }
+  }, [searchParams]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -175,11 +184,32 @@ export default function OnboardingPage() {
             <div className="flex flex-col items-center gap-4">
               <Button
                 size="xl"
-                onClick={() => setCurrentStep("account")}
-                className="btn-maple min-w-[200px]"
+                onClick={() => {
+                  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+                  window.location.href = `${apiUrl}/oauth2/authorization/kakao`;
+                }}
+                className="min-w-[200px] bg-[#FEE500] hover:bg-[#FDD835] text-[#191919] border-0"
               >
-                30초만에 가입하기
-                <ArrowRight className="h-5 w-5 ml-1" />
+                <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 3C6.477 3 2 6.463 2 10.69c0 2.745 1.814 5.157 4.548 6.507-.196.725-.713 2.628-.817 3.037-.123.483.178.476.374.346.154-.102 2.454-1.667 3.449-2.345.482.065.977.099 1.482.099 5.523 0 10-3.463 10-7.644C22 6.463 17.523 3 12 3z"/>
+                </svg>
+                카카오로 시작하기
+              </Button>
+
+              <div className="flex items-center gap-3 w-full max-w-[200px]">
+                <div className="flex-1 h-px bg-border/50" />
+                <span className="text-caption text-muted-foreground">또는</span>
+                <div className="flex-1 h-px bg-border/50" />
+              </div>
+
+              <Button
+                size="xl"
+                variant="outline"
+                onClick={() => setCurrentStep("account")}
+                className="min-w-[200px]"
+              >
+                기본 회원 가입하기
+                <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
               <p className="text-caption text-muted-foreground">
                 이미 계정이 있으신가요?{" "}
