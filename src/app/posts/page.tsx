@@ -112,34 +112,30 @@ export default function PostsPage() {
 
   return (
     <PageContainer className="py-2">
-      {/* Top bar: View Filter + Create Button */}
-      <div className="flex items-center justify-between mb-1.5">
-        <div className="flex items-center gap-2">
-          {isAuthenticated && (
-            <>
-              <Button
-                variant={viewFilter === "all" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleViewFilterChange("all")}
-              >
-                전체 모집글
-              </Button>
-              <Button
-                variant={viewFilter === "mine" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleViewFilterChange("mine")}
-              >
-                <Crown className="h-4 w-4 mr-1" />
-                내 모집글
-              </Button>
-            </>
-          )}
+      {/* View Filter */}
+      {isAuthenticated && (
+        <div className="flex items-center gap-2 mb-1.5">
+          <Button
+            variant={viewFilter === "all" ? "default" : "outline"}
+            size="sm"
+            onClick={() => handleViewFilterChange("all")}
+          >
+            전체 모집글
+          </Button>
+          <Button
+            variant={viewFilter === "mine" ? "default" : "outline"}
+            size="sm"
+            onClick={() => handleViewFilterChange("mine")}
+          >
+            <Crown className="h-4 w-4 mr-1" />
+            내 모집글
+          </Button>
         </div>
-        {createPostButton}
-      </div>
+      )}
 
-      {/* World Group Filter + Boss Filter */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 mb-2">
+      {/* World Group Filter + Boss Filter + Create Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 mb-2">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1.5">
         <Tabs
           value={worldGroupFilter}
           onValueChange={handleWorldGroupChange}
@@ -151,7 +147,9 @@ export default function PostsPage() {
             <TabsTrigger value="NORMAL">일반</TabsTrigger>
           </TabsList>
         </Tabs>
-        <BossFilterSelector value={bossFilter} onChange={handleBossFilterChange} />
+          <BossFilterSelector value={bossFilter} onChange={handleBossFilterChange} />
+        </div>
+        {createPostButton}
       </div>
 
       {error ? (
