@@ -7,7 +7,6 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
@@ -67,9 +66,9 @@ export default function PostDetailPage() {
   const postId = params.id as string;
 
   const { data: postDetail, isLoading, error, refetch } = usePost(postId);
-  const { data: charactersData } = useCharacters();
   const { formatBossNames } = useBossNames();
   const { user } = useAuth();
+  const { data: charactersData } = useCharacters({ enabled: !!user });
   const applyMutation = useApplyToPost();
   const closeMutation = useClosePost();
   const cancelMutation = useCancelPost();
