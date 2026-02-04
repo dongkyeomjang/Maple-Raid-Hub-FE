@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { PageContainer } from "@/components/layout/PageContainer";
+import { PageContainer, PageHeader } from "@/components/layout/PageContainer";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -111,7 +111,12 @@ export default function PostsPage() {
   );
 
   return (
-    <PageContainer className="py-2">
+    <PageContainer>
+      <PageHeader
+        title="파티 모집"
+        description="보스 레이드 파티를 모집하거나 참여하세요."
+      />
+
       {/* View Filter */}
       {isAuthenticated && (
         <div className="flex items-center gap-2 mb-1.5">
