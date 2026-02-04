@@ -38,6 +38,24 @@ async function fetchApi<T>(
       return { success: true, data: null as T };
     }
 
+    // 401 Unauthorized: 세션 만료 처리
+    if (response.status === 401) {
+      const { useAuth } = await import("@/lib/hooks/use-auth");
+      useAuth.setState({ user: null, isAuthenticated: false, isLoading: false });
+
+      if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
+        window.location.href = "/login";
+      }
+
+      return {
+        success: false,
+        error: {
+          code: "UNAUTHORIZED",
+          message: "세션이 만료되었습니다. 다시 로그인해주세요.",
+        },
+      };
+    }
+
     const text = await response.text();
     if (!text) {
       return { success: true, data: null as T };

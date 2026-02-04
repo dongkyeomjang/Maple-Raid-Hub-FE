@@ -13,6 +13,7 @@ import {
   usePost,
   useRespondToApplication,
   useClosePost,
+  usePostUpdates,
 } from "@/lib/hooks/use-posts";
 import { useBossNames } from "@/lib/hooks/use-boss-names";
 import { ArrowLeft, Users, Settings, XCircle } from "lucide-react";
@@ -23,6 +24,7 @@ export default function ManagePostPage() {
   const postId = params.id as string;
 
   const { data: postDetail, isLoading: postLoading, error: postError, refetch: refetchPost } = usePost(postId);
+  usePostUpdates(postId);
   const { formatBossNames } = useBossNames();
   const respondMutation = useRespondToApplication();
   const closeMutation = useClosePost();

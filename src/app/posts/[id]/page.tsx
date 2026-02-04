@@ -31,7 +31,7 @@ import { VerificationBadge } from "@/components/domain/VerificationBadge";
 import { CharacterDetailDialog } from "@/components/domain/CharacterDetailDialog";
 import { ErrorState } from "@/components/common/ErrorState";
 import { LoadingPage } from "@/components/common/LoadingSpinner";
-import { usePost, useApplyToPost, useClosePost, useCancelPost } from "@/lib/hooks/use-posts";
+import { usePost, useApplyToPost, useClosePost, useCancelPost, usePostUpdates } from "@/lib/hooks/use-posts";
 import { useCharacters } from "@/lib/hooks/use-characters";
 import { useBossNames } from "@/lib/hooks/use-boss-names";
 import { useAuth } from "@/lib/hooks/use-auth";
@@ -84,12 +84,23 @@ export default function PostDetailPage() {
 
   const setDraftDm = useChatStore((s) => s.setDraftDm);
 
+  // 실시간 지원 상태 변경 구독
+  usePostUpdates(postId);
+
   const post = postDetail?.post;
   const applications = postDetail?.applications ?? [];
   const authorCharacter = postDetail?.authorCharacter;
 
   // 작성자 여부 확인
   const isOwner = user?.id === post?.authorId;
+
+  // 현재 사용자의 활성 지원 상태 확인
+  const myApplication = applications.find(
+    (a) => a.applicantId === user?.id && (a.status === "APPLIED" || a.status === "ACCEPTED")
+  );
+  const wasRejected = !myApplication && applications.some(
+    (a) => a.applicantId === user?.id && a.status === "REJECTED"
+  );
 
   // Filter characters that can apply (verified, same world group)
   const eligibleCharacters =
@@ -385,10 +396,32 @@ export default function PostDetailPage() {
             /* 비작성자용 지원 패널 */
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">지원하기</CardTitle>
+                <CardTitle className="text-lg">
+                  {myApplication ? "지원 현황" : "지원하기"}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {!canApply ? (
+                {myApplication?.status === "APPLIED" ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <Clock className="h-5 w-5 text-blue-500 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-blue-700 dark:text-blue-300">지원이 완료되었습니다</p>
+                        <p className="text-xs text-blue-600 dark:text-blue-400">파티장의 수락을 기다리고 있습니다.</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : myApplication?.status === "ACCEPTED" ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
+                      <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-green-700 dark:text-green-300">지원이 수락되었습니다</p>
+                        <p className="text-xs text-green-600 dark:text-green-400">파티에 합류하게 됩니다.</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : !canApply ? (
                   <p className="text-sm text-muted-foreground">
                     현재 지원을 받지 않는 모집글입니다.
                   </p>
@@ -405,78 +438,86 @@ export default function PostDetailPage() {
                     </Button>
                   </div>
                 ) : (
-                  <Dialog open={applyDialogOpen} onOpenChange={setApplyDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button className="w-full">
-                        <Send className="h-4 w-4 mr-2" />
-                        지원하기
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>파티 지원</DialogTitle>
-                        <DialogDescription>
-                          {displayName} 파티에 지원합니다.
-                        </DialogDescription>
-                      </DialogHeader>
-
-                      <div className="space-y-4 py-4">
-                        <div className="space-y-2">
-                          <Label>캐릭터</Label>
-                          <Select
-                            value={selectedCharacterId}
-                            onValueChange={setSelectedCharacterId}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="캐릭터 선택" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {eligibleCharacters.map((char) => (
-                                <SelectItem key={char.id} value={char.id}>
-                                  {char.characterName} (Lv.{char.characterLevel})
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>메시지 (선택사항)</Label>
-                          <Textarea
-                            value={applyMessage}
-                            onChange={(e) => setApplyMessage(e.target.value)}
-                            placeholder="파티장에게 전할 메시지"
-                            rows={3}
-                          />
-                        </div>
+                  <>
+                    {wasRejected && (
+                      <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border border-border">
+                        <XCircle className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <p className="text-xs text-muted-foreground">이전 지원이 거절되었습니다. 다시 지원할 수 있습니다.</p>
                       </div>
+                    )}
+                    <Dialog open={applyDialogOpen} onOpenChange={setApplyDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button className="w-full">
+                          <Send className="h-4 w-4 mr-2" />
+                          {wasRejected ? "다시 지원하기" : "지원하기"}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>파티 지원</DialogTitle>
+                          <DialogDescription>
+                            {displayName} 파티에 지원합니다.
+                          </DialogDescription>
+                        </DialogHeader>
 
-                      <DialogFooter>
-                        <Button
-                          variant="outline"
-                          onClick={() => setApplyDialogOpen(false)}
-                        >
-                          취소
-                        </Button>
-                        <Button
-                          onClick={handleApply}
-                          disabled={
-                            !selectedCharacterId ||
-                            applyMutation.isPending
-                          }
-                        >
-                          {applyMutation.isPending ? (
-                            <>
-                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                              지원 중...
-                            </>
-                          ) : (
-                            "지원하기"
-                          )}
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
+                        <div className="space-y-4 py-4">
+                          <div className="space-y-2">
+                            <Label>캐릭터</Label>
+                            <Select
+                              value={selectedCharacterId}
+                              onValueChange={setSelectedCharacterId}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="캐릭터 선택" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {eligibleCharacters.map((char) => (
+                                  <SelectItem key={char.id} value={char.id}>
+                                    {char.characterName} (Lv.{char.characterLevel})
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>메시지 (선택사항)</Label>
+                            <Textarea
+                              value={applyMessage}
+                              onChange={(e) => setApplyMessage(e.target.value)}
+                              placeholder="파티장에게 전할 메시지"
+                              rows={3}
+                            />
+                          </div>
+                        </div>
+
+                        <DialogFooter>
+                          <Button
+                            variant="outline"
+                            onClick={() => setApplyDialogOpen(false)}
+                          >
+                            취소
+                          </Button>
+                          <Button
+                            onClick={handleApply}
+                            disabled={
+                              !selectedCharacterId ||
+                              applyMutation.isPending
+                            }
+                          >
+                            {applyMutation.isPending ? (
+                              <>
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                지원 중...
+                              </>
+                            ) : (
+                              "지원하기"
+                            )}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </>
                 )}
               </CardContent>
             </Card>

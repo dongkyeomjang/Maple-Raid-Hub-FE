@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { MessageCircle, Users } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import { useChatStore, PartyChatRoom } from "@/lib/stores/chat-store";
+import { useChatStore, PartyChatRoom, DmRoom } from "@/lib/stores/chat-store";
 import { useAuth } from "@/lib/hooks/use-auth";
-import { usePartyRooms } from "@/lib/hooks/use-party-rooms";
+import { usePartyRooms, usePartyRoomUpdatesSubscription } from "@/lib/hooks/use-party-rooms";
 import { useBossNames } from "@/lib/hooks/use-boss-names";
 import {
   useDmRooms,
@@ -74,6 +74,7 @@ export function ChatPanel() {
     useDmChatSubscription(selectedRoomType === "dm" ? selectedRoomId : null);
   useNotificationSubscription();
   usePartyChatNotificationSubscription();
+  usePartyRoomUpdatesSubscription();
 
   // 파티룸 데이터를 채팅방으로 변환
   useEffect(() => {
@@ -165,7 +166,7 @@ export function ChatPanel() {
       // 3. DM 방 목록 새로고침
       const roomsResult = await api.dm.getRooms();
       if (roomsResult.success && roomsResult.data) {
-        setDmRooms(roomsResult.data as any[]);
+        setDmRooms((roomsResult.data as { dmRooms: DmRoom[] }).dmRooms);
       }
 
       // 4. 임시 DM 초기화하고 생성된 방 선택

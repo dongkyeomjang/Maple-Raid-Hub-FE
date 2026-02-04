@@ -52,7 +52,7 @@ export function ScheduleSection({
   const [hasChanges, setHasChanges] = useState(false);
 
   // 가용시간 데이터 조회
-  const { data: availabilityData, isLoading } = useQuery({
+  const { data: availabilityData, isLoading, refetch: refetchAvailability } = useQuery({
     queryKey: ["availability", partyRoomId],
     queryFn: async () => {
       const result = await api.availability.getAll(partyRoomId);
@@ -185,7 +185,13 @@ export function ScheduleSection({
       </CardHeader>
 
       <CardContent>
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "my" | "all")}>
+        <Tabs value={activeTab} onValueChange={(v) => {
+          const tab = v as "my" | "all";
+          setActiveTab(tab);
+          if (tab === "all") {
+            refetchAvailability();
+          }
+        }}>
           <TabsList className="grid w-full grid-cols-2 mb-4">
             <TabsTrigger value="my" className="gap-1.5">
               <Clock className="h-4 w-4" />

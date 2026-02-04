@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { useAuth } from "@/lib/hooks/use-auth";
+import { useWebSocket } from "@/lib/websocket/WebSocketProvider";
 import { partyRoomKeys } from "@/lib/hooks/use-party-rooms";
 import type {
   PageResponse,
@@ -128,7 +130,7 @@ export function useApplications(postId: string) {
     queryFn: async () => {
       const result = await apiClient.posts.getApplications(postId);
       if (!result.success) throw new Error(result.error.message);
-      return result.data as ApplicationResponse[];
+      return (result.data as { applications: ApplicationResponse[] }).applications;
     },
     enabled: !!postId,
   });
@@ -201,7 +203,7 @@ export function useMyApplications() {
     queryFn: async () => {
       const result = await apiClient.posts.myApplications();
       if (!result.success) throw new Error(result.error.message);
-      return result.data as ApplicationResponse[];
+      return (result.data as { applications: ApplicationResponse[] }).applications;
     },
     // 인증 확인이 완료되고 user가 있을 때만 활성화
     enabled: !!user && !isLoading,
@@ -215,9 +217,29 @@ export function useMyPosts() {
     queryFn: async () => {
       const result = await apiClient.posts.myPosts();
       if (!result.success) throw new Error(result.error.message);
-      return result.data as PostResponse[];
+      return (result.data as { posts: PostResponse[] }).posts;
     },
     // 인증 확인이 완료되고 user가 있을 때만 활성화
     enabled: !!user && !isLoading,
   });
+}
+
+/**
+ * 모집글의 지원 상태 변경을 실시간으로 구독하여 자동 갱신
+ */
+export function usePostUpdates(postId: string | null) {
+  const { connected, subscribe, unsubscribe } = useWebSocket();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!connected || !postId) return;
+
+    const subId = subscribe(`/topic/post/${postId}`, () => {
+      queryClient.invalidateQueries({ queryKey: postKeys.detail(postId) });
+      queryClient.invalidateQueries({ queryKey: postKeys.applications(postId) });
+      queryClient.invalidateQueries({ queryKey: postKeys.lists() });
+    });
+
+    return () => unsubscribe(subId);
+  }, [connected, postId, subscribe, unsubscribe, queryClient]);
 }

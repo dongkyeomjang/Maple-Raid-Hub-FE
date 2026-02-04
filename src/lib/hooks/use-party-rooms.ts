@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { useAuth } from "@/lib/hooks/use-auth";
+import { useWebSocket } from "@/lib/websocket/WebSocketProvider";
 import type {
   PartyRoomResponse,
   ReviewResponse,
@@ -23,7 +25,7 @@ export function usePartyRooms() {
     queryFn: async () => {
       const result = await apiClient.partyRooms.list();
       if (!result.success) throw new Error(result.error.message);
-      return result.data as PartyRoomResponse[];
+      return (result.data as { partyRooms: PartyRoomResponse[] }).partyRooms;
     },
     // 인증 확인이 완료되고 user가 있을 때만 활성화
     enabled: !!user && !isLoading,
@@ -199,4 +201,29 @@ export function useVotePoll() {
       queryClient.invalidateQueries({ queryKey: partyRoomKeys.detail(data.roomId) });
     },
   });
+}
+
+/**
+ * 파티방 생성/변경을 실시간으로 구독하여 파티방 목록 자동 갱신
+ */
+export function usePartyRoomUpdatesSubscription() {
+  const { connected, subscribe, unsubscribe } = useWebSocket();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const subscriptionIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!connected || !user) return;
+
+    subscriptionIdRef.current = subscribe(`/user/queue/party-room-updates`, () => {
+      queryClient.invalidateQueries({ queryKey: partyRoomKeys.list() });
+    });
+
+    return () => {
+      if (subscriptionIdRef.current) {
+        unsubscribe(subscriptionIdRef.current);
+        subscriptionIdRef.current = null;
+      }
+    };
+  }, [connected, user, subscribe, unsubscribe, queryClient]);
 }
