@@ -28,7 +28,7 @@ export const postKeys = {
   myPosts: () => [...postKeys.all, "myPosts"] as const,
 };
 
-const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 6;
 
 export function usePosts(filters?: { worldGroup?: string }) {
   return useInfiniteQuery({

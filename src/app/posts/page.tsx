@@ -16,14 +16,17 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { usePosts } from "@/lib/hooks/use-posts";
 import { useAuth } from "@/lib/hooks/use-auth";
-import { Plus, Swords, Crown } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Swords, Crown } from "lucide-react";
 import type { WorldGroup } from "@/types/api";
 
 type ViewFilter = "all" | "mine";
 
+const ITEMS_PER_PAGE = 6;
+
 export default function PostsPage() {
   const [worldGroupFilter, setWorldGroupFilter] = useState<WorldGroup | "ALL">("ALL");
   const [viewFilter, setViewFilter] = useState<ViewFilter>("all");
+  const [currentPage, setCurrentPage] = useState(1);
   const { isAuthenticated, user } = useAuth();
 
   const { data, isLoading, error, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -34,9 +37,28 @@ export default function PostsPage() {
   const allPosts = data?.pages.flatMap((page) => page.content) || [];
 
   // 내 모집글만 필터링
-  const posts = viewFilter === "mine" && user
+  const filteredPosts = viewFilter === "mine" && user
     ? allPosts.filter((post) => post.authorId === user.id)
     : allPosts;
+
+  // 페이지네이션
+  const totalPages = Math.max(1, Math.ceil(filteredPosts.length / ITEMS_PER_PAGE));
+  const safePage = Math.min(currentPage, totalPages);
+  const posts = filteredPosts.slice(
+    (safePage - 1) * ITEMS_PER_PAGE,
+    safePage * ITEMS_PER_PAGE
+  );
+
+  // 필터 변경 시 페이지 초기화
+  const handleWorldGroupChange = (v: string) => {
+    setWorldGroupFilter(v as WorldGroup | "ALL");
+    setCurrentPage(1);
+  };
+
+  const handleViewFilterChange = (filter: ViewFilter) => {
+    setViewFilter(filter);
+    setCurrentPage(1);
+  };
 
   const createPostButton = isAuthenticated ? (
     <Button asChild>
@@ -73,18 +95,18 @@ export default function PostsPage() {
 
       {/* View Filter - 전체/내 모집글 */}
       {isAuthenticated && (
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-3">
           <Button
             variant={viewFilter === "all" ? "default" : "outline"}
             size="sm"
-            onClick={() => setViewFilter("all")}
+            onClick={() => handleViewFilterChange("all")}
           >
             전체 모집글
           </Button>
           <Button
             variant={viewFilter === "mine" ? "default" : "outline"}
             size="sm"
-            onClick={() => setViewFilter("mine")}
+            onClick={() => handleViewFilterChange("mine")}
           >
             <Crown className="h-4 w-4 mr-1" />
             내 모집글
@@ -95,8 +117,8 @@ export default function PostsPage() {
       {/* World Group Filter */}
       <Tabs
         value={worldGroupFilter}
-        onValueChange={(v) => setWorldGroupFilter(v as WorldGroup | "ALL")}
-        className="mb-6"
+        onValueChange={handleWorldGroupChange}
+        className="mb-4"
       >
         <TabsList>
           <TabsTrigger value="ALL">전체</TabsTrigger>
@@ -113,7 +135,7 @@ export default function PostsPage() {
           onRetry={() => refetch()}
         />
       ) : isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {[...Array(6)].map((_, i) => (
             <PostCardSkeleton key={i} />
           ))}
@@ -138,7 +160,7 @@ export default function PostsPage() {
         />
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {posts.map((post) => (
               <PostCard
                 key={post.id}
@@ -148,14 +170,53 @@ export default function PostsPage() {
             ))}
           </div>
 
-          {hasNextPage && viewFilter === "all" && (
-            <div className="mt-6 text-center">
+          {/* 서버에서 다음 페이지 데이터 미리 로드 */}
+          {hasNextPage && viewFilter === "all" && safePage >= totalPages && (
+            <div className="mt-3 text-center">
               <Button
-                variant="outline"
+                variant="ghost"
+                size="sm"
                 onClick={() => fetchNextPage()}
                 disabled={isFetchingNextPage}
               >
-                {isFetchingNextPage ? "불러오는 중..." : "더 보기"}
+                {isFetchingNextPage ? "불러오는 중..." : "더 많은 글 불러오기"}
+              </Button>
+            </div>
+          )}
+
+          {/* 페이지네이션 */}
+          {totalPages > 1 && (
+            <div className="mt-4 flex items-center justify-center gap-1">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={safePage <= 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <Button
+                  key={page}
+                  variant={page === safePage ? "default" : "outline"}
+                  size="icon"
+                  className="h-9 w-9"
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </Button>
+              ))}
+
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={safePage >= totalPages}
+              >
+                <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           )}
