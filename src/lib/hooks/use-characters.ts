@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import type {
   CharacterResponse,
+  CharacterListResponse,
   ChallengeResponse,
   VerificationResultResponse,
 } from "@/types/api";
@@ -21,7 +22,7 @@ export function useCharacters() {
     queryFn: async () => {
       const result = await apiClient.characters.list();
       if (!result.success) throw new Error(result.error.message);
-      return result.data as CharacterResponse[];
+      return (result.data as CharacterListResponse).characters;
     },
   });
 }

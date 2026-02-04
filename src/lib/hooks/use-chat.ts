@@ -26,7 +26,7 @@ export function useDmRooms() {
     queryFn: async () => {
       const result = await api.dm.getRooms();
       if (result.success && result.data) {
-        return result.data as DmRoom[];
+        return (result.data as { dmRooms: DmRoom[] }).dmRooms;
       }
       if (!result.success) {
         throw new Error(result.error?.message || "Failed to fetch DM rooms");
@@ -455,7 +455,7 @@ export function useNotificationSubscription() {
         try {
           const result = await api.dm.getRooms();
           if (result.success && result.data) {
-            setDmRooms(result.data as DmRoom[]);
+            setDmRooms((result.data as { dmRooms: DmRoom[] }).dmRooms);
           }
         } catch (e) {
           console.error("Failed to refresh DM rooms:", e);

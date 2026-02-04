@@ -6,7 +6,7 @@ import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import {WorldGroupBadge} from "./WorldGroupBadge";
 import type {PostResponse} from "@/types/api";
-import {cn, formatDateTime, formatRelativeTime} from "@/lib/utils";
+import {cn, formatRelativeTime} from "@/lib/utils";
 import {useBossNames} from "@/lib/hooks/use-boss-names";
 import {Calendar, ChevronRight, Clock, Crown, User} from "lucide-react";
 
@@ -65,7 +65,7 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
                   {post.preferredTime && (
                     <>
                       <span>·</span>
-                      <span>{formatDateTime(post.preferredTime)}</span>
+                      <span>{post.preferredTime.split("T")[0]}</span>
                     </>
                   )}
                 </div>
@@ -149,7 +149,7 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
       <CardContent className="space-y-3">
         <div className="flex items-center gap-2 text-body-sm">
           <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
-          <span className="text-foreground">{formatDateTime(post.preferredTime)}</span>
+          <span className="text-foreground">{post.preferredTime ? post.preferredTime.split("T")[0] : "상의 후 결정"}</span>
         </div>
 
         {post.description && (
