@@ -16,7 +16,7 @@ export const characterKeys = {
   challenge: (characterId: string) => [...characterKeys.all, "challenge", characterId] as const,
 };
 
-export function useCharacters() {
+export function useCharacters(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: characterKeys.list(),
     queryFn: async () => {
@@ -24,6 +24,7 @@ export function useCharacters() {
       if (!result.success) throw new Error(result.error.message);
       return (result.data as CharacterListResponse).characters;
     },
+    enabled: options?.enabled ?? true,
   });
 }
 
