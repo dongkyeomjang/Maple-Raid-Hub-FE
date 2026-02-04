@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { PageContainer, PageHeader } from "@/components/layout/PageContainer";
 import { Button } from "@/components/ui/button";
@@ -41,13 +41,26 @@ export default function PostsPage() {
     ? allPosts.filter((post) => post.authorId === user.id)
     : allPosts;
 
-  // 페이지네이션
-  const totalPages = Math.max(1, Math.ceil(filteredPosts.length / ITEMS_PER_PAGE));
+  // 페이지네이션: 서버 total 기반 (mine 필터는 클라이언트 계산)
+  const serverTotalPages = data?.pages[0]?.totalPages ?? 1;
+  const totalPages = viewFilter === "mine"
+    ? Math.max(1, Math.ceil(filteredPosts.length / ITEMS_PER_PAGE))
+    : serverTotalPages;
   const safePage = Math.min(currentPage, totalPages);
   const posts = filteredPosts.slice(
     (safePage - 1) * ITEMS_PER_PAGE,
     safePage * ITEMS_PER_PAGE
   );
+
+  // 현재 페이지 데이터가 미로드 시 자동 fetch
+  const loadedPages = data?.pages.length ?? 0;
+  useEffect(() => {
+    if (safePage > loadedPages && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [safePage, loadedPages, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const isPageLoading = safePage > loadedPages;
 
   // 필터 변경 시 페이지 초기화
   const handleWorldGroupChange = (v: string) => {
@@ -160,27 +173,21 @@ export default function PostsPage() {
         />
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {posts.map((post) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                isOwner={user?.id === post.authorId}
-              />
-            ))}
-          </div>
-
-          {/* 서버에서 다음 페이지 데이터 미리 로드 */}
-          {hasNextPage && viewFilter === "all" && safePage >= totalPages && (
-            <div className="mt-3 text-center">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => fetchNextPage()}
-                disabled={isFetchingNextPage}
-              >
-                {isFetchingNextPage ? "불러오는 중..." : "더 많은 글 불러오기"}
-              </Button>
+          {isPageLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {[...Array(ITEMS_PER_PAGE)].map((_, i) => (
+                <PostCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {posts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  isOwner={user?.id === post.authorId}
+                />
+              ))}
             </div>
           )}
 
