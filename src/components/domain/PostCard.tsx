@@ -112,85 +112,75 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
 
   return (
     <Card interactive className={cn("group", isOwner && "ring-1 ring-primary/30")}>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0 space-y-2">
-            <div className="flex items-center flex-wrap gap-2 min-h-[22px]">
+      <CardHeader className="p-4 pb-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0 space-y-1">
+            <div className="flex items-center flex-wrap gap-1.5">
               {isOwner && (
-                <Badge variant="default" className="bg-primary/10 text-primary border-primary/20">
-                  <Crown className="h-3 w-3 mr-1" />
-                  내 모집글
+                <Badge variant="default" size="sm" className="bg-primary/10 text-primary border-primary/20">
+                  <Crown className="h-3 w-3 mr-0.5" />
+                  내 글
                 </Badge>
               )}
-              <WorldGroupBadge worldGroup={post.worldGroup} showEmoji />
-              <Badge variant={statusConfig.variant}>
+              <WorldGroupBadge worldGroup={post.worldGroup} size="sm" showEmoji />
+              <Badge variant={statusConfig.variant} size="sm">
                 {statusConfig.label}
               </Badge>
             </div>
-            <h3 className="font-semibold text-h3 truncate">
+            <h3 className="font-semibold text-body truncate">
               {displayName}
             </h3>
           </div>
-          <div className="flex flex-col items-center justify-center px-3 py-2 bg-muted/50 rounded-lg">
+          <div className="flex flex-col items-center justify-center px-2 py-1 bg-muted/50 rounded-md">
             <div className={cn(
-              "text-h2 font-bold tabular-nums leading-none",
+              "text-h3 font-bold tabular-nums leading-none",
               isFull ? "text-error" : "text-primary"
             )}>
               {post.currentMembers}
-              <span className="text-body-sm font-normal text-muted-foreground">
+              <span className="text-caption font-normal text-muted-foreground">
                 /{post.requiredMembers}
               </span>
             </div>
-            <p className="text-tiny text-muted-foreground mt-0.5">파티원</p>
+            <p className="text-tiny text-muted-foreground">파티원</p>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3">
-        <div className="flex items-center gap-2 text-body-sm">
-          <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
+      <CardContent className="px-4 pb-2 pt-0 space-y-1.5">
+        <div className="flex items-center gap-1.5 text-caption">
+          <Calendar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
           <span className="text-foreground">{post.preferredTime ? post.preferredTime.split("T")[0] : "상의 후 결정"}</span>
         </div>
 
         {post.description && (
-          <div className="p-2.5 bg-muted/30 rounded-lg">
-            <p className="text-body-sm text-muted-foreground line-clamp-2">
+          <div className="px-2 py-1.5 bg-muted/30 rounded-md">
+            <p className="text-caption text-muted-foreground line-clamp-1">
               {post.description}
             </p>
           </div>
         )}
       </CardContent>
 
-      <CardFooter className="flex justify-between items-end pt-3 border-t border-border/50">
-        <div className="flex flex-col gap-2">
-          {/* 계정 닉네임 & 시간 (이전 뷰) */}
-          <div className="flex items-center gap-1.5 text-caption text-muted-foreground">
-            <User className="h-3.5 w-3.5" />
-            {post.authorNickname && (
-              <span className="font-medium text-foreground/70">{post.authorNickname}</span>
+      <CardFooter className="flex justify-between items-center px-4 pb-3 pt-2 border-t border-border/50">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="relative h-7 w-7 rounded-full border border-border/50 overflow-hidden shrink-0">
+            {post.characterImageUrl ? (
+              <img
+                src={post.characterImageUrl}
+                alt={post.characterName || "캐릭터"}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300%] h-[300%] object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-[10px]">
+                ?
+              </div>
             )}
-            <span>·</span>
-            <Clock className="h-3.5 w-3.5" />
-            <span>{formatRelativeTime(post.createdAt)}</span>
           </div>
-          {/* 캐릭터 이미지 & 닉네임 - 항상 공간 확보 */}
-          <div className="flex items-center gap-2 h-10">
-            <div className="relative h-10 w-10 rounded-full border border-border/50 overflow-hidden shrink-0">
-              {post.characterImageUrl ? (
-                <img
-                  src={post.characterImageUrl}
-                  alt={post.characterName || "캐릭터"}
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300%] h-[300%] object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-xs">
-                  ?
-                </div>
-              )}
-            </div>
-            {post.characterName && (
-              <span className="text-body-sm text-foreground">{post.characterName}</span>
+          <div className="flex flex-col min-w-0">
+            {post.authorNickname && (
+              <span className="text-caption font-medium text-foreground/70 truncate">{post.authorNickname}</span>
             )}
+            <span className="text-tiny text-muted-foreground">{formatRelativeTime(post.createdAt)}</span>
           </div>
         </div>
         <Button
@@ -198,13 +188,13 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
           variant={isOwner ? "default" : "outline"}
           asChild
           className={cn(
-            "transition-colors",
+            "transition-colors h-7 text-xs px-2.5",
             !isOwner && "group-hover:bg-primary group-hover:text-white group-hover:border-primary"
           )}
         >
           <Link href={`/posts/${post.id}`}>
-            {isOwner ? "관리하기" : "자세히 보기"}
-            <ChevronRight className="h-4 w-4 ml-1" />
+            {isOwner ? "관리" : "보기"}
+            <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
           </Link>
         </Button>
       </CardFooter>
