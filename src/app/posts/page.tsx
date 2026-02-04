@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { PageContainer, PageHeader } from "@/components/layout/PageContainer";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -12,6 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { PostCard, PostCardSkeleton } from "@/components/domain/PostCard";
+import { BossFilterSelector } from "@/components/domain/BossFilterSelector";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { usePosts } from "@/lib/hooks/use-posts";
@@ -26,12 +27,18 @@ const ITEMS_PER_PAGE = 6;
 export default function PostsPage() {
   const [worldGroupFilter, setWorldGroupFilter] = useState<WorldGroup | "ALL">("ALL");
   const [viewFilter, setViewFilter] = useState<ViewFilter>("all");
+  const [bossFilter, setBossFilter] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const { isAuthenticated, user } = useAuth();
 
+  const postsFilters = {
+    ...(worldGroupFilter !== "ALL" && { worldGroup: worldGroupFilter }),
+    ...(bossFilter.length > 0 && { bossIds: bossFilter }),
+  };
+
   const { data, isLoading, error, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
     usePosts(
-      worldGroupFilter === "ALL" ? undefined : { worldGroup: worldGroupFilter }
+      Object.keys(postsFilters).length > 0 ? postsFilters : undefined
     );
 
   const allPosts = data?.pages.flatMap((page) => page.content) || [];
@@ -73,6 +80,11 @@ export default function PostsPage() {
     setCurrentPage(1);
   };
 
+  const handleBossFilterChange = (bossIds: string[]) => {
+    setBossFilter(bossIds);
+    setCurrentPage(1);
+  };
+
   const createPostButton = isAuthenticated ? (
     <Button asChild>
       <Link href="/posts/new">
@@ -99,16 +111,10 @@ export default function PostsPage() {
   );
 
   return (
-    <PageContainer>
-      <PageHeader
-        title="파티 모집"
-        description="보스 레이드 파티를 모집하거나 참여하세요."
-        actions={createPostButton}
-      />
-
-      {/* View Filter - 전체/내 모집글 */}
+    <PageContainer className="py-2">
+      {/* View Filter */}
       {isAuthenticated && (
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-1.5">
           <Button
             variant={viewFilter === "all" ? "default" : "outline"}
             size="sm"
@@ -127,19 +133,24 @@ export default function PostsPage() {
         </div>
       )}
 
-      {/* World Group Filter */}
-      <Tabs
-        value={worldGroupFilter}
-        onValueChange={handleWorldGroupChange}
-        className="mb-4"
-      >
-        <TabsList>
-          <TabsTrigger value="ALL">전체</TabsTrigger>
-          <TabsTrigger value="CHALLENGER">챌린저스</TabsTrigger>
-          <TabsTrigger value="EOS_HELIOS">에오스/헬리오스</TabsTrigger>
-          <TabsTrigger value="NORMAL">일반</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      {/* World Group Filter + Boss Filter + Create Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 mb-2">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1.5">
+        <Tabs
+          value={worldGroupFilter}
+          onValueChange={handleWorldGroupChange}
+        >
+          <TabsList>
+            <TabsTrigger value="ALL">전체</TabsTrigger>
+            <TabsTrigger value="CHALLENGER">챌린저스</TabsTrigger>
+            <TabsTrigger value="EOS_HELIOS">에오스/헬리오스</TabsTrigger>
+            <TabsTrigger value="NORMAL">일반</TabsTrigger>
+          </TabsList>
+        </Tabs>
+          <BossFilterSelector value={bossFilter} onChange={handleBossFilterChange} />
+        </div>
+        {createPostButton}
+      </div>
 
       {error ? (
         <ErrorState
@@ -148,7 +159,7 @@ export default function PostsPage() {
           onRetry={() => refetch()}
         />
       ) : isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
           {[...Array(6)].map((_, i) => (
             <PostCardSkeleton key={i} />
           ))}
@@ -174,13 +185,13 @@ export default function PostsPage() {
       ) : (
         <>
           {isPageLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               {[...Array(ITEMS_PER_PAGE)].map((_, i) => (
                 <PostCardSkeleton key={i} />
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               {posts.map((post) => (
                 <PostCard
                   key={post.id}
@@ -193,7 +204,7 @@ export default function PostsPage() {
 
           {/* 페이지네이션 */}
           {totalPages > 1 && (
-            <div className="mt-4 flex items-center justify-center gap-1">
+            <div className="mt-2 flex items-center justify-center gap-1">
               <Button
                 variant="outline"
                 size="icon"

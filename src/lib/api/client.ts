@@ -178,11 +178,16 @@ export const api = {
 
   // Posts
   posts: {
-    list: (params?: { worldGroup?: string; page?: number; size?: number }) => {
+    list: (params?: { worldGroup?: string; page?: number; size?: number; bossIds?: string[] }) => {
       const searchParams = new URLSearchParams();
       if (params?.worldGroup) searchParams.set("worldGroup", params.worldGroup);
       if (params?.page !== undefined) searchParams.set("page", params.page.toString());
       if (params?.size) searchParams.set("size", params.size.toString());
+      if (params?.bossIds) {
+        for (const bossId of params.bossIds) {
+          searchParams.append("bossIds", bossId);
+        }
+      }
       const query = searchParams.toString();
       return fetchApiWithRefresh(`/api/posts${query ? `?${query}` : ""}`);
     },
