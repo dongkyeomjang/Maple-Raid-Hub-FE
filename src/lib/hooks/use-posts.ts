@@ -21,7 +21,7 @@ import type {
 export const postKeys = {
   all: ["posts"] as const,
   lists: () => [...postKeys.all, "list"] as const,
-  list: (filters: { worldGroup?: string }) => [...postKeys.lists(), filters] as const,
+  list: (filters: { worldGroup?: string; bossIds?: string[] }) => [...postKeys.lists(), filters] as const,
   detail: (id: string) => [...postKeys.all, "detail", id] as const,
   applications: (postId: string) => [...postKeys.all, "applications", postId] as const,
   myApplications: () => [...postKeys.all, "myApplications"] as const,
@@ -30,7 +30,7 @@ export const postKeys = {
 
 const DEFAULT_PAGE_SIZE = 6;
 
-export function usePosts(filters?: { worldGroup?: string }) {
+export function usePosts(filters?: { worldGroup?: string; bossIds?: string[] }) {
   return useInfiniteQuery({
     queryKey: postKeys.list(filters || {}),
     queryFn: async ({ pageParam = 0 }) => {
@@ -38,6 +38,7 @@ export function usePosts(filters?: { worldGroup?: string }) {
         worldGroup: filters?.worldGroup,
         page: pageParam as number,
         size: DEFAULT_PAGE_SIZE,
+        bossIds: filters?.bossIds,
       });
       if (!result.success) throw new Error(result.error.message);
       return result.data as PageResponse<PostResponse>;

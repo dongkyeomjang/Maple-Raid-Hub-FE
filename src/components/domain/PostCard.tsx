@@ -112,10 +112,10 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
 
   return (
     <Card interactive className={cn("group", isOwner && "ring-1 ring-primary/30")}>
-      <CardHeader className="p-4 pb-2">
+      <CardHeader className="p-2.5 pb-1">
         <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0 space-y-1">
-            <div className="flex items-center flex-wrap gap-1.5">
+          <div className="flex-1 min-w-0 space-y-1.5">
+            <div className="flex items-center flex-wrap gap-1">
               {isOwner && (
                 <Badge variant="default" size="sm" className="bg-primary/10 text-primary border-primary/20">
                   <Crown className="h-3 w-3 mr-0.5" />
@@ -127,11 +127,11 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
                 {statusConfig.label}
               </Badge>
             </div>
-            <h3 className="font-semibold text-body truncate">
+            <h3 className="font-semibold text-h3 truncate">
               {displayName}
             </h3>
           </div>
-          <div className="flex flex-col items-center justify-center px-2 py-1 bg-muted/50 rounded-md">
+          <div className="flex flex-col items-center justify-center px-1.5 py-0.5 bg-muted/50 rounded-md">
             <div className={cn(
               "text-h3 font-bold tabular-nums leading-none",
               isFull ? "text-error" : "text-primary"
@@ -146,24 +146,22 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
         </div>
       </CardHeader>
 
-      <CardContent className="px-4 pb-2 pt-0 space-y-1.5">
+      <CardContent className="px-2.5 pb-1 pt-0 space-y-0.5">
         <div className="flex items-center gap-1.5 text-caption">
           <Calendar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
           <span className="text-foreground">{post.preferredTime ? post.preferredTime.split("T")[0] : "상의 후 결정"}</span>
         </div>
 
-        {post.description && (
-          <div className="px-2 py-1.5 bg-muted/30 rounded-md">
-            <p className="text-caption text-muted-foreground line-clamp-1">
-              {post.description}
-            </p>
-          </div>
-        )}
+        <div className="px-2 py-1 bg-muted/30 rounded-md min-h-[40px] flex items-start">
+          <p className="text-caption text-muted-foreground line-clamp-2">
+            {post.description || "\u00A0"}
+          </p>
+        </div>
       </CardContent>
 
-      <CardFooter className="flex justify-between items-center px-4 pb-3 pt-2 border-t border-border/50">
-        <div className="flex items-center gap-2 min-w-0">
-          <div className="relative h-7 w-7 rounded-full border border-border/50 overflow-hidden shrink-0">
+      <CardFooter className="flex justify-between items-center px-2.5 pb-1.5 pt-1 border-t border-border/50">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <div className="relative h-6 w-6 rounded-full border border-border/50 overflow-hidden shrink-0">
             {post.characterImageUrl ? (
               <img
                 src={post.characterImageUrl}
