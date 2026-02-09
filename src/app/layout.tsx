@@ -4,6 +4,7 @@ import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Header } from "@/components/layout/Header";
 import { WebSocketProvider } from "@/lib/websocket/WebSocketProvider";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { FloatingChatButton, ChatPanel } from "@/components/chat";
 
 export const metadata: Metadata = {
@@ -48,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko" className="scroll-smooth">
+    <html lang="ko" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <link
           rel="preconnect"
@@ -57,18 +58,20 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased">
-        <QueryProvider>
-          <AuthProvider>
-            <WebSocketProvider>
-              <div className="min-h-screen flex flex-col bg-background">
-                <Header />
-                <main className="flex-1">{children}</main>
-              </div>
-              <FloatingChatButton />
-              <ChatPanel />
-            </WebSocketProvider>
-          </AuthProvider>
-        </QueryProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <QueryProvider>
+            <AuthProvider>
+              <WebSocketProvider>
+                <div className="min-h-screen flex flex-col bg-background">
+                  <Header />
+                  <main className="flex-1">{children}</main>
+                </div>
+                <FloatingChatButton />
+                <ChatPanel />
+              </WebSocketProvider>
+            </AuthProvider>
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

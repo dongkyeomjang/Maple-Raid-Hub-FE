@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { TemperatureBadge } from "@/components/domain/TemperatureBadge";
 import { LogoIcon } from "@/components/ui/Logo";
 import { useAuth } from "@/lib/hooks/use-auth";
+import { ThemeToggle, ThemeToggleExpanded } from "@/components/ui/ThemeToggle";
 import { cn } from "@/lib/utils";
 import {
   User,
@@ -96,6 +97,7 @@ export function Header() {
                   <TemperatureBadge temperature={user.temperature} size="sm" />
                 </div>
               </div>
+              <ThemeToggle />
               <Button
                 variant="ghost"
                 size="sm"
@@ -107,6 +109,7 @@ export function Header() {
             </>
           ) : (
             <>
+              <ThemeToggle />
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/login">로그인</Link>
               </Button>
@@ -178,6 +181,11 @@ export function Header() {
                     </Link>
                   );
                 })}
+
+                {/* Theme Toggle */}
+                <div className="pt-2 mt-2 border-t border-border/50 px-3">
+                  <ThemeToggleExpanded />
+                </div>
 
                 {/* Logout */}
                 <div className="pt-2 mt-2 border-t border-border/50">

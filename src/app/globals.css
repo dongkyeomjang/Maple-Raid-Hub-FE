@@ -131,6 +131,10 @@
     @apply bg-gradient-to-br from-primary-50 to-primary-100/50 rounded-lg border border-primary-200/50;
   }
 
+  .dark .card-maple {
+    @apply from-primary-900/20 to-primary-800/10 border-primary-800/30;
+  }
+
   /* Button Base */
   .btn-base {
     @apply inline-flex items-center justify-center gap-2;
@@ -150,8 +154,16 @@
     @apply bg-gradient-to-br from-chat-bg to-purple-50 border border-chat/20;
   }
 
+  .dark .feature-card-chat {
+    @apply from-chat/10 to-purple-900/10 border-chat/30;
+  }
+
   .feature-card-schedule {
     @apply bg-gradient-to-br from-schedule-bg to-cyan-50 border border-schedule/20;
+  }
+
+  .dark .feature-card-schedule {
+    @apply from-schedule/10 to-cyan-900/10 border-schedule/30;
   }
 
   /* World Group Badges */
@@ -212,15 +224,15 @@
   }
 
   .empty-state-icon {
-    @apply w-16 h-16 mb-4 text-gray-300;
+    @apply w-16 h-16 mb-4 text-muted-foreground/40;
   }
 
   .empty-state-title {
-    @apply text-h3 text-gray-600 mb-2;
+    @apply text-h3 text-muted-foreground mb-2;
   }
 
   .empty-state-description {
-    @apply text-body-sm text-gray-500;
+    @apply text-body-sm text-muted-foreground/70;
   }
 
   /* Highlight Badge */
@@ -436,9 +448,9 @@
   /* 따뜻한 인풋 */
   .input-warm {
     @apply input-base rounded-xl;
-    @apply border-2 border-gray-200;
+    @apply border-2 border-border;
     @apply focus:border-primary focus:ring-primary/20;
-    @apply placeholder:text-gray-400;
+    @apply placeholder:text-muted-foreground;
   }
 
   .input-warm:focus {
@@ -451,6 +463,10 @@
     @apply shadow-lg;
   }
 
+  .dark .tooltip-cute {
+    @apply bg-gray-100 text-gray-900;
+  }
+
   .tooltip-cute::after {
     content: '';
     position: absolute;
@@ -460,6 +476,10 @@
     border-width: 6px 6px 0 6px;
     border-style: solid;
     border-color: #1C1917 transparent transparent transparent;
+  }
+
+  .dark .tooltip-cute::after {
+    border-color: #F5F5F4 transparent transparent transparent;
   }
 
   /* 마스코트 컨테이너 */
@@ -475,11 +495,19 @@
     @apply border border-gray-100;
   }
 
+  .dark .feature-section {
+    @apply from-gray-900 to-gray-800 border-gray-700;
+  }
+
   /* 소셜 프루프 바 */
   .social-proof-bar {
     @apply flex flex-wrap items-center justify-center gap-4 py-4 px-6;
     @apply bg-gradient-to-r from-primary-50/50 via-white to-accent-50/50;
     @apply border-y border-primary-100/50;
+  }
+
+  .dark .social-proof-bar {
+    @apply from-primary-900/20 via-transparent to-accent-700/20 border-primary-800/30;
   }
 
   /* 푸터 링크 스타일 */
