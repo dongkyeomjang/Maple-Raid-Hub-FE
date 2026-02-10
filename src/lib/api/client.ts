@@ -43,7 +43,9 @@ async function fetchApi<T>(
       const { useAuth } = await import("@/lib/hooks/use-auth");
       useAuth.setState({ user: null, isAuthenticated: false, isLoading: false });
 
-      if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
+      if (typeof window !== "undefined"
+        && !window.location.pathname.startsWith("/login")
+        && !window.location.pathname.startsWith("/oauth")) {
         window.location.href = "/login";
       }
 
