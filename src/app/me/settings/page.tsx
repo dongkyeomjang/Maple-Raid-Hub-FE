@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { PageContainer, PageHeader } from "@/components/layout/PageContainer";
@@ -17,6 +17,14 @@ import { useNotificationPreferences, useUpdateNotificationPreferences } from "@/
 import { ArrowLeft, Link2, Unlink, Bell, MessageSquare, UserPlus, UserCheck, UserX } from "lucide-react";
 
 export default function SettingsPage() {
+  return (
+    <Suspense fallback={<PageContainer><LoadingPage message="로딩 중..." /></PageContainer>}>
+      <SettingsContent />
+    </Suspense>
+  );
+}
+
+function SettingsContent() {
   const { user, isLoading: authLoading, checkAuth } = useAuth();
   const searchParams = useSearchParams();
   const discordParam = searchParams.get("discord");
