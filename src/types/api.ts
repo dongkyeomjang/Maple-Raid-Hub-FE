@@ -183,6 +183,7 @@ export interface BossConfig {
   partySize: number;
   resetType: string;
   iconUrl: string | null;
+  crystalPrice: number;
 }
 
 export interface BossBundleConfig {

@@ -53,7 +53,10 @@ import {
   Pencil,
   Trash2,
   AlertTriangle,
+  Gem,
 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { formatMeso, formatNumber } from "@/lib/utils";
 import type { PublicCharacterResponse } from "@/types/api";
 
 interface SelectedMemberInfo {
@@ -66,7 +69,7 @@ export default function PostDetailPage() {
   const postId = params.id as string;
 
   const { data: postDetail, isLoading, error, refetch } = usePost(postId);
-  const { formatBossNames } = useBossNames();
+  const { formatBossNames, getCrystalInfo } = useBossNames();
   const { user } = useAuth();
   const { data: charactersData } = useCharacters({ enabled: !!user });
   const applyMutation = useApplyToPost();
@@ -173,6 +176,7 @@ export default function PostDetailPage() {
   const statusConfig = statusLabels[post.status] || statusLabels.RECRUITING;
   const bossIds = post.bossIds ?? [];
   const displayName = formatBossNames(bossIds);
+  const crystalInfo = getCrystalInfo(bossIds, post.requiredMembers);
   const canApply = post.status === "RECRUITING" && post.currentMembers < post.requiredMembers;
 
   // 지원자 통계
@@ -227,6 +231,45 @@ export default function PostDetailPage() {
                   {post.preferredTime ? post.preferredTime.split("T")[0] : "상의 후 결정"}
                 </span>
               </div>
+
+              {crystalInfo.totalCrystal > 0 && (
+                <div className="flex items-center gap-2">
+                  <Gem className="h-5 w-5 text-violet-500" />
+                  <TooltipProvider delayDuration={200}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="font-medium text-violet-600 dark:text-violet-400 cursor-help">
+                          1인당 {formatMeso(crystalInfo.perPerson)} 메소
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="max-w-[280px]">
+                        <div className="space-y-1.5 py-1">
+                          <p className="text-xs font-semibold">결정석 계산</p>
+                          {crystalInfo.breakdown.map((b, i) => (
+                            <div key={i} className="flex justify-between gap-6 text-xs">
+                              <span className="text-muted-foreground">{b.name}</span>
+                              <span className="tabular-nums">{formatNumber(b.price)}</span>
+                            </div>
+                          ))}
+                          {crystalInfo.breakdown.length > 1 && (
+                            <div className="flex justify-between gap-6 text-xs border-t pt-1">
+                              <span className="text-muted-foreground">합계</span>
+                              <span className="tabular-nums font-medium">{formatNumber(crystalInfo.totalCrystal)}</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between gap-6 text-xs border-t pt-1">
+                            <span className="text-muted-foreground">{formatNumber(crystalInfo.totalCrystal)} / {post.requiredMembers}명</span>
+                            <span className="tabular-nums font-semibold text-violet-600 dark:text-violet-400">{formatNumber(crystalInfo.perPerson)}</span>
+                          </div>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <span className="text-sm text-muted-foreground">
+                    (합계 {formatMeso(crystalInfo.totalCrystal)})
+                  </span>
+                </div>
+              )}
 
               {post.description && (
                 <div className="p-4 bg-muted rounded-lg">

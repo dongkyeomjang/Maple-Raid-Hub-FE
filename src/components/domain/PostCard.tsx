@@ -4,11 +4,12 @@ import Link from "next/link";
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 import {WorldGroupBadge} from "./WorldGroupBadge";
 import type {PostResponse} from "@/types/api";
-import {cn, formatRelativeTime} from "@/lib/utils";
+import {cn, formatMeso, formatNumber, formatRelativeTime} from "@/lib/utils";
 import {useBossNames} from "@/lib/hooks/use-boss-names";
-import {Calendar, ChevronRight, Clock, Crown, User} from "lucide-react";
+import {Calendar, ChevronRight, Clock, Crown, Gem, User} from "lucide-react";
 
 interface PostCardProps {
   post: PostResponse;
@@ -27,12 +28,13 @@ const statusLabels: Record<
 };
 
 export function PostCard({ post, variant = "default", isOwner = false }: PostCardProps) {
-  const { formatBossNames } = useBossNames();
+  const { formatBossNames, getCrystalInfo } = useBossNames();
   const statusConfig = statusLabels[post.status] || statusLabels.RECRUITING;
   const isFull = post.currentMembers >= post.requiredMembers;
 
   const bossIds = post.bossIds ?? [];
   const displayName = formatBossNames(bossIds);
+  const crystalInfo = getCrystalInfo(bossIds, post.requiredMembers);
 
   if (variant === "compact") {
     return (
@@ -66,6 +68,12 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
                     <>
                       <span>·</span>
                       <span>{post.preferredTime.split("T")[0]}</span>
+                    </>
+                  )}
+                  {crystalInfo.totalCrystal > 0 && (
+                    <>
+                      <span>·</span>
+                      <CrystalTooltip crystalInfo={crystalInfo} partySize={post.requiredMembers} />
                     </>
                   )}
                 </div>
@@ -150,6 +158,13 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
         <div className="flex items-center gap-1.5 text-caption">
           <Calendar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
           <span className="text-foreground">{post.preferredTime ? post.preferredTime.split("T")[0] : "상의 후 결정"}</span>
+          {crystalInfo.totalCrystal > 0 && (
+            <>
+              <span className="text-muted-foreground">·</span>
+              <Gem className="h-3 w-3 text-violet-500 shrink-0" />
+              <CrystalTooltip crystalInfo={crystalInfo} partySize={post.requiredMembers} />
+            </>
+          )}
         </div>
 
         <div className="px-2 py-1 bg-muted/30 rounded-md min-h-[40px] flex items-start">
@@ -197,6 +212,47 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
         </Button>
       </CardFooter>
     </Card>
+  );
+}
+
+function CrystalTooltip({
+  crystalInfo,
+  partySize,
+}: {
+  crystalInfo: { totalCrystal: number; perPerson: number; breakdown: { name: string; price: number }[] };
+  partySize: number;
+}) {
+  return (
+    <TooltipProvider delayDuration={200}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="text-violet-600 dark:text-violet-400 font-medium cursor-help">
+            1인 {formatMeso(crystalInfo.perPerson)}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="max-w-[260px]">
+          <div className="space-y-1.5 py-1">
+            <p className="text-xs font-semibold">결정석 계산</p>
+            {crystalInfo.breakdown.map((b, i) => (
+              <div key={i} className="flex justify-between gap-4 text-xs">
+                <span className="text-muted-foreground">{b.name}</span>
+                <span className="tabular-nums">{formatNumber(b.price)}</span>
+              </div>
+            ))}
+            {crystalInfo.breakdown.length > 1 && (
+              <div className="flex justify-between gap-4 text-xs border-t pt-1">
+                <span className="text-muted-foreground">합계</span>
+                <span className="tabular-nums font-medium">{formatNumber(crystalInfo.totalCrystal)}</span>
+              </div>
+            )}
+            <div className="flex justify-between gap-4 text-xs border-t pt-1">
+              <span className="text-muted-foreground">{formatNumber(crystalInfo.totalCrystal)} / {partySize}명</span>
+              <span className="tabular-nums font-semibold text-violet-600 dark:text-violet-400">{formatNumber(crystalInfo.perPerson)}</span>
+            </div>
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 

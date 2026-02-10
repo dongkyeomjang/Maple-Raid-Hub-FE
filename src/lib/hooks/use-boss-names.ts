@@ -2,6 +2,7 @@
 
 import { useMemo, useCallback } from "react";
 import { useBosses } from "./use-config";
+import type { BossConfig } from "@/types/api";
 
 /**
  * bossId를 한글 이름(shortName)으로 변환하는 훅
@@ -12,6 +13,11 @@ export function useBossNames() {
   const bossMap = useMemo(() => {
     if (!bosses) return new Map<string, string>();
     return new Map(bosses.map((boss) => [boss.id, boss.shortName]));
+  }, [bosses]);
+
+  const bossConfigMap = useMemo(() => {
+    if (!bosses) return new Map<string, BossConfig>();
+    return new Map(bosses.map((boss) => [boss.id, boss]));
   }, [bosses]);
 
   const getBossName = useCallback(
@@ -36,10 +42,37 @@ export function useBossNames() {
     [bossMap]
   );
 
+  const getCrystalInfo = useCallback(
+    (bossIds: string[], partySize: number): {
+      totalCrystal: number;
+      perPerson: number;
+      breakdown: { name: string; price: number }[];
+    } => {
+      const breakdown: { name: string; price: number }[] = [];
+      let totalCrystal = 0;
+
+      for (const id of bossIds) {
+        const boss = bossConfigMap.get(id);
+        if (boss) {
+          breakdown.push({ name: boss.shortName, price: boss.crystalPrice });
+          totalCrystal += boss.crystalPrice;
+        }
+      }
+
+      return {
+        totalCrystal,
+        perPerson: partySize > 0 ? Math.floor(totalCrystal / partySize) : 0,
+        breakdown,
+      };
+    },
+    [bossConfigMap]
+  );
+
   return {
     getBossName,
     getBossNames,
     formatBossNames,
+    getCrystalInfo,
     isLoading,
   };
 }
