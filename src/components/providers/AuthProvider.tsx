@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isLoading, isAuthenticated, user, pathname, router]);
 
-  // 디스코드 연동 유도 모달 (최초 1회)
+  // 디스코드 연동 유도 모달 (온보딩 완료 후 첫 페이지 이동 시)
   useEffect(() => {
     if (
       !isLoading &&
@@ -52,11 +52,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user &&
       user.nicknameSet &&
       !user.discordLinked &&
-      !user.discordPromptDismissed
+      !user.discordPromptDismissed &&
+      !pathname.startsWith("/onboarding") &&
+      !pathname.startsWith("/characters")
     ) {
       setShowDiscordPrompt(true);
     }
-  }, [isLoading, isAuthenticated, user]);
+  }, [isLoading, isAuthenticated, user, pathname]);
 
   return (
     <>
