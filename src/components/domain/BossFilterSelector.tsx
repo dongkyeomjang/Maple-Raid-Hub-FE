@@ -47,6 +47,7 @@ const bossFamilyNames: Record<string, string> = {
   shining_star: "찬란한 흉성",
   limbo: "림보",
   baldrix: "발드릭스",
+  jupiter: "유피테르",
 };
 
 interface BossGroup {

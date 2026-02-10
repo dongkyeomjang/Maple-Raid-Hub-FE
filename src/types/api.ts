@@ -183,6 +183,7 @@ export interface BossConfig {
   partySize: number;
   resetType: string;
   iconUrl: string | null;
+  crystalPrice: number;
 }
 
 export interface BossBundleConfig {
@@ -265,6 +266,16 @@ export interface PublicCharacterResponse {
   equipmentJson: string | null;
   verificationStatus: VerificationStatus;
   lastSyncedAt: string | null;
+}
+
+export interface MyApplicationResponse extends ApplicationResponse {
+  postId: string;
+  bossIds: string[];
+  postStatus: PostStatus;
+  requiredMembers: number;
+  currentMembers: number;
+  authorCharacterName: string | null;
+  authorCharacterImageUrl: string | null;
 }
 
 export interface ApplicationWithCharacterResponse extends ApplicationResponse {

@@ -6,7 +6,6 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ErrorState } from "@/components/common/ErrorState";
 import { LoadingPage } from "@/components/common/LoadingSpinner";
 import { usePartyRoom } from "@/lib/hooks/use-party-rooms";
@@ -105,14 +104,19 @@ export default function ChatRoomPage() {
                   key={member.userId}
                   className="flex items-center gap-3 p-2 rounded-lg bg-muted/50"
                 >
-                  <Avatar className="h-10 w-10">
-                    {member.characterImageUrl && (
-                      <AvatarImage src={member.characterImageUrl} alt={member.characterName || ""} />
+                  <div className="h-10 w-10 rounded-full overflow-hidden bg-muted flex-shrink-0">
+                    {member.characterImageUrl ? (
+                      <img
+                        src={member.characterImageUrl}
+                        alt={member.characterName || ""}
+                        className="w-full h-full object-cover scale-[2.5] object-[45%_35%]"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <User className="h-5 w-5 text-muted-foreground" />
+                      </div>
                     )}
-                    <AvatarFallback>
-                      <User className="h-5 w-5" />
-                    </AvatarFallback>
-                  </Avatar>
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-medium truncate">

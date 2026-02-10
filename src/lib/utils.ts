@@ -138,6 +138,18 @@ export function formatNumber(num: number): string {
   return num.toLocaleString("ko-KR");
 }
 
+// Format meso value (억/만 단위)
+export function formatMeso(meso: number): string {
+  if (meso >= 100000000) {
+    const eok = meso / 100000000;
+    return eok % 1 === 0 ? `${eok}억` : `${eok.toFixed(1)}억`;
+  }
+  if (meso >= 10000) {
+    return `${Math.floor(meso / 10000)}만`;
+  }
+  return formatNumber(meso);
+}
+
 // Format combat power (억 단위)
 export function formatCombatPower(power: number): string {
   if (power >= 100000000) {
