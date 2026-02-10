@@ -5,11 +5,13 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { DiscordLinkPromptModal } from "@/components/domain/DiscordLinkPromptModal";
 
+const DISCORD_PROMPT_EXCLUDED_PATHS = ["/onboarding", "/characters"];
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { checkAuth, clearAuthState, user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const [showDiscordPrompt, setShowDiscordPrompt] = useState(false);
+  const [promptDismissedLocally, setPromptDismissedLocally] = useState(false);
 
   useEffect(() => {
     // OAuth 리다이렉트에서 왔는지 확인 (클라이언트에서만)
@@ -44,28 +46,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isLoading, isAuthenticated, user, pathname, router]);
 
-  // 디스코드 연동 유도 모달 (온보딩 완료 후 첫 페이지 이동 시)
-  useEffect(() => {
-    if (
-      !isLoading &&
-      isAuthenticated &&
-      user &&
-      user.nicknameSet &&
-      !user.discordLinked &&
-      !user.discordPromptDismissed &&
-      !pathname.startsWith("/onboarding") &&
-      !pathname.startsWith("/characters")
-    ) {
-      setShowDiscordPrompt(true);
-    }
-  }, [isLoading, isAuthenticated, user, pathname]);
+  const isExcludedPath = DISCORD_PROMPT_EXCLUDED_PATHS.some((p) => pathname.startsWith(p));
+  const showDiscordPrompt =
+    !isLoading &&
+    isAuthenticated &&
+    !!user &&
+    user.nicknameSet &&
+    !user.discordLinked &&
+    !user.discordPromptDismissed &&
+    !isExcludedPath &&
+    !promptDismissedLocally;
 
   return (
     <>
       {children}
       <DiscordLinkPromptModal
         isOpen={showDiscordPrompt}
-        onClose={() => setShowDiscordPrompt(false)}
+        onClose={() => setPromptDismissedLocally(true)}
       />
     </>
   );
