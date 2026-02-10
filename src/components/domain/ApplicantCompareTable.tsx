@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -99,14 +98,19 @@ export function ApplicantCompareTable({
                       onClick={() => char && setSelectedInfo({ character: char })}
                       disabled={!char}
                     >
-                      <Avatar className="h-12 w-12">
+                      <div className="h-12 w-12 rounded-full overflow-hidden bg-muted flex-shrink-0">
                         {char?.characterImageUrl ? (
-                          <AvatarImage src={char.characterImageUrl} alt={char.characterName} />
-                        ) : null}
-                        <AvatarFallback>
-                          <User className="h-5 w-5" />
-                        </AvatarFallback>
-                      </Avatar>
+                          <img
+                            src={char.characterImageUrl}
+                            alt={char.characterName}
+                            className="w-full h-full object-cover scale-[2.5] object-[45%_35%]"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <User className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                        )}
+                      </div>
                       <div>
                         <p className="font-medium">{char?.characterName ?? "알 수 없음"}</p>
                         <p className="text-xs text-muted-foreground">
