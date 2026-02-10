@@ -43,7 +43,9 @@ async function fetchApi<T>(
       const { useAuth } = await import("@/lib/hooks/use-auth");
       useAuth.setState({ user: null, isAuthenticated: false, isLoading: false });
 
-      if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
+      if (typeof window !== "undefined"
+        && !window.location.pathname.startsWith("/login")
+        && !window.location.pathname.startsWith("/oauth")) {
         window.location.href = "/login";
       }
 
@@ -131,6 +133,11 @@ export const api = {
       fetchApi<void>("/api/auth/oauth/complete", {
         method: "POST",
         body: JSON.stringify({ nickname }),
+      }),
+
+    dismissDiscordPrompt: () =>
+      fetchApiWithRefresh<void>("/api/auth/discord-prompt-dismiss", {
+        method: "PATCH",
       }),
   },
 
@@ -393,6 +400,37 @@ export const api = {
       fetchApiWithRefresh(`/api/party-rooms/${roomId}/schedule`, {
         method: "POST",
         body: JSON.stringify({ scheduledTime }),
+      }),
+  },
+
+  // Discord
+  discord: {
+    getAuthUrl: () =>
+      fetchApiWithRefresh<{ authUrl: string }>("/api/discord/auth-url"),
+
+    getStatus: () =>
+      fetchApiWithRefresh("/api/discord/status"),
+
+    unlink: () =>
+      fetchApiWithRefresh<void>("/api/discord/unlink", {
+        method: "POST",
+      }),
+  },
+
+  // Notifications
+  notifications: {
+    getPreferences: () =>
+      fetchApiWithRefresh("/api/notifications/preferences"),
+
+    updatePreferences: (data: {
+      notifyApplicationReceived?: boolean;
+      notifyApplicationAccepted?: boolean;
+      notifyApplicationRejected?: boolean;
+      notifyDmReceived?: boolean;
+    }) =>
+      fetchApiWithRefresh("/api/notifications/preferences", {
+        method: "PATCH",
+        body: JSON.stringify(data),
       }),
   },
 

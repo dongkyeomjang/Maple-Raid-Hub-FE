@@ -23,7 +23,7 @@ export function ChallengeInstructionCard({
                                          }: ChallengeInstructionCardProps) {
     // 실시간 타이머를 위한 state
     const [now, setNow] = useState(() => Date.now());
-    const [cooldownSeconds, setCooldownSeconds] = useState(challenge.secondsUntilNextCheck);
+    const [cooldownSeconds, setCooldownSeconds] = useState(challenge.secondsUntilNextCheck ?? 0);
 
     // 매초 현재 시간 업데이트
     useEffect(() => {
@@ -37,7 +37,7 @@ export function ChallengeInstructionCard({
 
     // challenge가 변경되면 cooldown 초기화
     useEffect(() => {
-        setCooldownSeconds(challenge.secondsUntilNextCheck);
+        setCooldownSeconds(challenge.secondsUntilNextCheck ?? 0);
     }, [challenge.secondsUntilNextCheck]);
 
     const expiresAt = new Date(challenge.expiresAt).getTime();
@@ -45,9 +45,11 @@ export function ChallengeInstructionCard({
     const minutesRemaining = Math.floor(timeRemaining / 1000 / 60);
     const secondsRemaining = Math.floor((timeRemaining / 1000) % 60);
 
-    const checksRemaining = challenge.maxChecks - challenge.checkCount;
+    const maxChecks = challenge.maxChecks ?? 10;
+    const checkCount = challenge.checkCount ?? 0;
+    const checksRemaining = maxChecks - checkCount;
     const canCheckNow = cooldownSeconds <= 0;
-    const checksProgress = (challenge.checkCount / challenge.maxChecks) * 100;
+    const checksProgress = maxChecks > 0 ? (checkCount / maxChecks) * 100 : 0;
 
     return (
         <Card>
@@ -136,7 +138,7 @@ export function ChallengeInstructionCard({
                 <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                         <span>확인 가능 횟수</span>
-                        <span className="font-medium">{checksRemaining}/{challenge.maxChecks}</span>
+                        <span className="font-medium">{checksRemaining}/{maxChecks}</span>
                     </div>
                     <Progress value={checksProgress}/>
                 </div>

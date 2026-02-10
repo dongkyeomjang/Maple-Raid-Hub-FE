@@ -70,6 +70,9 @@ export interface UserResponse {
   temperature: number;
   completedParties: number;
   createdAt: string;
+  discordLinked: boolean;
+  discordUsername: string | null;
+  discordPromptDismissed: boolean;
 }
 
 export interface RefreshRequest {
@@ -399,6 +402,29 @@ export interface ReadyCheckResponse {
   expiresAt: string | null;
   readyMembers: string[]; // member IDs
   allReady: boolean;
+}
+
+// ============================================
+// Discord DTOs
+// ============================================
+
+export interface DiscordStatusResponse {
+  linked: boolean;
+  discordUsername: string | null;
+}
+
+export interface NotificationPreferencesResponse {
+  notifyApplicationReceived: boolean;
+  notifyApplicationAccepted: boolean;
+  notifyApplicationRejected: boolean;
+  notifyDmReceived: boolean;
+}
+
+export interface UpdateNotificationPreferencesRequest {
+  notifyApplicationReceived?: boolean;
+  notifyApplicationAccepted?: boolean;
+  notifyApplicationRejected?: boolean;
+  notifyDmReceived?: boolean;
 }
 
 // ============================================
