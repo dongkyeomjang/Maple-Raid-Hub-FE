@@ -134,6 +134,11 @@ export const api = {
         method: "POST",
         body: JSON.stringify({ nickname }),
       }),
+
+    dismissDiscordPrompt: () =>
+      fetchApiWithRefresh<void>("/api/auth/discord-prompt-dismiss", {
+        method: "PATCH",
+      }),
   },
 
   // Characters
@@ -395,6 +400,37 @@ export const api = {
       fetchApiWithRefresh(`/api/party-rooms/${roomId}/schedule`, {
         method: "POST",
         body: JSON.stringify({ scheduledTime }),
+      }),
+  },
+
+  // Discord
+  discord: {
+    getAuthUrl: () =>
+      fetchApiWithRefresh<{ authUrl: string }>("/api/discord/auth-url"),
+
+    getStatus: () =>
+      fetchApiWithRefresh("/api/discord/status"),
+
+    unlink: () =>
+      fetchApiWithRefresh<void>("/api/discord/unlink", {
+        method: "POST",
+      }),
+  },
+
+  // Notifications
+  notifications: {
+    getPreferences: () =>
+      fetchApiWithRefresh("/api/notifications/preferences"),
+
+    updatePreferences: (data: {
+      notifyApplicationReceived?: boolean;
+      notifyApplicationAccepted?: boolean;
+      notifyApplicationRejected?: boolean;
+      notifyDmReceived?: boolean;
+    }) =>
+      fetchApiWithRefresh("/api/notifications/preferences", {
+        method: "PATCH",
+        body: JSON.stringify(data),
       }),
   },
 

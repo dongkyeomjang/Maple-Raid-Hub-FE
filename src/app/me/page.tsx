@@ -58,7 +58,12 @@ export default function MyPage() {
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 text-center sm:text-left">
-              <h2 className="text-h2 font-bold">{user.nickname}</h2>
+              <div className="flex items-center justify-center sm:justify-start gap-2">
+                <h2 className="text-h2 font-bold">{user.nickname}</h2>
+                <Link href="/me/settings">
+                  <Settings className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer" />
+                </Link>
+              </div>
               <p className="text-body-sm text-muted-foreground">{user.username}</p>
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-2">
                 <TemperatureBadge temperature={user.temperature} showLabel />

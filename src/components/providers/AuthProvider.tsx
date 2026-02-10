@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/lib/hooks/use-auth";
+import { DiscordLinkPromptModal } from "@/components/domain/DiscordLinkPromptModal";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { checkAuth, clearAuthState, user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [showDiscordPrompt, setShowDiscordPrompt] = useState(false);
 
   useEffect(() => {
     // OAuth 리다이렉트에서 왔는지 확인 (클라이언트에서만)
@@ -42,5 +44,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isLoading, isAuthenticated, user, pathname, router]);
 
-  return <>{children}</>;
+  // 디스코드 연동 유도 모달 (최초 1회)
+  useEffect(() => {
+    if (
+      !isLoading &&
+      isAuthenticated &&
+      user &&
+      user.nicknameSet &&
+      !user.discordLinked &&
+      !user.discordPromptDismissed
+    ) {
+      setShowDiscordPrompt(true);
+    }
+  }, [isLoading, isAuthenticated, user]);
+
+  return (
+    <>
+      {children}
+      <DiscordLinkPromptModal
+        isOpen={showDiscordPrompt}
+        onClose={() => setShowDiscordPrompt(false)}
+      />
+    </>
+  );
 }
