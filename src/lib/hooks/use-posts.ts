@@ -11,6 +11,7 @@ import type {
   PostResponse,
   ApplicationResponse,
   ApplicationWithCharacterResponse,
+  MyApplicationResponse,
   PostDetailResponse,
   PublicCharacterResponse,
   CreatePostRequest,
@@ -204,7 +205,7 @@ export function useMyApplications() {
     queryFn: async () => {
       const result = await apiClient.posts.myApplications();
       if (!result.success) throw new Error(result.error.message);
-      return (result.data as { applications: ApplicationResponse[] }).applications;
+      return (result.data as { applications: MyApplicationResponse[] }).applications;
     },
     // 인증 확인이 완료되고 user가 있을 때만 활성화
     enabled: !!user && !isLoading,

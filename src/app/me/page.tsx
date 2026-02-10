@@ -301,21 +301,54 @@ export default function MyPage() {
               }}
             />
           ) : (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {applications.map((app) => (
-                <Card key={app.id}>
-                  <CardContent className="pt-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">지원</p>
-                        <p className="text-xs text-muted-foreground">
-                          지원일: {formatRelativeTime(app.appliedAt)}
-                        </p>
+                <Link key={app.id} href={`/posts/${app.postId}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+                    <CardHeader className="pb-2">
+                      <div className="flex items-start justify-between">
+                        <CardTitle className="text-lg">
+                          {app.bossIds?.length > 0 ? formatBossNames(app.bossIds) : "모집글"}
+                        </CardTitle>
+                        <ApplicationStatusBadge status={app.status} />
                       </div>
-                      <ApplicationStatusBadge status={app.status} />
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      {/* 파티장 정보 */}
+                      {app.authorCharacterName && (
+                        <div className="flex items-center gap-2">
+                          <div className="h-8 w-8 rounded-full overflow-hidden bg-muted flex-shrink-0">
+                            {app.authorCharacterImageUrl ? (
+                              <img
+                                src={app.authorCharacterImageUrl}
+                                alt={app.authorCharacterName}
+                                className="w-full h-full object-cover scale-[2.5] object-[45%_35%]"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <User className="h-4 w-4 text-muted-foreground" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Crown className="h-3 w-3 text-yellow-500" />
+                            <span className="text-sm">{app.authorCharacterName}</span>
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Users className="h-4 w-4" />
+                          {app.currentMembers}/{app.requiredMembers}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          {formatRelativeTime(app.appliedAt)}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           )}

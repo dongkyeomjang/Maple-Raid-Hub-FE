@@ -268,6 +268,16 @@ export interface PublicCharacterResponse {
   lastSyncedAt: string | null;
 }
 
+export interface MyApplicationResponse extends ApplicationResponse {
+  postId: string;
+  bossIds: string[];
+  postStatus: PostStatus;
+  requiredMembers: number;
+  currentMembers: number;
+  authorCharacterName: string | null;
+  authorCharacterImageUrl: string | null;
+}
+
 export interface ApplicationWithCharacterResponse extends ApplicationResponse {
   character: PublicCharacterResponse | null;
 }
