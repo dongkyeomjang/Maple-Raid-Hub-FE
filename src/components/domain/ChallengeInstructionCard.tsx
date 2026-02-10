@@ -37,7 +37,7 @@ export function ChallengeInstructionCard({
 
     // challenge가 변경되면 cooldown 초기화
     useEffect(() => {
-        setCooldownSeconds(challenge.secondsUntilNextCheck);
+        setCooldownSeconds(challenge.secondsUntilNextCheck ?? 0);
     }, [challenge.secondsUntilNextCheck]);
 
     const expiresAt = new Date(challenge.expiresAt).getTime();
