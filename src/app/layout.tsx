@@ -9,6 +9,11 @@ import { FloatingChatButton, ChatPanel } from "@/components/chat";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.mapleraid.com"),
+  verification: {
+    other: {
+      "naver-site-verification": "77d54262b2baf3f4628b16fe7a14bfbc9806ec28",
+    },
+  },
   title: "메-력소 | 월드통합 보스 파티 매칭",
   description: "서로 다른 월드 유저들과 실시간 채팅하고 일정을 조율하세요. 메이플스토리 월드통합 보스 파티 매칭 플랫폼.",
   keywords: ["메이플스토리", "보스", "파티", "매칭", "레이드", "월드통합", "채팅", "일정조율", "메력소"],
