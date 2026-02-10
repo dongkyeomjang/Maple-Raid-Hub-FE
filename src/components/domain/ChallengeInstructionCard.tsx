@@ -23,7 +23,7 @@ export function ChallengeInstructionCard({
                                          }: ChallengeInstructionCardProps) {
     // 실시간 타이머를 위한 state
     const [now, setNow] = useState(() => Date.now());
-    const [cooldownSeconds, setCooldownSeconds] = useState(challenge.secondsUntilNextCheck);
+    const [cooldownSeconds, setCooldownSeconds] = useState(challenge.secondsUntilNextCheck ?? 0);
 
     // 매초 현재 시간 업데이트
     useEffect(() => {

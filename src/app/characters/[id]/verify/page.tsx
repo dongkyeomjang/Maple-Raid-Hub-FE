@@ -60,7 +60,7 @@ export default function VerifyCharacterPage() {
 
       if (result.status === "SUCCESS") {
         setTimeout(() => {
-          router.push(`/characters/${characterId}`);
+          router.push("/posts");
         }, 2000);
       }
     } catch (error) {
