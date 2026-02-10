@@ -16,7 +16,8 @@ import { usePartyRooms } from "@/lib/hooks/use-party-rooms";
 import { useMyApplications, useMyPosts } from "@/lib/hooks/use-posts";
 import { useBossNames } from "@/lib/hooks/use-boss-names";
 import { formatDateTime, formatRelativeTime } from "@/lib/utils";
-import { User, Calendar, Users, MessageSquare, Clock, Swords, Crown, Settings, CheckCircle } from "lucide-react";
+import { useDiscordStatus } from "@/lib/hooks/use-discord";
+import { User, Calendar, Users, MessageSquare, Clock, Swords, Crown, Settings, CheckCircle, Bell, Link2 } from "lucide-react";
 
 export default function MyPage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -24,6 +25,7 @@ export default function MyPage() {
   const { data: applications, isLoading: appsLoading } = useMyApplications();
   const { data: myPosts, isLoading: postsLoading } = useMyPosts();
   const { formatBossNames } = useBossNames();
+  const { data: discordStatus } = useDiscordStatus();
 
   if (authLoading) {
     return (
@@ -60,9 +62,6 @@ export default function MyPage() {
             <div className="flex-1 text-center sm:text-left">
               <div className="flex items-center justify-center sm:justify-start gap-2">
                 <h2 className="text-h2 font-bold">{user.nickname}</h2>
-                <Link href="/me/settings">
-                  <Settings className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer" />
-                </Link>
               </div>
               <p className="text-body-sm text-muted-foreground">{user.username}</p>
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-2">
@@ -75,6 +74,51 @@ export default function MyPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Discord Notification Banner */}
+      {user && (
+        <Link href="/me/settings">
+          {(discordStatus?.linked ?? user.discordLinked) ? (
+            <Card className="mb-6 border border-indigo-200 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-950/30 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition-colors cursor-pointer">
+              <CardContent className="py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center h-9 w-9 rounded-full bg-indigo-100 dark:bg-indigo-900">
+                      <Bell className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">디스코드 알림 설정</p>
+                      <p className="text-xs text-muted-foreground">
+                        {discordStatus?.discordUsername ?? user.discordUsername} 연동됨 · 알림 설정 관리하기
+                      </p>
+                    </div>
+                  </div>
+                  <Badge variant="success" className="flex-shrink-0">연동됨</Badge>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="mb-6 border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/30 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition-colors cursor-pointer">
+              <CardContent className="py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center h-9 w-9 rounded-full bg-amber-100 dark:bg-amber-900">
+                      <Link2 className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">디스코드를 연동해보세요</p>
+                      <p className="text-xs text-muted-foreground">
+                        모집 신청, DM 등의 알림을 디스코드로 받을 수 있어요
+                      </p>
+                    </div>
+                  </div>
+                  <Badge variant="warning" className="flex-shrink-0">미연동</Badge>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </Link>
+      )}
 
       {/* Tabs */}
       <Tabs defaultValue="parties">
