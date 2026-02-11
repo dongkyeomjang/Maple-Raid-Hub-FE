@@ -13,11 +13,11 @@ import { ErrorState } from "@/components/common/ErrorState";
 import { LoadingPage } from "@/components/common/LoadingSpinner";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { usePartyRooms } from "@/lib/hooks/use-party-rooms";
-import { useMyApplications, useMyPosts } from "@/lib/hooks/use-posts";
+import { useMyApplications, useMyPosts, useWithdrawApplication } from "@/lib/hooks/use-posts";
 import { useBossNames } from "@/lib/hooks/use-boss-names";
 import { formatDateTime, formatRelativeTime } from "@/lib/utils";
 import { useDiscordStatus } from "@/lib/hooks/use-discord";
-import { User, Calendar, Users, MessageSquare, Clock, Swords, Crown, Settings, CheckCircle, Bell, Link2 } from "lucide-react";
+import { User, Calendar, Users, MessageSquare, Clock, Swords, Crown, Settings, CheckCircle, Bell, Link2, XCircle, Loader2 } from "lucide-react";
 
 export default function MyPage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -26,6 +26,7 @@ export default function MyPage() {
   const { data: myPosts, isLoading: postsLoading } = useMyPosts();
   const { formatBossNames } = useBossNames();
   const { data: discordStatus } = useDiscordStatus();
+  const withdrawMutation = useWithdrawApplication();
 
   if (authLoading) {
     return (
@@ -262,9 +263,14 @@ export default function MyPage() {
                                 </div>
                               )}
                             </div>
-                            <span className="text-xs font-medium truncate max-w-[80px]">
-                              {member.characterName || "알 수 없음"}
-                            </span>
+                            <div className="flex flex-col min-w-0">
+                              <span className="text-xs font-medium truncate max-w-[80px]">
+                                {member.characterName || "알 수 없음"}
+                              </span>
+                              {member.worldName && (
+                                <span className="text-[10px] text-muted-foreground truncate max-w-[80px]">{member.worldName}</span>
+                              )}
+                            </div>
                             {member.isLeader && (
                               <Crown className="h-3 w-3 text-yellow-500 flex-shrink-0" />
                             )}
@@ -303,8 +309,8 @@ export default function MyPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {applications.map((app) => (
-                <Link key={app.id} href={`/posts/${app.postId}`}>
-                  <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+                <Card key={app.id} className="hover:shadow-md transition-shadow h-full">
+                  <Link href={`/posts/${app.postId}`}>
                     <CardHeader className="pb-2">
                       <div className="flex items-start justify-between">
                         <CardTitle className="text-lg">
@@ -332,7 +338,10 @@ export default function MyPage() {
                           </div>
                           <div className="flex items-center gap-1.5">
                             <Crown className="h-3 w-3 text-yellow-500" />
-                            <span className="text-sm">{app.authorCharacterName}</span>
+                            <span className="text-sm">
+                              {app.authorCharacterName}
+                              {app.authorWorldName && <span className="text-xs text-muted-foreground"> · {app.authorWorldName}</span>}
+                            </span>
                           </div>
                         </div>
                       )}
@@ -347,8 +356,34 @@ export default function MyPage() {
                         </span>
                       </div>
                     </CardContent>
-                  </Card>
-                </Link>
+                  </Link>
+                  {app.status === "APPLIED" && (
+                    <CardContent className="pt-0">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        disabled={withdrawMutation.isPending}
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          if (confirm("지원을 취소하시겠습니까?")) {
+                            await withdrawMutation.mutateAsync({
+                              postId: app.postId,
+                              applicationId: app.id,
+                            });
+                          }
+                        }}
+                      >
+                        {withdrawMutation.isPending ? (
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        ) : (
+                          <XCircle className="h-4 w-4 mr-2" />
+                        )}
+                        지원 취소
+                      </Button>
+                    </CardContent>
+                  )}
+                </Card>
               ))}
             </div>
           )}
@@ -387,7 +422,7 @@ function ApplicationStatusBadge({ status }: { status: string }) {
     ACCEPTED: { label: "수락됨", variant: "success" },
     REJECTED: { label: "거절됨", variant: "destructive" },
     CANCELED: { label: "취소됨", variant: "secondary" },
-    WITHDRAWN: { label: "철회됨", variant: "secondary" },
+    WITHDRAWN: { label: "취소됨", variant: "secondary" },
   };
 
   const { label, variant } = config[status] || config.APPLIED;

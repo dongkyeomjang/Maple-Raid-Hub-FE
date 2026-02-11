@@ -132,6 +132,9 @@ export default function ChatRoomPage() {
                         </Badge>
                       )}
                     </div>
+                    {member.worldName && (
+                      <p className="text-xs text-muted-foreground">{member.worldName}</p>
+                    )}
                   </div>
                 </div>
               ))}

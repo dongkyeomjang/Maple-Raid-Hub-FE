@@ -94,7 +94,10 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
                       )}
                     </div>
                     {post.characterName && (
-                      <span className="text-caption text-muted-foreground">{post.characterName}</span>
+                      <span className="text-caption text-muted-foreground">
+                        {post.characterName}
+                        {post.worldName && <span className="text-muted-foreground/70"> · {post.worldName}</span>}
+                      </span>
                     )}
                   </div>
                 )}
@@ -193,7 +196,10 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
             {post.authorNickname && (
               <span className="text-caption font-medium text-foreground/70 truncate">{post.authorNickname}</span>
             )}
-            <span className="text-tiny text-muted-foreground">{formatRelativeTime(post.createdAt)}</span>
+            <span className="text-tiny text-muted-foreground">
+              {post.worldName && <>{post.worldName} · </>}
+              {formatRelativeTime(post.createdAt)}
+            </span>
           </div>
         </div>
         <Button
