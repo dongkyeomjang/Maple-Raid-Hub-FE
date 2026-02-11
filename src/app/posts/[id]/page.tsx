@@ -30,7 +30,7 @@ import { VerificationBadge } from "@/components/domain/VerificationBadge";
 import { CharacterDetailDialog } from "@/components/domain/CharacterDetailDialog";
 import { ErrorState } from "@/components/common/ErrorState";
 import { LoadingPage } from "@/components/common/LoadingSpinner";
-import { usePost, useApplyToPost, useClosePost, useCancelPost, usePostUpdates } from "@/lib/hooks/use-posts";
+import { usePost, useApplyToPost, useClosePost, useCancelPost, useWithdrawApplication, usePostUpdates } from "@/lib/hooks/use-posts";
 import { useCharacters } from "@/lib/hooks/use-characters";
 import { useBossNames } from "@/lib/hooks/use-boss-names";
 import { useAuth } from "@/lib/hooks/use-auth";
@@ -75,6 +75,7 @@ export default function PostDetailPage() {
   const applyMutation = useApplyToPost();
   const closeMutation = useClosePost();
   const cancelMutation = useCancelPost();
+  const withdrawMutation = useWithdrawApplication();
 
   const [applyDialogOpen, setApplyDialogOpen] = useState(false);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
@@ -452,6 +453,28 @@ export default function PostDetailPage() {
                         <p className="text-xs text-blue-600 dark:text-blue-400">파티장의 수락을 기다리고 있습니다.</p>
                       </div>
                     </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      disabled={withdrawMutation.isPending}
+                      onClick={async () => {
+                        if (confirm("지원을 취소하시겠습니까?")) {
+                          await withdrawMutation.mutateAsync({
+                            postId,
+                            applicationId: myApplication.id,
+                          });
+                          refetch();
+                        }
+                      }}
+                    >
+                      {withdrawMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <XCircle className="h-4 w-4 mr-2" />
+                      )}
+                      지원 취소
+                    </Button>
                   </div>
                 ) : myApplication?.status === "ACCEPTED" ? (
                   <div className="space-y-3">
@@ -754,6 +777,7 @@ function CharacterInfoCard({
         </div>
         <p className="text-sm text-muted-foreground">
           Lv.{character.characterLevel} {character.characterClass}
+          {character.worldName && <span> · {character.worldName}</span>}
         </p>
         {character.combatPower > 0 && (
           <div className="flex items-center gap-1 text-sm">

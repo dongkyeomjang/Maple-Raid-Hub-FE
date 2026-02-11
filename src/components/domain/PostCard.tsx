@@ -58,46 +58,30 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
                 <h3 className="font-semibold text-body truncate">
                   {displayName}
                 </h3>
-                {/* 계정 닉네임 */}
-                <div className="flex items-center gap-1.5 text-caption text-muted-foreground mt-1">
-                  <User className="h-3 w-3" />
-                  {post.authorNickname && (
-                    <span className="font-medium text-foreground/70">{post.authorNickname}</span>
-                  )}
-                  {post.preferredTime && (
-                    <>
-                      <span>·</span>
-                      <span>{post.preferredTime.split("T")[0]}</span>
-                    </>
-                  )}
-                  {crystalInfo.totalCrystal > 0 && (
-                    <>
-                      <span>·</span>
-                      <CrystalTooltip crystalInfo={crystalInfo} partySize={post.requiredMembers} />
-                    </>
-                  )}
-                </div>
-                {/* 캐릭터 이미지 & 닉네임 */}
-                {(post.characterImageUrl || post.characterName) && (
-                  <div className="flex items-center gap-1.5 mt-2">
-                    <div className="relative h-6 w-6 rounded-full border border-border/50 overflow-hidden shrink-0">
-                      {post.characterImageUrl ? (
-                        <img
-                          src={post.characterImageUrl}
-                          alt={post.characterName || "캐릭터"}
-                          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300%] h-[300%] object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-[10px]">
-                          ?
-                        </div>
-                      )}
-                    </div>
-                    {post.characterName && (
-                      <span className="text-caption text-muted-foreground">{post.characterName}</span>
+                <div className="flex items-center gap-1.5 mt-2">
+                  <div className="relative h-6 w-6 rounded-full border border-border/50 overflow-hidden shrink-0">
+                    {post.characterImageUrl ? (
+                      <img
+                        src={post.characterImageUrl}
+                        alt={post.characterName || "캐릭터"}
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300%] h-[300%] object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-[10px]">
+                        ?
+                      </div>
                     )}
                   </div>
-                )}
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-caption font-medium text-foreground/70 truncate">
+                      {post.characterName || "알 수 없음"}
+                    </span>
+                    <span className="text-tiny text-muted-foreground truncate">
+                      {post.worldName && <>{post.worldName} · </>}
+                      {formatRelativeTime(post.createdAt)}
+                    </span>
+                  </div>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="text-right">
@@ -190,10 +174,13 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
             )}
           </div>
           <div className="flex flex-col min-w-0">
-            {post.authorNickname && (
-              <span className="text-caption font-medium text-foreground/70 truncate">{post.authorNickname}</span>
-            )}
-            <span className="text-tiny text-muted-foreground">{formatRelativeTime(post.createdAt)}</span>
+            <span className="text-caption font-medium text-foreground/70 truncate">
+              {post.characterName || "알 수 없음"}
+            </span>
+            <span className="text-tiny text-muted-foreground truncate">
+              {post.worldName && <>{post.worldName} · </>}
+              {formatRelativeTime(post.createdAt)}
+            </span>
           </div>
         </div>
         <Button

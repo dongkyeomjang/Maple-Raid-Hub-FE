@@ -325,7 +325,7 @@ function ApplicationStatusBadge({ status }: { status: string }) {
     ACCEPTED: { label: "수락됨", variant: "success", icon: Check },
     REJECTED: { label: "거절됨", variant: "destructive", icon: X },
     CANCELED: { label: "취소됨", variant: "secondary", icon: X },
-    WITHDRAWN: { label: "철회됨", variant: "secondary", icon: X },
+    WITHDRAWN: { label: "취소됨", variant: "secondary", icon: X },
   };
 
   const { label, variant, icon: Icon } = config[status] || config.APPLIED;

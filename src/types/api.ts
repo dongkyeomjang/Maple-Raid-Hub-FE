@@ -228,6 +228,7 @@ export interface PostResponse {
   characterName: string | null;
   characterImageUrl: string | null;
   worldGroup: WorldGroup;
+  worldName: string | null;
   bossIds: string[];
   requiredMembers: number;
   currentMembers: number;
@@ -276,6 +277,7 @@ export interface MyApplicationResponse extends ApplicationResponse {
   currentMembers: number;
   authorCharacterName: string | null;
   authorCharacterImageUrl: string | null;
+  authorWorldName: string | null;
 }
 
 export interface ApplicationWithCharacterResponse extends ApplicationResponse {
@@ -317,6 +319,7 @@ export interface PartyMemberResponse {
   characterId: string;
   characterName: string | null;
   characterImageUrl: string | null;
+  worldName: string | null;
   isLeader: boolean;
   isReady: boolean;
   joinedAt: string;
