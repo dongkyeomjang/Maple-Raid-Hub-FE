@@ -76,11 +76,9 @@ export default function ManagePostPage() {
   return (
     <PageContainer>
       <div className="mb-6">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href={`/posts/${postId}`}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            모집글로 돌아가기
-          </Link>
+        <Button variant="ghost" size="sm" onClick={() => router.back()}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          뒤로가기
         </Button>
       </div>
 

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Send, ArrowLeft, User, Loader2, Thermometer } from "lucide-react";
+import { TemperatureWithTags } from "@/components/domain/TemperatureWithTags";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -230,15 +231,22 @@ export function ChatMessages({
             메시지가 없습니다
           </div>
         ) : (
-          messages.map((message) => (
-            <MessageItem
-              key={message.id}
-              message={message}
-              isOwnMessage={message.senderId === currentUserId}
-              type={type}
-              memberInfo={getMemberInfo(message.senderId)}
-            />
-          ))
+          messages.map((message) => {
+            // 상대방 userId 결정: 파티는 members에서, DM은 targetUserId 사용
+            const senderUserId = type === "party"
+              ? members?.find((m) => m.userId === message.senderId)?.userId ?? null
+              : (message.senderId !== currentUserId ? targetUserId ?? null : null);
+            return (
+              <MessageItem
+                key={message.id}
+                message={message}
+                isOwnMessage={message.senderId === currentUserId}
+                type={type}
+                memberInfo={getMemberInfo(message.senderId)}
+                senderUserId={senderUserId}
+              />
+            );
+          })
         )}
         <div ref={messagesEndRef} />
       </div>
@@ -273,11 +281,13 @@ function MessageItem({
   isOwnMessage,
   type,
   memberInfo,
+  senderUserId,
 }: {
   message: PartyChatMessage | DmChatMessage;
   isOwnMessage: boolean;
   type: "party" | "dm";
   memberInfo: MemberInfo | null;
+  senderUserId: string | null;
 }) {
   const isSystemMessage = type === "party"
     ? (message as PartyChatMessage).type !== "CHAT"
@@ -301,19 +311,47 @@ function MessageItem({
   return (
     <div className={cn("flex gap-2", isOwnMessage ? "flex-row-reverse" : "flex-row")}>
       {!isOwnMessage && (
-        <Avatar className="h-7 w-7 shrink-0 overflow-hidden">
-          {displayImageUrl ? (
-            <img
-              src={displayImageUrl}
-              alt={displayName || ""}
-              className="w-full h-full object-cover scale-[2.5] object-[45%_35%]"
-            />
-          ) : (
-            <AvatarFallback className="text-xs">
-              {displayName?.charAt(0).toUpperCase() || <User className="h-3 w-3" />}
-            </AvatarFallback>
-          )}
-        </Avatar>
+        senderUserId ? (
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
+                <Avatar className="h-7 w-7 overflow-hidden">
+                  {displayImageUrl ? (
+                    <img
+                      src={displayImageUrl}
+                      alt={displayName || ""}
+                      className="w-full h-full object-cover scale-[2.5] object-[45%_35%]"
+                    />
+                  ) : (
+                    <AvatarFallback className="text-xs">
+                      {displayName?.charAt(0).toUpperCase() || <User className="h-3 w-3" />}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-3" align="start" side="right">
+              <div className="space-y-2">
+                <p className="text-sm font-medium">{displayName}</p>
+                <TemperatureWithTags userId={senderUserId} size="sm" />
+              </div>
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <Avatar className="h-7 w-7 shrink-0 overflow-hidden">
+            {displayImageUrl ? (
+              <img
+                src={displayImageUrl}
+                alt={displayName || ""}
+                className="w-full h-full object-cover scale-[2.5] object-[45%_35%]"
+              />
+            ) : (
+              <AvatarFallback className="text-xs">
+                {displayName?.charAt(0).toUpperCase() || <User className="h-3 w-3" />}
+              </AvatarFallback>
+            )}
+          </Avatar>
+        )
       )}
       <div className={cn("flex flex-col max-w-[75%]", isOwnMessage ? "items-end" : "items-start")}>
         {!isOwnMessage && (
