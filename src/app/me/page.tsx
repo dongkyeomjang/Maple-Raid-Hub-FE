@@ -410,31 +410,31 @@ export default function MyPage() {
               {evaluations.map((evaluation) => (
                 <Card key={evaluation.id}>
                   <CardContent className="py-4">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-2">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-medium">{evaluation.evaluatorNickname}</span>
                           <EvaluationContextBadge context={evaluation.context} />
                         </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          {evaluation.tags.map((tag) => (
-                            <EvaluationTagBadge key={tag} tag={tag} />
-                          ))}
+                        <div className={cn(
+                          "text-sm font-bold px-2 py-1 rounded shrink-0",
+                          evaluation.temperatureChange > 0
+                            ? "text-green-600 bg-green-50 dark:bg-green-950"
+                            : evaluation.temperatureChange < 0
+                              ? "text-red-600 bg-red-50 dark:bg-red-950"
+                              : "text-gray-500 bg-gray-50 dark:bg-gray-900"
+                        )}>
+                          {evaluation.temperatureChange > 0 ? "+" : ""}{evaluation.temperatureChange.toFixed(2)}°C
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          {formatRelativeTime(evaluation.createdAt)}
-                        </p>
                       </div>
-                      <div className={cn(
-                        "text-sm font-bold px-2 py-1 rounded",
-                        evaluation.temperatureChange > 0
-                          ? "text-green-600 bg-green-50 dark:bg-green-950"
-                          : evaluation.temperatureChange < 0
-                            ? "text-red-600 bg-red-50 dark:bg-red-950"
-                            : "text-gray-500 bg-gray-50 dark:bg-gray-900"
-                      )}>
-                        {evaluation.temperatureChange > 0 ? "+" : ""}{evaluation.temperatureChange.toFixed(2)}°C
+                      <div className="flex flex-wrap gap-1.5">
+                        {evaluation.tags.map((tag) => (
+                          <EvaluationTagBadge key={tag} tag={tag} />
+                        ))}
                       </div>
+                      <p className="text-xs text-muted-foreground">
+                        {formatRelativeTime(evaluation.createdAt)}
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
