@@ -14,18 +14,6 @@ export type ApplicationStatus = "APPLIED" | "ACCEPTED" | "REJECTED" | "CANCELED"
 
 export type PartyRoomStatus = "ACTIVE" | "COMPLETED" | "CANCELED";
 
-export type ReviewTag =
-  | "SKILLED"
-  | "PUNCTUAL"
-  | "GOOD_COMM"
-  | "FRIENDLY"
-  | "LEADER_MATERIAL"
-  | "UNSKILLED"
-  | "LATE"
-  | "BAD_COMM"
-  | "RUDE"
-  | "NO_SHOW";
-
 // ============================================
 // Generic Pagination Response
 // ============================================
@@ -267,6 +255,7 @@ export interface PublicCharacterResponse {
   equipmentJson: string | null;
   verificationStatus: VerificationStatus;
   lastSyncedAt: string | null;
+  ownerTemperature?: number;
 }
 
 export interface MyApplicationResponse extends ApplicationResponse {
@@ -327,33 +316,59 @@ export interface PartyMemberResponse {
 }
 
 // ============================================
-// Review DTOs
+// Manner Evaluation DTOs
 // ============================================
 
-export interface SubmitReviewRequest {
-  targetMemberId: string;
-  tags: ReviewTag[];
+export type MannerTag =
+  | "GOOD_CONTACT"
+  | "PUNCTUAL"
+  | "KIND"
+  | "CARRIES_LOG"
+  | "GOOD_CONTROL"
+  | "BAD_CONTACT"
+  | "LATE"
+  | "NO_SHOW"
+  | "RUDE"
+  | "TOXIC";
+
+export type EvaluationContext = "DM" | "PARTY_CHAT" | "PARTY_PAGE";
+
+export interface SubmitMannerEvaluationRequest {
+  targetUserId: string;
+  context: EvaluationContext;
+  tags: MannerTag[];
 }
 
-export interface ReviewResponse {
+export interface MannerEvaluationResponse {
   id: string;
-  partyRoomId: string;
-  reviewerNickname: string;
-  tags: ReviewTag[];
+  evaluateeId: string;
+  tags: string[];
   temperatureChange: number;
   createdAt: string;
 }
 
-export interface ReviewListResponse {
-  reviews: ReviewResponse[];
-  canSubmitReviews: boolean;
-  pendingReviews: PendingReview[];
+export interface MyEvaluationDetailResponse {
+  id: string;
+  evaluatorNickname: string;
+  context: string;
+  tags: string[];
+  temperatureChange: number;
+  createdAt: string;
 }
 
-export interface PendingReview {
-  memberId: string;
-  nickname: string;
-  characterName: string;
+export interface EvaluationAvailabilityResponse {
+  canEvaluate: boolean;
+  nextAvailableAt: string | null;
+}
+
+export interface TagSummaryResponse {
+  tagCounts: TagCountResponse[];
+  totalEvaluations: number;
+}
+
+export interface TagCountResponse {
+  tag: MannerTag;
+  count: number;
 }
 
 // ============================================

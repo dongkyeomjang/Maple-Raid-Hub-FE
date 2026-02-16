@@ -14,10 +14,11 @@ import { LoadingPage } from "@/components/common/LoadingSpinner";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { usePartyRooms } from "@/lib/hooks/use-party-rooms";
 import { useMyApplications, useMyPosts, useWithdrawApplication } from "@/lib/hooks/use-posts";
+import { useMyEvaluations } from "@/lib/hooks/use-manner";
 import { useBossNames } from "@/lib/hooks/use-boss-names";
-import { formatDateTime, formatRelativeTime } from "@/lib/utils";
+import { cn, formatDateTime, formatRelativeTime } from "@/lib/utils";
 import { useDiscordStatus } from "@/lib/hooks/use-discord";
-import { User, Calendar, Users, MessageSquare, Clock, Swords, Crown, Settings, CheckCircle, Bell, Link2, XCircle, Loader2 } from "lucide-react";
+import { User, Calendar, Users, MessageSquare, Clock, Swords, Crown, Settings, CheckCircle, Bell, Link2, XCircle, Loader2, Thermometer } from "lucide-react";
 
 export default function MyPage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -26,6 +27,7 @@ export default function MyPage() {
   const { data: myPosts, isLoading: postsLoading } = useMyPosts();
   const { formatBossNames } = useBossNames();
   const { data: discordStatus } = useDiscordStatus();
+  const { data: evaluations, isLoading: evalLoading } = useMyEvaluations();
   const withdrawMutation = useWithdrawApplication();
 
   if (authLoading) {
@@ -66,7 +68,7 @@ export default function MyPage() {
               </div>
               <p className="text-body-sm text-muted-foreground">{user.username}</p>
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-2">
-                <TemperatureBadge temperature={user.temperature} showLabel />
+                <TemperatureBadge temperature={user.temperature} showLabel decimals={2} />
                 <span className="text-tiny text-muted-foreground">
                   가입일: {formatRelativeTime(user.createdAt)}
                 </span>
@@ -135,6 +137,10 @@ export default function MyPage() {
           <TabsTrigger value="posts" className="gap-2">
             <Crown className="h-4 w-4" />
             내 모집글 ({myPosts?.length || 0})
+          </TabsTrigger>
+          <TabsTrigger value="evaluations" className="gap-2">
+            <Thermometer className="h-4 w-4" />
+            받은 평가 ({evaluations?.length || 0})
           </TabsTrigger>
         </TabsList>
 
@@ -388,9 +394,102 @@ export default function MyPage() {
             </div>
           )}
         </TabsContent>
+
+        {/* Received Evaluations */}
+        <TabsContent value="evaluations">
+          {evalLoading ? (
+            <LoadingPage message="받은 평가를 불러오는 중..." />
+          ) : !evaluations?.length ? (
+            <EmptyState
+              icon={<Thermometer className="h-8 w-8 text-muted-foreground" />}
+              title="받은 평가가 없습니다"
+              description="다른 사용자로부터 매너 평가를 받으면 여기에 표시됩니다."
+            />
+          ) : (
+            <div className="space-y-3">
+              {evaluations.map((evaluation) => (
+                <Card key={evaluation.id}>
+                  <CardContent className="py-4">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">{evaluation.evaluatorNickname}</span>
+                          <EvaluationContextBadge context={evaluation.context} />
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {evaluation.tags.map((tag) => (
+                            <EvaluationTagBadge key={tag} tag={tag} />
+                          ))}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {formatRelativeTime(evaluation.createdAt)}
+                        </p>
+                      </div>
+                      <div className={cn(
+                        "text-sm font-bold px-2 py-1 rounded",
+                        evaluation.temperatureChange > 0
+                          ? "text-green-600 bg-green-50 dark:bg-green-950"
+                          : evaluation.temperatureChange < 0
+                            ? "text-red-600 bg-red-50 dark:bg-red-950"
+                            : "text-gray-500 bg-gray-50 dark:bg-gray-900"
+                      )}>
+                        {evaluation.temperatureChange > 0 ? "+" : ""}{evaluation.temperatureChange.toFixed(2)}°C
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
       </Tabs>
     </PageContainer>
   );
+}
+
+const TAG_LABELS: Record<string, string> = {
+  GOOD_CONTACT: "연락이 잘돼요",
+  PUNCTUAL: "시간 약속을 잘 지켜요",
+  KIND: "친절하고 매너가 좋아요",
+  CARRIES_LOG: "통나무를 들어줘요",
+  GOOD_CONTROL: "컨트롤이 좋아요",
+  BAD_CONTACT: "연락이 잘 안돼요",
+  LATE: "시간 약속을 안 지켜요",
+  NO_SHOW: "노쇼를 했어요",
+  RUDE: "불친절해요",
+  TOXIC: "비매너 언행이 있었어요",
+};
+
+const POSITIVE_TAGS = ["GOOD_CONTACT", "PUNCTUAL", "KIND", "CARRIES_LOG", "GOOD_CONTROL"];
+const NEGATIVE_TAGS = ["BAD_CONTACT", "LATE", "NO_SHOW", "RUDE", "TOXIC"];
+
+function EvaluationTagBadge({ tag }: { tag: string }) {
+  const isPositive = POSITIVE_TAGS.includes(tag);
+  const isNegative = NEGATIVE_TAGS.includes(tag);
+
+  return (
+    <Badge
+      variant="outline"
+      className={cn(
+        "text-xs",
+        isPositive && "border-green-300 text-green-700 dark:border-green-700 dark:text-green-400",
+        isNegative && "border-red-300 text-red-700 dark:border-red-700 dark:text-red-400",
+        !isPositive && !isNegative && "border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-400"
+      )}
+    >
+      {TAG_LABELS[tag] || tag}
+    </Badge>
+  );
+}
+
+function EvaluationContextBadge({ context }: { context: string }) {
+  const config: Record<string, { label: string; variant: "default" | "secondary" }> = {
+    DM: { label: "DM", variant: "secondary" },
+    PARTY_CHAT: { label: "파티 채팅", variant: "secondary" },
+    PARTY_PAGE: { label: "파티 페이지", variant: "secondary" },
+  };
+  const { label } = config[context] || { label: context };
+  return <Badge variant="secondary" className="text-xs">{label}</Badge>;
 }
 
 function PostStatusBadge({ status }: { status: string }) {

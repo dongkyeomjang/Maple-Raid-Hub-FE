@@ -297,8 +297,6 @@ export const api = {
         method: "POST",
       }),
 
-    getReviews: (id: string) => fetchApiWithRefresh(`/api/party-rooms/${id}/reviews`),
-
     getMessages: (id: string, limit = 50, before?: string) => {
       const params = new URLSearchParams({ limit: limit.toString() });
       if (before) params.set("before", before);
@@ -308,12 +306,6 @@ export const api = {
     markAsRead: (id: string) =>
       fetchApiWithRefresh(`/api/party-rooms/${id}/read`, {
         method: "POST",
-      }),
-
-    submitReview: (roomId: string, data: { targetMemberId: string; tags: string[] }) =>
-      fetchApiWithRefresh(`/api/party-rooms/${roomId}/reviews`, {
-        method: "POST",
-        body: JSON.stringify(data),
       }),
 
     createPoll: (roomId: string, options: string[]) =>
@@ -327,6 +319,24 @@ export const api = {
         method: "POST",
         body: JSON.stringify({ optionIndex }),
       }),
+  },
+
+  // Manner Evaluation
+  manner: {
+    evaluate: (data: { targetUserId: string; context: string; tags: string[] }) =>
+      fetchApiWithRefresh("/api/manner/evaluate", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+
+    getMyEvaluations: () =>
+      fetchApiWithRefresh("/api/manner/my-evaluations"),
+
+    checkAvailability: (targetUserId: string) =>
+      fetchApiWithRefresh(`/api/manner/check?targetUserId=${targetUserId}`),
+
+    getTagSummary: (userId: string) =>
+      fetchApiWithRefresh(`/api/manner/user/${userId}/tag-summary`),
   },
 
   // Chat

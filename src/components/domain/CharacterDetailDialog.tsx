@@ -12,18 +12,21 @@ import { VerificationBadge } from "./VerificationBadge";
 import { EquipmentGrid } from "./EquipmentGrid";
 import type { PublicCharacterResponse, EquipmentInfo } from "@/types/api";
 import { User, Swords, Info } from "lucide-react";
+import { TemperatureWithTags } from "./TemperatureWithTags";
 import { formatDateTime } from "@/lib/utils";
 
 interface CharacterDetailDialogProps {
   character: PublicCharacterResponse | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  ownerUserId?: string;
 }
 
 export function CharacterDetailDialog({
   character,
   open,
   onOpenChange,
+  ownerUserId,
 }: CharacterDetailDialogProps) {
   if (!character) return null;
 
@@ -81,6 +84,15 @@ export function CharacterDetailDialog({
                 {character.worldName}
               </span>
             </div>
+            {character.ownerTemperature != null && ownerUserId && (
+              <div className="mt-2">
+                <TemperatureWithTags
+                  temperature={character.ownerTemperature}
+                  userId={ownerUserId}
+                  size="md"
+                />
+              </div>
+            )}
           </div>
         </div>
 

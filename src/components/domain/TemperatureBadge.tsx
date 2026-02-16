@@ -9,6 +9,7 @@ interface TemperatureBadgeProps {
   showIcon?: boolean;
   size?: "sm" | "md" | "lg";
   variant?: "default" | "pill";
+  decimals?: number;
   className?: string;
 }
 
@@ -18,6 +19,7 @@ export function TemperatureBadge({
   showIcon = true,
   size = "md",
   variant = "default",
+  decimals = 1,
   className,
 }: TemperatureBadgeProps) {
   const colorClass = getTemperatureColor(temperature);
@@ -61,7 +63,7 @@ export function TemperatureBadge({
       >
         {showIcon && <Thermometer className={cn(config.icon, colorClass)} />}
         <span className={cn("font-semibold tabular-nums", colorClass)}>
-          {temperature.toFixed(1)}°C
+          {temperature.toFixed(decimals)}°C
         </span>
         {showLabel && (
           <span className={cn("font-normal", colorClass, "opacity-80")}>
@@ -83,7 +85,7 @@ export function TemperatureBadge({
     >
       {showIcon && <Thermometer className={cn(config.icon, colorClass)} />}
       <span className={cn("font-semibold tabular-nums", colorClass)}>
-        {temperature.toFixed(1)}°C
+        {temperature.toFixed(decimals)}°C
       </span>
       {showLabel && (
         <span className="text-muted-foreground">({label})</span>
