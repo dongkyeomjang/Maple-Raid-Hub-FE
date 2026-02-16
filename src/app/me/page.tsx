@@ -421,7 +421,6 @@ export default function MyPage() {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium">{evaluation.evaluatorNickname}</span>
                           <EvaluationContextBadge context={evaluation.context} />
                         </div>
                         <div className={cn(
