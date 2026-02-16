@@ -1,5 +1,7 @@
 "use client";
 
+import { Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { PageContainer, PageHeader } from "@/components/layout/PageContainer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,7 +22,28 @@ import { cn, formatDateTime, formatRelativeTime } from "@/lib/utils";
 import { useDiscordStatus } from "@/lib/hooks/use-discord";
 import { User, Calendar, Users, MessageSquare, Clock, Swords, Crown, Settings, CheckCircle, Bell, Link2, XCircle, Loader2, Thermometer } from "lucide-react";
 
+const VALID_TABS = ["parties", "applications", "posts", "evaluations"];
+
 export default function MyPage() {
+  return (
+    <Suspense fallback={<PageContainer><LoadingPage message="로딩 중..." /></PageContainer>}>
+      <MyPageContent />
+    </Suspense>
+  );
+}
+
+function MyPageContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const tabParam = searchParams.get("tab");
+  const activeTab = VALID_TABS.includes(tabParam ?? "") ? tabParam! : "parties";
+
+  const handleTabChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", value);
+    router.replace(`/me?${params.toString()}`, { scroll: false });
+  };
+
   const { user, isLoading: authLoading } = useAuth();
   const { data: partyRooms, isLoading: roomsLoading, error: roomsError } = usePartyRooms();
   const { data: applications, isLoading: appsLoading } = useMyApplications();
@@ -124,7 +147,7 @@ export default function MyPage() {
       )}
 
       {/* Tabs */}
-      <Tabs defaultValue="parties">
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="mb-4 w-full grid grid-cols-4">
           <TabsTrigger value="parties" className="gap-1.5 text-xs sm:text-sm sm:gap-2">
             <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />

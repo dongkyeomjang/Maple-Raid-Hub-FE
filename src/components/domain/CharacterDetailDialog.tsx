@@ -1,6 +1,5 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
@@ -58,17 +57,19 @@ export function CharacterDetailDialog({
 
         {/* 캐릭터 기본 정보 */}
         <div className="flex items-start gap-4 pb-4 border-b">
-          <Avatar className="h-20 w-20">
+          <div className="h-20 w-20 rounded-full overflow-hidden bg-muted flex-shrink-0">
             {character.characterImageUrl ? (
-              <AvatarImage
+              <img
                 src={character.characterImageUrl}
                 alt={character.characterName}
+                className="w-full h-full object-cover scale-[2.5] object-[45%_35%]"
               />
-            ) : null}
-            <AvatarFallback>
-              <User className="h-10 w-10" />
-            </AvatarFallback>
-          </Avatar>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <User className="h-10 w-10 text-muted-foreground" />
+              </div>
+            )}
+          </div>
 
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">

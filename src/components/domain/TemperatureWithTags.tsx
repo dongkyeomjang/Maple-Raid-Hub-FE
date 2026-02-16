@@ -26,7 +26,7 @@ const POSITIVE_TAGS = new Set<MannerTag>([
 ]);
 
 interface TemperatureWithTagsProps {
-  temperature: number;
+  temperature?: number;
   userId: string;
   size?: "sm" | "md" | "lg";
   showLabel?: boolean;
@@ -39,14 +39,15 @@ export function TemperatureWithTags({
   showLabel = false,
 }: TemperatureWithTagsProps) {
   const [open, setOpen] = useState(false);
-  const { data: tagSummary, isLoading } = useTagSummary(open ? userId : null);
+  const { data: tagSummary, isLoading } = useTagSummary(temperature == null ? userId : (open ? userId : null));
+  const displayTemperature = temperature ?? tagSummary?.temperature ?? 36.5;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button className="inline-flex items-center hover:opacity-80 transition-opacity cursor-pointer">
           <TemperatureBadge
-            temperature={temperature}
+            temperature={displayTemperature}
             size={size}
             showLabel={showLabel}
             showIcon

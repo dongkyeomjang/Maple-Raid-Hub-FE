@@ -349,7 +349,6 @@ export interface MannerEvaluationResponse {
 
 export interface MyEvaluationDetailResponse {
   id: string;
-  evaluatorNickname: string;
   context: string;
   tags: string[];
   temperatureChange: number;
@@ -364,6 +363,7 @@ export interface EvaluationAvailabilityResponse {
 export interface TagSummaryResponse {
   tagCounts: TagCountResponse[];
   totalEvaluations: number;
+  temperature: number;
 }
 
 export interface TagCountResponse {

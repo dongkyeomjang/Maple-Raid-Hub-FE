@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { CharacterDetailDialog } from "./CharacterDetailDialog";
+import { TemperatureWithTags } from "./TemperatureWithTags";
 import { useCharacters } from "@/lib/hooks/use-characters";
 import { useChatStore } from "@/lib/stores/chat-store";
 import type { ApplicationWithCharacterResponse, PublicCharacterResponse } from "@/types/api";
@@ -27,6 +28,7 @@ interface ApplicantCompareTableProps {
 
 interface SelectedCharacterInfo {
   character: PublicCharacterResponse;
+  ownerUserId: string;
 }
 
 interface DMTargetInfo {
@@ -95,7 +97,7 @@ export function ApplicantCompareTable({
                   <td className="py-3 px-4">
                     <button
                       className="flex items-center gap-3 text-left hover:opacity-80 transition-opacity"
-                      onClick={() => char && setSelectedInfo({ character: char })}
+                      onClick={() => char && setSelectedInfo({ character: char, ownerUserId: app.applicantId })}
                       disabled={!char}
                     >
                       <div className="h-12 w-12 rounded-full overflow-hidden bg-muted flex-shrink-0">
@@ -116,12 +118,23 @@ export function ApplicantCompareTable({
                         <p className="text-xs text-muted-foreground">
                           {char?.characterClass ?? "-"} · {char?.worldName ?? "-"}
                         </p>
-                        {char?.verificationStatus === "VERIFIED_OWNER" && (
-                          <Badge variant="success" className="text-xs mt-1">
-                            <Shield className="h-3 w-3 mr-1" />
-                            인증됨
-                          </Badge>
-                        )}
+                        <div className="flex items-center gap-1.5 mt-1">
+                          {char?.ownerTemperature != null && (
+                            <div onClick={(e) => e.stopPropagation()}>
+                              <TemperatureWithTags
+                                temperature={char.ownerTemperature}
+                                userId={app.applicantId}
+                                size="sm"
+                              />
+                            </div>
+                          )}
+                          {char?.verificationStatus === "VERIFIED_OWNER" && (
+                            <Badge variant="success" className="text-xs">
+                              <Shield className="h-3 w-3 mr-1" />
+                              인증됨
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </button>
                   </td>
@@ -139,7 +152,7 @@ export function ApplicantCompareTable({
                           variant="ghost"
                           size="sm"
                           className="h-6 px-2 text-xs"
-                          onClick={() => setSelectedInfo({ character: char })}
+                          onClick={() => setSelectedInfo({ character: char, ownerUserId: app.applicantId })}
                         >
                           <Eye className="h-3 w-3 mr-1" />
                           상세 보기
@@ -214,6 +227,7 @@ export function ApplicantCompareTable({
         character={selectedInfo?.character ?? null}
         open={!!selectedInfo}
         onOpenChange={(open) => !open && setSelectedInfo(null)}
+        ownerUserId={selectedInfo?.ownerUserId}
       />
 
       {/* DM 캐릭터 선택 다이얼로그 */}
