@@ -7,15 +7,12 @@ import { useAuth } from "@/lib/hooks/use-auth";
 import { useWebSocket } from "@/lib/websocket/WebSocketProvider";
 import type {
   PartyRoomResponse,
-  ReviewResponse,
-  ReviewTag,
 } from "@/types/api";
 
 export const partyRoomKeys = {
   all: ["partyRooms"] as const,
   list: () => [...partyRoomKeys.all, "list"] as const,
   detail: (id: string) => [...partyRoomKeys.all, "detail", id] as const,
-  reviews: (id: string) => [...partyRoomKeys.all, "reviews", id] as const,
 };
 
 export function usePartyRooms() {
@@ -134,41 +131,6 @@ export function useDisbandParty() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: partyRoomKeys.list() });
-    },
-  });
-}
-
-export function useReviews(roomId: string) {
-  return useQuery({
-    queryKey: partyRoomKeys.reviews(roomId),
-    queryFn: async () => {
-      const result = await apiClient.partyRooms.getReviews(roomId);
-      if (!result.success) throw new Error(result.error.message);
-      return result.data as ReviewResponse[];
-    },
-    enabled: !!roomId,
-  });
-}
-
-export function useSubmitReview() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      roomId,
-      targetMemberId,
-      tags,
-    }: {
-      roomId: string;
-      targetMemberId: string;
-      tags: ReviewTag[];
-    }) => {
-      const result = await apiClient.partyRooms.submitReview(roomId, { targetMemberId, tags });
-      if (!result.success) throw new Error(result.error.message);
-      return { roomId };
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: partyRoomKeys.reviews(data.roomId) });
     },
   });
 }

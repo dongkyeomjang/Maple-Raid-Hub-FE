@@ -3,10 +3,15 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
-import { Send, ArrowLeft, User, Loader2 } from "lucide-react";
+import { Send, ArrowLeft, User, Loader2, Thermometer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { PartyChatMessage, DmChatMessage } from "@/lib/stores/chat-store";
 import type { PartyMemberResponse } from "@/types/api";
@@ -28,6 +33,9 @@ interface ChatMessagesProps {
   hasMore?: boolean;
   onLoadMore?: () => Promise<unknown>;
   isLoadingMore?: boolean;
+  onEvaluate?: (userId: string, name: string) => void;
+  targetUserId?: string;
+  targetName?: string;
 }
 
 export function ChatMessages({
@@ -42,6 +50,9 @@ export function ChatMessages({
   hasMore = false,
   onLoadMore,
   isLoadingMore = false,
+  onEvaluate,
+  targetUserId,
+  targetName,
 }: ChatMessagesProps) {
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -137,6 +148,54 @@ export function ChatMessages({
             )}
           </p>
         </div>
+        {onEvaluate && (
+          type === "dm" && targetUserId && targetName ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => onEvaluate(targetUserId, targetName)}
+              title="매너 평가"
+            >
+              <Thermometer className="h-4 w-4" />
+            </Button>
+          ) : type === "party" && members && members.length > 0 ? (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8" title="매너 평가">
+                  <Thermometer className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-48 p-2" align="end">
+                <p className="text-xs font-medium text-muted-foreground mb-2 px-2">평가할 멤버 선택</p>
+                {members
+                  .filter((m) => m.userId !== currentUserId)
+                  .map((member) => (
+                    <button
+                      key={member.userId}
+                      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-muted text-sm text-left"
+                      onClick={() => onEvaluate(member.userId, member.characterName || "알 수 없음")}
+                    >
+                      <div className="h-6 w-6 rounded-full overflow-hidden bg-muted flex-shrink-0">
+                        {member.characterImageUrl ? (
+                          <img
+                            src={member.characterImageUrl}
+                            alt={member.characterName || ""}
+                            className="w-full h-full object-cover scale-[2.5] object-[45%_35%]"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <User className="h-3 w-3 text-muted-foreground" />
+                          </div>
+                        )}
+                      </div>
+                      <span className="truncate">{member.characterName || "알 수 없음"}</span>
+                    </button>
+                  ))}
+              </PopoverContent>
+            </Popover>
+          ) : null
+        )}
       </div>
 
       {/* Messages */}

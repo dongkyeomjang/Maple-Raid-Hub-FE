@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       clearAuthState();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [pathname]);
 
   // 닉네임 설정이 필요한 사용자를 리다이렉트
   useEffect(() => {

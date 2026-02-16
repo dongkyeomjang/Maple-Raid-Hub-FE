@@ -26,7 +26,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { WorldGroupBadge } from "@/components/domain/WorldGroupBadge";
-import { VerificationBadge } from "@/components/domain/VerificationBadge";
 import { CharacterDetailDialog } from "@/components/domain/CharacterDetailDialog";
 import { ErrorState } from "@/components/common/ErrorState";
 import { LoadingPage } from "@/components/common/LoadingSpinner";
@@ -57,10 +56,12 @@ import {
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatMeso, formatNumber } from "@/lib/utils";
+import { TemperatureWithTags } from "@/components/domain/TemperatureWithTags";
 import type { PublicCharacterResponse } from "@/types/api";
 
 interface SelectedMemberInfo {
   character: PublicCharacterResponse;
+  ownerUserId?: string;
 }
 
 export default function PostDetailPage() {
@@ -187,11 +188,9 @@ export default function PostDetailPage() {
   return (
     <PageContainer>
       <div className="mb-6 flex justify-between items-center">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/posts">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            모집글 목록
-          </Link>
+        <Button variant="ghost" size="sm" onClick={() => router.back()}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          뒤로가기
         </Button>
         {isOwner && (
           <Badge variant="default" className="bg-primary/10 text-primary border-primary/20">
@@ -293,7 +292,8 @@ export default function PostDetailPage() {
               <CardContent className="space-y-3">
                 <CharacterInfoCard
                   character={authorCharacter}
-                  onClick={() => setSelectedMemberInfo({ character: authorCharacter })}
+                  ownerUserId={post.authorId}
+                  onClick={() => setSelectedMemberInfo({ character: authorCharacter, ownerUserId: post.authorId })}
                 />
                 {/* 비작성자 + 로그인 + 인증된 캐릭터 소유자만 DM 버튼 표시 */}
                 {!isOwner && user && hasVerifiedCharacter && (
@@ -327,7 +327,8 @@ export default function PostDetailPage() {
                       <CharacterInfoCard
                         key={app.id}
                         character={app.character}
-                        onClick={() => setSelectedMemberInfo({ character: app.character! })}
+                        ownerUserId={app.applicantId}
+                        onClick={() => setSelectedMemberInfo({ character: app.character!, ownerUserId: app.applicantId })}
                       />
                     )
                   ))}
@@ -595,6 +596,7 @@ export default function PostDetailPage() {
         character={selectedMemberInfo?.character ?? null}
         open={!!selectedMemberInfo}
         onOpenChange={(open) => !open && setSelectedMemberInfo(null)}
+        ownerUserId={selectedMemberInfo?.ownerUserId}
       />
 
       {/* 모집 취소 확인 다이얼로그 */}
@@ -747,9 +749,11 @@ export default function PostDetailPage() {
 
 function CharacterInfoCard({
   character,
+  ownerUserId,
   onClick,
 }: {
   character: PublicCharacterResponse;
+  ownerUserId?: string;
   onClick?: () => void;
 }) {
   return (
@@ -773,7 +777,15 @@ function CharacterInfoCard({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="font-medium truncate">{character.characterName}</span>
-          <VerificationBadge status={character.verificationStatus} />
+          {character.ownerTemperature != null && ownerUserId && (
+            <div onClick={(e) => e.stopPropagation()}>
+              <TemperatureWithTags
+                temperature={character.ownerTemperature}
+                userId={ownerUserId}
+                size="sm"
+              />
+            </div>
+          )}
         </div>
         <p className="text-sm text-muted-foreground">
           Lv.{character.characterLevel} {character.characterClass}

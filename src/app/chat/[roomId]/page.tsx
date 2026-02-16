@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ErrorState } from "@/components/common/ErrorState";
 import { LoadingPage } from "@/components/common/LoadingSpinner";
+import { MannerEvaluationModal } from "@/components/domain/MannerEvaluationModal";
 import { usePartyRoom } from "@/lib/hooks/use-party-rooms";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { useBossNames } from "@/lib/hooks/use-boss-names";
@@ -16,6 +18,7 @@ import {
   Users,
   User,
   Crown,
+  Thermometer,
 } from "lucide-react";
 import { ScheduleSection } from "@/components/schedule";
 
@@ -26,6 +29,12 @@ export default function ChatRoomPage() {
   const { formatBossNames } = useBossNames();
 
   const { data: room, isLoading, error, refetch } = usePartyRoom(roomId);
+
+  const [mannerModal, setMannerModal] = useState<{
+    isOpen: boolean;
+    targetUserId: string | null;
+    targetName: string;
+  }>({ isOpen: false, targetUserId: null, targetName: "" });
 
   // Check if current user is leader
   const isLeader = room?.members?.some(
@@ -136,6 +145,23 @@ export default function ChatRoomPage() {
                       <p className="text-xs text-muted-foreground">{member.worldName}</p>
                     )}
                   </div>
+                  {member.userId !== user?.id && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 flex-shrink-0"
+                      title="매너 평가"
+                      onClick={() =>
+                        setMannerModal({
+                          isOpen: true,
+                          targetUserId: member.userId,
+                          targetName: member.characterName || "알 수 없음",
+                        })
+                      }
+                    >
+                      <Thermometer className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               ))}
             </CardContent>
@@ -153,6 +179,14 @@ export default function ChatRoomPage() {
           />
         </div>
       </div>
+
+      <MannerEvaluationModal
+        isOpen={mannerModal.isOpen}
+        onClose={() => setMannerModal((prev) => ({ ...prev, isOpen: false }))}
+        targetUserId={mannerModal.targetUserId}
+        targetName={mannerModal.targetName}
+        context="PARTY_PAGE"
+      />
     </PageContainer>
   );
 }

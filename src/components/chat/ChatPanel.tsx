@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { MessageCircle, Users } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
@@ -24,7 +24,9 @@ import { api } from "@/lib/api/client";
 import { ChatRoomList } from "./ChatRoomList";
 import { ChatMessages } from "./ChatMessages";
 import { DraftDmChat } from "./DraftDmChat";
+import { MannerEvaluationModal } from "@/components/domain/MannerEvaluationModal";
 import { cn } from "@/lib/utils";
+import type { EvaluationContext } from "@/types/api";
 
 export function ChatPanel() {
   const { user } = useAuth();
@@ -54,6 +56,14 @@ export function ChatPanel() {
 
   // 로딩 상태
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  // 매너 평가 모달 상태
+  const [mannerModal, setMannerModal] = useState<{
+    isOpen: boolean;
+    targetUserId: string | null;
+    targetName: string;
+    context: EvaluationContext;
+  }>({ isOpen: false, targetUserId: null, targetName: "", context: "DM" });
 
   // 데이터 로딩
   useDmRooms();
@@ -101,6 +111,11 @@ export function ChatPanel() {
       }
     }
   }, [selectedRoomId, selectedRoomType, markDmAsRead, markPartyAsRead, clearDmUnread, clearPartyUnread, refetchDmMessages, refetchPartyMessages]);
+
+  const handleEvaluate = useCallback((userId: string, name: string) => {
+    const context: EvaluationContext = selectedRoomType === "dm" ? "DM" : "PARTY_CHAT";
+    setMannerModal({ isOpen: true, targetUserId: userId, targetName: name, context });
+  }, [selectedRoomType]);
 
   if (!user || !isOpen) return null;
 
@@ -222,6 +237,9 @@ export function ChatPanel() {
           hasMore={selectedRoomType === "party" ? partyHasMore : dmHasMore}
           onLoadMore={handleLoadMore}
           isLoadingMore={isLoadingMore}
+          onEvaluate={handleEvaluate}
+          targetUserId={selectedRoomType === "dm" ? selectedDmRoom?.otherUserId : undefined}
+          targetName={selectedRoomType === "dm" ? (selectedDmRoom?.otherCharacterName || selectedDmRoom?.otherUserNickname || "상대방") : undefined}
         />
       ) : (
         <Tabs
@@ -269,6 +287,14 @@ export function ChatPanel() {
           </TabsContent>
         </Tabs>
       )}
+
+      <MannerEvaluationModal
+        isOpen={mannerModal.isOpen}
+        onClose={() => setMannerModal((prev) => ({ ...prev, isOpen: false }))}
+        targetUserId={mannerModal.targetUserId}
+        targetName={mannerModal.targetName}
+        context={mannerModal.context}
+      />
     </Card>
   );
 }
