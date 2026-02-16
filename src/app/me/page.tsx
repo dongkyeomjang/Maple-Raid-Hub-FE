@@ -125,22 +125,30 @@ export default function MyPage() {
 
       {/* Tabs */}
       <Tabs defaultValue="parties">
-        <TabsList className="mb-4">
-          <TabsTrigger value="parties" className="gap-2">
-            <Users className="h-4 w-4" />
-            내 파티 ({partyRooms?.length || 0})
+        <TabsList className="mb-4 w-full grid grid-cols-4">
+          <TabsTrigger value="parties" className="gap-1.5 text-xs sm:text-sm sm:gap-2">
+            <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">내 파티</span>
+            <span className="sm:hidden">파티</span>
+            ({partyRooms?.length || 0})
           </TabsTrigger>
-          <TabsTrigger value="applications" className="gap-2">
-            <Clock className="h-4 w-4" />
-            지원 현황 ({applications?.length || 0})
+          <TabsTrigger value="applications" className="gap-1.5 text-xs sm:text-sm sm:gap-2">
+            <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">지원 현황</span>
+            <span className="sm:hidden">지원</span>
+            ({applications?.length || 0})
           </TabsTrigger>
-          <TabsTrigger value="posts" className="gap-2">
-            <Crown className="h-4 w-4" />
-            내 모집글 ({myPosts?.length || 0})
+          <TabsTrigger value="posts" className="gap-1.5 text-xs sm:text-sm sm:gap-2">
+            <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">내 모집글</span>
+            <span className="sm:hidden">모집</span>
+            ({myPosts?.length || 0})
           </TabsTrigger>
-          <TabsTrigger value="evaluations" className="gap-2">
-            <Thermometer className="h-4 w-4" />
-            받은 평가 ({evaluations?.length || 0})
+          <TabsTrigger value="evaluations" className="gap-1.5 text-xs sm:text-sm sm:gap-2">
+            <Thermometer className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">받은 평가</span>
+            <span className="sm:hidden">평가</span>
+            ({evaluations?.length || 0})
           </TabsTrigger>
         </TabsList>
 
@@ -410,31 +418,31 @@ export default function MyPage() {
               {evaluations.map((evaluation) => (
                 <Card key={evaluation.id}>
                   <CardContent className="py-4">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-2">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-medium">{evaluation.evaluatorNickname}</span>
                           <EvaluationContextBadge context={evaluation.context} />
                         </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          {evaluation.tags.map((tag) => (
-                            <EvaluationTagBadge key={tag} tag={tag} />
-                          ))}
+                        <div className={cn(
+                          "text-sm font-bold px-2 py-1 rounded shrink-0",
+                          evaluation.temperatureChange > 0
+                            ? "text-green-600 bg-green-50 dark:bg-green-950"
+                            : evaluation.temperatureChange < 0
+                              ? "text-red-600 bg-red-50 dark:bg-red-950"
+                              : "text-gray-500 bg-gray-50 dark:bg-gray-900"
+                        )}>
+                          {evaluation.temperatureChange > 0 ? "+" : ""}{evaluation.temperatureChange.toFixed(2)}°C
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          {formatRelativeTime(evaluation.createdAt)}
-                        </p>
                       </div>
-                      <div className={cn(
-                        "text-sm font-bold px-2 py-1 rounded",
-                        evaluation.temperatureChange > 0
-                          ? "text-green-600 bg-green-50 dark:bg-green-950"
-                          : evaluation.temperatureChange < 0
-                            ? "text-red-600 bg-red-50 dark:bg-red-950"
-                            : "text-gray-500 bg-gray-50 dark:bg-gray-900"
-                      )}>
-                        {evaluation.temperatureChange > 0 ? "+" : ""}{evaluation.temperatureChange.toFixed(2)}°C
+                      <div className="flex flex-wrap gap-1.5">
+                        {evaluation.tags.map((tag) => (
+                          <EvaluationTagBadge key={tag} tag={tag} />
+                        ))}
                       </div>
+                      <p className="text-xs text-muted-foreground">
+                        {formatRelativeTime(evaluation.createdAt)}
+                      </p>
                     </div>
                   </CardContent>
                 </Card>

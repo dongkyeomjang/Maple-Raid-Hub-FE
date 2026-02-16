@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { PageContainer, PageHeader } from "@/components/layout/PageContainer";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,11 +26,32 @@ type ViewFilter = "all" | "mine";
 const ITEMS_PER_PAGE = 6;
 
 export default function PostsPage() {
+  return (
+    <Suspense>
+      <PostsPageContent />
+    </Suspense>
+  );
+}
+
+function PostsPageContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [worldGroupFilter, setWorldGroupFilter] = useState<WorldGroup | "ALL">("ALL");
   const [viewFilter, setViewFilter] = useState<ViewFilter>("all");
   const [bossFilter, setBossFilter] = useState<string[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const { isAuthenticated, user } = useAuth();
+
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const setCurrentPage = useCallback((pageOrFn: number | ((prev: number) => number)) => {
+    const newPage = typeof pageOrFn === "function" ? pageOrFn(currentPage) : pageOrFn;
+    const params = new URLSearchParams(searchParams.toString());
+    if (newPage <= 1) {
+      params.delete("page");
+    } else {
+      params.set("page", String(newPage));
+    }
+    router.replace(`/posts${params.toString() ? `?${params}` : ""}`, { scroll: false });
+  }, [currentPage, searchParams, router]);
 
   const postsFilters = {
     ...(worldGroupFilter !== "ALL" && { worldGroup: worldGroupFilter }),
