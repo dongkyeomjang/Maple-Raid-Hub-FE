@@ -271,6 +271,15 @@ export default function PostDetailPage() {
                 </div>
               )}
 
+              {post.status === "RECRUITING" && post.createdAt && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4" />
+                  <span>
+                    {new Date(new Date(post.createdAt).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString("ko-KR")} 자동 마감
+                  </span>
+                </div>
+              )}
+
               {post.description && (
                 <div className="p-4 bg-muted rounded-lg">
                   <h4 className="font-medium mb-2">설명</h4>
