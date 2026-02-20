@@ -29,7 +29,7 @@ import { ErrorState } from "@/components/common/ErrorState";
 import { usePosts } from "@/lib/hooks/use-posts";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { useWorldGroups } from "@/lib/hooks/use-config";
-import { ChevronLeft, ChevronRight, Plus, Swords, Crown, Globe } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, Plus, Swords, Crown, Globe } from "lucide-react";
 import type { WorldGroup } from "@/types/api";
 
 type ViewFilter = "all" | "mine";
@@ -250,6 +250,11 @@ function PostsPageContent() {
         </div>
         {createPostButton}
       </div>
+
+      <p className="text-xs text-muted-foreground flex items-center gap-1 mb-2">
+        <Clock className="h-3 w-3" />
+        모집글은 작성 후 7일이 지나면 자동으로 마감됩니다.
+      </p>
 
       {error ? (
         <ErrorState

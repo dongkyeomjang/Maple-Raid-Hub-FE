@@ -21,7 +21,7 @@ import { BossMultiSelector } from "@/components/domain/BossMultiSelector";
 import { WorldGroupBadge } from "@/components/domain/WorldGroupBadge";
 import { useCharacters } from "@/lib/hooks/use-characters";
 import { useCreatePost } from "@/lib/hooks/use-posts";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Clock, Loader2 } from "lucide-react";
 
 export default function NewPostPage() {
   const router = useRouter();
@@ -205,6 +205,11 @@ export default function NewPostPage() {
                 placeholder="파티원에게 전달할 메시지를 입력하세요"
                 rows={3}
               />
+            </div>
+
+            <div className="p-3 rounded-lg bg-muted text-sm text-muted-foreground flex items-center gap-2">
+              <Clock className="h-4 w-4 flex-shrink-0" />
+              모집글은 작성 후 7일이 지나면 자동으로 마감됩니다.
             </div>
 
             {error && (
