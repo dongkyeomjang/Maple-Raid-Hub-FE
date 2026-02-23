@@ -16,17 +16,17 @@ interface EquipmentDetailDialogProps {
 }
 
 const gradeColors: Record<PotentialGrade, string> = {
-  "레어": "text-blue-400",
-  "에픽": "text-purple-400",
-  "유니크": "text-yellow-400",
-  "레전드리": "text-green-400",
+  "레어": "text-blue-600 dark:text-blue-400",
+  "에픽": "text-purple-600 dark:text-purple-400",
+  "유니크": "text-yellow-600 dark:text-yellow-400",
+  "레전드리": "text-green-600 dark:text-green-400",
 };
 
 const gradeBgColors: Record<PotentialGrade, string> = {
-  "레어": "bg-blue-950/50 border-blue-800",
-  "에픽": "bg-purple-950/50 border-purple-800",
-  "유니크": "bg-yellow-950/50 border-yellow-800",
-  "레전드리": "bg-green-950/50 border-green-800",
+  "레어": "bg-blue-50 border-blue-200 dark:bg-blue-950/50 dark:border-blue-800",
+  "에픽": "bg-purple-50 border-purple-200 dark:bg-purple-950/50 dark:border-purple-800",
+  "유니크": "bg-yellow-50 border-yellow-200 dark:bg-yellow-950/50 dark:border-yellow-800",
+  "레전드리": "bg-green-50 border-green-200 dark:bg-green-950/50 dark:border-green-800",
 };
 
 // 스탯 이름 한글화
@@ -92,11 +92,11 @@ export function EquipmentDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md bg-gray-900 border-gray-700 text-white max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-md bg-card border-border text-card-foreground max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-start gap-4">
             {itemIcon && (
-              <div className="p-2 bg-gray-800 rounded-lg border border-gray-700">
+              <div className="p-2 bg-muted rounded-lg border border-border">
                 <img
                   src={itemIcon}
                   alt={itemName}
@@ -112,7 +112,7 @@ export function EquipmentDetailDialog({
               )}
               <DialogTitle className="text-lg">{itemName}</DialogTitle>
               {scrollUpgrade > 0 && (
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   주문서 강화: +{scrollUpgrade}
                 </p>
               )}
@@ -123,8 +123,8 @@ export function EquipmentDetailDialog({
         <div className="space-y-4 mt-4">
           {/* 스탯 상세 (분해 표시) */}
           {Object.keys(totalOption).length > 0 && (
-            <div className="p-3 bg-gray-800 rounded-lg border border-gray-700">
-              <h4 className="text-sm font-semibold text-gray-300 mb-2">
+            <div className="p-3 bg-muted rounded-lg border border-border">
+              <h4 className="text-sm font-semibold text-muted-foreground mb-2">
                 스탯 상세
               </h4>
               <div className="space-y-1.5 text-sm">
@@ -144,13 +144,13 @@ export function EquipmentDetailDialog({
 
                   return (
                     <div key={key} className="flex items-center justify-between">
-                      <span className="text-gray-400">
+                      <span className="text-muted-foreground">
                         {statNameMap[key] || key}
                       </span>
                       <div className="text-right">
-                        <span className="text-white font-medium">+{totalValue}</span>
+                        <span className="text-foreground font-medium">+{totalValue}</span>
                         {breakdown && parts.length > 1 && (
-                          <span className="text-gray-500 text-xs ml-2">
+                          <span className="text-muted-foreground/70 text-xs ml-2">
                             ({parts.join(" + ")})
                           </span>
                         )}
@@ -160,7 +160,7 @@ export function EquipmentDetailDialog({
                 })}
               </div>
               {hasBreakdown && (
-                <p className="text-[10px] text-gray-500 mt-2">
+                <p className="text-[10px] text-muted-foreground/70 mt-2">
                   (기본 + 추옵 + 주문서 + 스타포스)
                 </p>
               )}
@@ -171,25 +171,25 @@ export function EquipmentDetailDialog({
           {potentialGrade && (
             <div
               className={`p-3 rounded-lg border ${
-                gradeBgColors[potentialGrade] || "bg-gray-800 border-gray-700"
+                gradeBgColors[potentialGrade] || "bg-muted border-border"
               }`}
             >
               <h4
                 className={`text-sm font-semibold mb-2 ${
-                  gradeColors[potentialGrade] || "text-gray-300"
+                  gradeColors[potentialGrade] || "text-muted-foreground"
                 }`}
               >
                 잠재능력 ({potentialGrade})
               </h4>
               <ul className="text-sm space-y-1">
                 {details.potentialOption1 && (
-                  <li className="text-gray-200">{details.potentialOption1}</li>
+                  <li className="text-foreground/80">{details.potentialOption1}</li>
                 )}
                 {details.potentialOption2 && (
-                  <li className="text-gray-200">{details.potentialOption2}</li>
+                  <li className="text-foreground/80">{details.potentialOption2}</li>
                 )}
                 {details.potentialOption3 && (
-                  <li className="text-gray-200">{details.potentialOption3}</li>
+                  <li className="text-foreground/80">{details.potentialOption3}</li>
                 )}
               </ul>
             </div>
@@ -199,29 +199,29 @@ export function EquipmentDetailDialog({
           {additionalGrade && (
             <div
               className={`p-3 rounded-lg border ${
-                gradeBgColors[additionalGrade] || "bg-gray-800 border-gray-700"
+                gradeBgColors[additionalGrade] || "bg-muted border-border"
               }`}
             >
               <h4
                 className={`text-sm font-semibold mb-2 ${
-                  gradeColors[additionalGrade] || "text-gray-300"
+                  gradeColors[additionalGrade] || "text-muted-foreground"
                 }`}
               >
                 에디셔널 잠재능력 ({additionalGrade})
               </h4>
               <ul className="text-sm space-y-1">
                 {details.additionalPotentialOption1 && (
-                  <li className="text-gray-200">
+                  <li className="text-foreground/80">
                     {details.additionalPotentialOption1}
                   </li>
                 )}
                 {details.additionalPotentialOption2 && (
-                  <li className="text-gray-200">
+                  <li className="text-foreground/80">
                     {details.additionalPotentialOption2}
                   </li>
                 )}
                 {details.additionalPotentialOption3 && (
-                  <li className="text-gray-200">
+                  <li className="text-foreground/80">
                     {details.additionalPotentialOption3}
                   </li>
                 )}
@@ -231,20 +231,20 @@ export function EquipmentDetailDialog({
 
           {/* 소울 */}
           {details.soulName && (
-            <div className="p-3 bg-purple-950/50 rounded-lg border border-purple-800">
-              <h4 className="text-sm font-semibold text-purple-300 mb-1">
+            <div className="p-3 bg-purple-50 dark:bg-purple-950/50 rounded-lg border border-purple-200 dark:border-purple-800">
+              <h4 className="text-sm font-semibold text-purple-600 dark:text-purple-300 mb-1">
                 {details.soulName}
               </h4>
               {details.soulOption && (
-                <p className="text-sm text-gray-300">{details.soulOption}</p>
+                <p className="text-sm text-muted-foreground">{details.soulOption}</p>
               )}
             </div>
           )}
 
           {/* 아이템 설명 */}
           {details.itemDescription && (
-            <div className="p-3 bg-gray-800 rounded-lg border border-gray-700">
-              <p className="text-sm text-gray-400">{details.itemDescription}</p>
+            <div className="p-3 bg-muted rounded-lg border border-border">
+              <p className="text-sm text-muted-foreground">{details.itemDescription}</p>
             </div>
           )}
         </div>
