@@ -20,17 +20,17 @@ interface EquipmentSlotItemProps {
 }
 
 const gradeColors: Record<PotentialGrade, string> = {
-  "레어": "text-blue-400",
-  "에픽": "text-purple-400",
-  "유니크": "text-yellow-400",
-  "레전드리": "text-green-400",
+  "레어": "text-blue-600 dark:text-blue-400",
+  "에픽": "text-purple-600 dark:text-purple-400",
+  "유니크": "text-yellow-600 dark:text-yellow-400",
+  "레전드리": "text-green-600 dark:text-green-400",
 };
 
 const gradeBgColors: Record<PotentialGrade, string> = {
-  "레어": "bg-blue-500/20",
-  "에픽": "bg-purple-500/20",
-  "유니크": "bg-yellow-500/20",
-  "레전드리": "bg-green-500/20",
+  "레어": "bg-blue-100 dark:bg-blue-500/20",
+  "에픽": "bg-purple-100 dark:bg-purple-500/20",
+  "유니크": "bg-yellow-100 dark:bg-yellow-500/20",
+  "레전드리": "bg-green-100 dark:bg-green-500/20",
 };
 
 export function EquipmentSlotItem({
@@ -48,13 +48,13 @@ export function EquipmentSlotItem({
   // 빈 슬롯
   if (!slot) {
     return (
-      <div className="flex items-center gap-2 px-2 py-1.5 rounded border border-gray-700/50 bg-gray-800/30 h-11">
-        <div className="w-8 h-8 bg-gray-700/50 rounded flex items-center justify-center shrink-0">
-          <span className="text-[7px] text-gray-500 text-center leading-tight">
+      <div className="flex items-center gap-2 px-2 py-1.5 rounded border border-border/50 bg-muted/30 h-11">
+        <div className="w-8 h-8 bg-gray-100 dark:bg-gray-700/50 rounded flex items-center justify-center shrink-0">
+          <span className="text-[7px] text-muted-foreground text-center leading-tight">
             {displayName}
           </span>
         </div>
-        <span className="text-xs text-gray-500 truncate flex-1">-</span>
+        <span className="text-xs text-muted-foreground truncate flex-1">-</span>
       </div>
     );
   }
@@ -65,10 +65,10 @@ export function EquipmentSlotItem({
         <TooltipTrigger asChild>
           <button
             onClick={() => setDialogOpen(true)}
-            className="flex items-center gap-2 px-2 py-1.5 rounded border border-gray-700 bg-gray-800/50 hover:bg-gray-700/50 transition-colors cursor-pointer w-full h-11 text-left"
+            className="flex items-center gap-2 px-2 py-1.5 rounded border border-border bg-card hover:bg-muted/50 transition-colors cursor-pointer w-full h-11 text-left"
           >
             {/* 아이콘 */}
-            <div className="w-8 h-8 bg-gray-700 rounded shrink-0 overflow-hidden">
+            <div className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded shrink-0 overflow-hidden">
               {slot.itemIcon ? (
                 <img
                   src={slot.itemIcon}
@@ -76,14 +76,14 @@ export function EquipmentSlotItem({
                   className="w-full h-full object-contain"
                 />
               ) : (
-                <span className="text-[7px] text-gray-500 flex items-center justify-center h-full">
+                <span className="text-[7px] text-muted-foreground flex items-center justify-center h-full">
                   {displayName}
                 </span>
               )}
             </div>
 
             {/* 아이템 이름 */}
-            <span className="flex-1 min-w-0 text-xs text-white truncate">
+            <span className="flex-1 min-w-0 text-xs text-foreground truncate">
               {slot.itemName}
             </span>
 
@@ -99,7 +99,7 @@ export function EquipmentSlotItem({
               <span
                 className={`text-[10px] px-1 py-0.5 rounded shrink-0 ${
                   gradeColors[potentialGrade] || "text-gray-400"
-                } ${gradeBgColors[potentialGrade] || "bg-gray-700"}`}
+                } ${gradeBgColors[potentialGrade] || "bg-muted"}`}
               >
                 {potentialGrade}
               </span>
@@ -110,7 +110,7 @@ export function EquipmentSlotItem({
               <span
                 className={`text-[10px] px-1 py-0.5 rounded shrink-0 ${
                   gradeColors[additionalGrade] || "text-gray-400"
-                } ${gradeBgColors[additionalGrade] || "bg-gray-700"}`}
+                } ${gradeBgColors[additionalGrade] || "bg-muted"}`}
               >
                 {additionalGrade}
               </span>
