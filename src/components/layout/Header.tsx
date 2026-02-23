@@ -16,11 +16,14 @@ import {
   X,
   Swords,
   Users,
+  MessageCircle,
 } from "lucide-react";
 import { useState } from "react";
+import { useChatStore } from "@/lib/stores/chat-store";
 
 const navItems = [
   { href: "/posts", label: "파티 찾기", icon: Swords },
+  { href: "/chat", label: "채팅", icon: MessageCircle },
   { href: "/characters", label: "내 캐릭터", icon: Users },
   { href: "/me", label: "마이페이지", icon: User },
 ];
@@ -28,6 +31,7 @@ const navItems = [
 export function Header() {
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
+  const totalUnreadCount = useChatStore((s) => s.totalUnreadCount);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // 온보딩, 로그인 페이지에서는 헤더 숨김
@@ -67,7 +71,7 @@ export function Header() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-lg text-body-sm font-medium transition-colors",
+                    "relative flex items-center gap-2 px-4 py-2 rounded-lg text-body-sm font-medium transition-colors",
                     isActive
                       ? "bg-primary/10 text-primary"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -75,6 +79,11 @@ export function Header() {
                 >
                   <Icon className="h-4 w-4" />
                   {item.label}
+                  {item.href === "/chat" && totalUnreadCount > 0 && (
+                    <span className="ml-1 px-1.5 py-0.5 rounded-full bg-red-500 text-white text-xs font-medium min-w-[18px] text-center leading-none">
+                      {totalUnreadCount > 99 ? "99+" : totalUnreadCount}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -177,7 +186,12 @@ export function Header() {
                       )}
                     >
                       <Icon className="h-5 w-5" />
-                      <span className="text-body">{item.label}</span>
+                      <span className="text-body flex-1">{item.label}</span>
+                      {item.href === "/chat" && totalUnreadCount > 0 && (
+                        <span className="px-1.5 py-0.5 rounded-full bg-red-500 text-white text-xs font-medium min-w-[18px] text-center leading-none">
+                          {totalUnreadCount > 99 ? "99+" : totalUnreadCount}
+                        </span>
+                      )}
                     </Link>
                   );
                 })}
