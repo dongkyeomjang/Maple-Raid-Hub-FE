@@ -1,19 +1,21 @@
 "use client";
 
 import { MessageCircle, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useChatStore } from "@/lib/stores/chat-store";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 export function FloatingChatButton() {
+  const pathname = usePathname();
   const { user } = useAuth();
   const isOpen = useChatStore((s) => s.isOpen);
   const togglePanel = useChatStore((s) => s.togglePanel);
   const totalUnreadCount = useChatStore((s) => s.totalUnreadCount);
 
-  // 비로그인 시 버튼 숨김
-  if (!user) {
+  // 비로그인 시 또는 /chat 페이지에서는 버튼 숨김
+  if (!user || pathname.startsWith("/chat")) {
     return null;
   }
 

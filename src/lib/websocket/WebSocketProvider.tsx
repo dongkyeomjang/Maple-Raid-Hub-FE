@@ -200,8 +200,8 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
         }
       };
 
-      ws.onerror = (error) => {
-        console.error("[WebSocket] Error:", error);
+      ws.onerror = () => {
+        // 연결 실패 시 onclose에서 재연결을 처리하므로 별도 로깅 불필요
       };
     } catch (error) {
       console.error("[WebSocket] Connection failed:", error);
