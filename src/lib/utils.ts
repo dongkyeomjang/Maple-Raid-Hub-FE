@@ -103,7 +103,7 @@ export function getWorldGroupDisplayName(worldGroup: string): string {
     case "CHALLENGER":
       return "챌린저스";
     case "EOS_HELIOS":
-      return "에오스/헬리오스";
+      return "에오스/핼리오스";
     case "NORMAL":
       return "일반";
     default:
