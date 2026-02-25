@@ -119,7 +119,7 @@ export const FEATURE_COPY = {
   worldGroup: {
     title: "월드 그룹",
     subtitle: "자동 분류",
-    description: "챌린저스, 에오스/헬리오스, 일반 서버별로 자동 분류되어 올바른 파티를 찾기 쉬워요.",
+    description: "챌린저스, 에오스/핼리오스, 일반 서버별로 자동 분류되어 올바른 파티를 찾기 쉬워요.",
     shortDesc: "서버별 자동 필터링",
     badge: "AUTO",
     emoji: "🌍",

@@ -74,7 +74,7 @@ function PostsPageContent() {
     router.replace(`/posts${params.toString() ? `?${params}` : ""}`, { scroll: false });
   }, [currentPage, searchParams, router]);
 
-  // 서버 드롭다운에 표시할 서버 목록 (일반 → 에오스/헬리오스 → 챌린저스 순)
+  // 서버 드롭다운에 표시할 서버 목록 (일반 → 에오스/핼리오스 → 챌린저스 순)
   const allServers = useMemo(() => {
     if (!worldGroups) return [];
     const order = ["NORMAL", "EOS_HELIOS", "CHALLENGER"];
@@ -220,7 +220,7 @@ function PostsPageContent() {
             <TabsList>
               <TabsTrigger value="ALL">전체</TabsTrigger>
               <TabsTrigger value="CHALLENGER">챌린저스</TabsTrigger>
-              <TabsTrigger value="EOS_HELIOS">에오스/헬리오스</TabsTrigger>
+              <TabsTrigger value="EOS_HELIOS">에오스/핼리오스</TabsTrigger>
               <TabsTrigger value="NORMAL">일반</TabsTrigger>
             </TabsList>
           </Tabs>

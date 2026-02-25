@@ -214,7 +214,7 @@ export default function HomePage() {
             <FeatureCardSimple
               icon={<Users className="h-6 w-6" />}
               title="월드 그룹 매칭"
-              description="챌린저스·에오스/헬리오스·일반 서버별 자동 분류"
+              description="챌린저스·에오스/핼리오스·일반 서버별 자동 분류"
               color="eosHelios"
             />
             <FeatureCardSimple

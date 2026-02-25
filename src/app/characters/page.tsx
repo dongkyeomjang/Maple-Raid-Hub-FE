@@ -36,9 +36,9 @@ const WORLDS = [
     {name: "챌린저스2", group: "CHALLENGER"},
     {name: "챌린저스3", group: "CHALLENGER"},
     {name: "챌린저스4", group: "CHALLENGER"},
-    // 에오스/헬리오스
+    // 에오스/핼리오스
     {name: "에오스", group: "EOS_HELIOS"},
-    {name: "헬리오스", group: "EOS_HELIOS"},
+    {name: "핼리오스", group: "EOS_HELIOS"},
     // 일반 월드
     {name: "스카니아", group: "NORMAL"},
     {name: "베라", group: "NORMAL"},
