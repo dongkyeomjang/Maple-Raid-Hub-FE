@@ -61,7 +61,7 @@ export function Header() {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-1 flex-1">
+        <nav className="hidden lg:flex items-center gap-1 flex-1">
           {isAuthenticated &&
             navItems.map((item) => {
               const Icon = item.icon;
@@ -90,7 +90,7 @@ export function Header() {
         </nav>
 
         {/* Desktop User Menu */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-3">
           {isAuthenticated && user ? (
             <>
               <div className="flex items-center gap-3 px-3 py-1.5 rounded-lg bg-muted/50">
@@ -130,7 +130,7 @@ export function Header() {
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="flex md:hidden ml-auto">
+        <div className="flex lg:hidden ml-auto">
           <Button
             variant="ghost"
             size="icon-sm"
@@ -148,7 +148,7 @@ export function Header() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border/50 bg-background animate-slide-down">
+        <div className="lg:hidden border-t border-border/50 bg-background animate-slide-down">
           <nav className="container py-3 space-y-1">
             {isAuthenticated ? (
               <>
