@@ -17,6 +17,26 @@ import { cn } from "@/lib/utils";
 import { PartyChatMessage, DmChatMessage } from "@/lib/stores/chat-store";
 import type { PartyMemberResponse } from "@/types/api";
 
+function renderMessageContent(content: string) {
+  const parts = content.split(/(https?:\/\/[^\s]+)/);
+  if (parts.length === 1) return content;
+  return parts.map((part, i) =>
+    i % 2 === 1 ? (
+      <a
+        key={i}
+        href={part}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline break-all"
+      >
+        {part}
+      </a>
+    ) : (
+      part
+    )
+  );
+}
+
 interface MemberInfo {
   name: string | null;
   imageUrl: string | null;
@@ -363,7 +383,7 @@ function MessageItem({
             isOwnMessage ? "bg-primary text-primary-foreground" : "bg-muted"
           )}
         >
-          {message.content}
+          {renderMessageContent(message.content)}
         </div>
         <span className="text-[10px] text-muted-foreground mt-0.5">
           {formatDistanceToNow(new Date(message.timestamp), {
