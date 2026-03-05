@@ -174,6 +174,7 @@ export function useRespondToApplication() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: postKeys.applications(data.postId) });
       queryClient.invalidateQueries({ queryKey: postKeys.detail(data.postId) });
+      queryClient.invalidateQueries({ queryKey: postKeys.myPosts() });
       // 수락 시 파티방이 생성될 수 있으므로 파티 목록도 갱신
       if (data.accept) {
         queryClient.invalidateQueries({ queryKey: [...partyRoomKeys.all, "list"] });
@@ -226,6 +227,15 @@ export function useMyPosts() {
   });
 }
 
+export function useTotalPendingApplicationCount() {
+  const { data: myPosts } = useMyPosts();
+  const totalPending = myPosts?.reduce(
+    (sum, post) => sum + (post.pendingApplicationCount ?? 0),
+    0
+  ) ?? 0;
+  return totalPending;
+}
+
 /**
  * 모집글의 지원 상태 변경을 실시간으로 구독하여 자동 갱신
  */
@@ -240,6 +250,7 @@ export function usePostUpdates(postId: string | null) {
       queryClient.invalidateQueries({ queryKey: postKeys.detail(postId) });
       queryClient.invalidateQueries({ queryKey: postKeys.applications(postId) });
       queryClient.invalidateQueries({ queryKey: postKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: postKeys.myPosts() });
     });
 
     return () => unsubscribe(subId);

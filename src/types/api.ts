@@ -226,6 +226,7 @@ export interface PostResponse {
   partyRoomId: string | null;
   createdAt: string;
   updatedAt: string;
+  pendingApplicationCount?: number;
 }
 
 export interface ApplyRequest {

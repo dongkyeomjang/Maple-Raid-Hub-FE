@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useChatStore } from "@/lib/stores/chat-store";
+import { useTotalPendingApplicationCount } from "@/lib/hooks/use-posts";
 
 const navItems = [
   { href: "/posts", label: "파티 찾기", icon: Swords },
@@ -32,6 +33,7 @@ export function Header() {
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
   const totalUnreadCount = useChatStore((s) => s.totalUnreadCount);
+  const totalPendingCount = useTotalPendingApplicationCount();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // 온보딩, 로그인 페이지에서는 헤더 숨김
@@ -84,6 +86,11 @@ export function Header() {
                   {item.href === "/chat" && totalUnreadCount > 0 && (
                     <span className="ml-1 px-1.5 py-0.5 rounded-full bg-red-500 text-white text-xs font-medium min-w-[18px] text-center leading-none">
                       {totalUnreadCount > 99 ? "99+" : totalUnreadCount}
+                    </span>
+                  )}
+                  {item.href === "/me" && totalPendingCount > 0 && (
+                    <span className="ml-1 px-1.5 py-0.5 rounded-full bg-orange-500 text-white text-xs font-medium min-w-[18px] text-center leading-none">
+                      {totalPendingCount > 99 ? "99+" : totalPendingCount}
                     </span>
                   )}
                 </Link>
@@ -194,6 +201,11 @@ export function Header() {
                       {item.href === "/chat" && totalUnreadCount > 0 && (
                         <span className="px-1.5 py-0.5 rounded-full bg-red-500 text-white text-xs font-medium min-w-[18px] text-center leading-none">
                           {totalUnreadCount > 99 ? "99+" : totalUnreadCount}
+                        </span>
+                      )}
+                      {item.href === "/me" && totalPendingCount > 0 && (
+                        <span className="px-1.5 py-0.5 rounded-full bg-orange-500 text-white text-xs font-medium min-w-[18px] text-center leading-none">
+                          {totalPendingCount > 99 ? "99+" : totalPendingCount}
                         </span>
                       )}
                     </Link>
