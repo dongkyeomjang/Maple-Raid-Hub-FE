@@ -348,7 +348,7 @@ function MyPageContent() {
                     <Button className="w-full mt-auto" variant={room.status === "ACTIVE" ? "default" : "outline"} asChild>
                       <Link href={`/chat/${room.id}`}>
                         <MessageSquare className="h-4 w-4 mr-2" />
-                        {room.status === "ACTIVE" ? "파티방 입장" : "채팅 기록 보기"}
+                        {room.status === "ACTIVE" ? "파티방 입장" : "상세 보기"}
                       </Link>
                     </Button>
                   </CardContent>
