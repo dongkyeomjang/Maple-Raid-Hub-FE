@@ -15,7 +15,7 @@ export function FloatingChatButton() {
   const totalUnreadCount = useChatStore((s) => s.totalUnreadCount);
 
   // 비로그인 시 또는 /chat 페이지에서는 버튼 숨김
-  if (!user || pathname.startsWith("/chat")) {
+  if (!user || pathname === "/chat") {
     return null;
   }
 

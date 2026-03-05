@@ -14,7 +14,7 @@ import { LoadingPage } from "@/components/common/LoadingSpinner";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { useDiscordStatus, useDiscordLink, useDiscordUnlink } from "@/lib/hooks/use-discord";
 import { useNotificationPreferences, useUpdateNotificationPreferences } from "@/lib/hooks/use-notifications";
-import { ArrowLeft, Link2, Unlink, Bell, MessageSquare, UserPlus, UserCheck, UserX } from "lucide-react";
+import { ArrowLeft, Link2, Unlink, Bell, MessageSquare, Users, UserPlus, UserCheck, UserX } from "lucide-react";
 
 export default function SettingsPage() {
   return (
@@ -194,6 +194,14 @@ function SettingsContent() {
                 description="새 DM을 5분 이상 읽지 않았을 때"
                 checked={preferences.notifyDmReceived}
                 onChange={() => handleTogglePreference("notifyDmReceived", preferences.notifyDmReceived)}
+                disabled={updatePreferences.isPending}
+              />
+              <NotificationToggle
+                icon={<Users className="h-4 w-4" />}
+                label="파티 채팅 수신"
+                description="파티 채팅 메시지를 5분 이상 읽지 않았을 때"
+                checked={preferences.notifyPartyChatReceived}
+                onChange={() => handleTogglePreference("notifyPartyChatReceived", preferences.notifyPartyChatReceived)}
                 disabled={updatePreferences.isPending}
               />
             </div>

@@ -431,6 +431,7 @@ export const api = {
       notifyApplicationAccepted?: boolean;
       notifyApplicationRejected?: boolean;
       notifyDmReceived?: boolean;
+      notifyPartyChatReceived?: boolean;
     }) =>
       fetchApiWithRefresh("/api/notifications/preferences", {
         method: "PATCH",

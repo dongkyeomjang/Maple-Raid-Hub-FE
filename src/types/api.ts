@@ -447,6 +447,7 @@ export interface NotificationPreferencesResponse {
   notifyApplicationAccepted: boolean;
   notifyApplicationRejected: boolean;
   notifyDmReceived: boolean;
+  notifyPartyChatReceived: boolean;
 }
 
 export interface UpdateNotificationPreferencesRequest {
@@ -454,6 +455,7 @@ export interface UpdateNotificationPreferencesRequest {
   notifyApplicationAccepted?: boolean;
   notifyApplicationRejected?: boolean;
   notifyDmReceived?: boolean;
+  notifyPartyChatReceived?: boolean;
 }
 
 // ============================================
