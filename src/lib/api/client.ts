@@ -263,7 +263,10 @@ export const api = {
 
   // Party Rooms
   partyRooms: {
-    list: () => fetchApiWithRefresh("/api/party-rooms"),
+    list: (status?: string) => {
+      const params = status ? `?status=${status}` : "";
+      return fetchApiWithRefresh(`/api/party-rooms${params}`);
+    },
 
     get: (id: string) => fetchApiWithRefresh(`/api/party-rooms/${id}`),
 

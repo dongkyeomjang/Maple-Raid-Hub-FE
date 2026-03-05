@@ -57,6 +57,7 @@ interface ChatMessagesProps {
   onEvaluate?: (userId: string, name: string) => void;
   targetUserId?: string;
   targetName?: string;
+  disabled?: boolean;
 }
 
 export function ChatMessages({
@@ -74,6 +75,7 @@ export function ChatMessages({
   onEvaluate,
   targetUserId,
   targetName,
+  disabled = false,
 }: ChatMessagesProps) {
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -140,7 +142,7 @@ export function ChatMessages({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputValue.trim() || !isConnected) return;
+    if (!inputValue.trim() || !isConnected || disabled) return;
     onSendMessage(inputValue.trim());
     setInputValue("");
     inputRef.current?.focus();
@@ -273,24 +275,28 @@ export function ChatMessages({
 
       {/* Input */}
       <div className="p-3 border-t">
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <Input
-            ref={inputRef}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder={isConnected ? "메시지를 입력하세요..." : "연결 중..."}
-            disabled={!isConnected}
-            className="flex-1 h-9 text-sm"
-          />
-          <Button
-            type="submit"
-            size="icon"
-            className="h-9 w-9"
-            disabled={!isConnected || !inputValue.trim()}
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </form>
+        {disabled ? (
+          <p className="text-sm text-muted-foreground text-center py-1">종료된 파티에서는 메시지를 보낼 수 없습니다</p>
+        ) : (
+          <form onSubmit={handleSubmit} className="flex gap-2">
+            <Input
+              ref={inputRef}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder={isConnected ? "메시지를 입력하세요..." : "연결 중..."}
+              disabled={!isConnected}
+              className="flex-1 h-9 text-sm"
+            />
+            <Button
+              type="submit"
+              size="icon"
+              className="h-9 w-9"
+              disabled={!isConnected || !inputValue.trim()}
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </form>
+        )}
       </div>
     </div>
   );

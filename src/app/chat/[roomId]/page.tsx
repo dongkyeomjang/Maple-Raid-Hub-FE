@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { MannerEvaluationModal } from "@/components/domain/MannerEvaluationModal";
-import { usePartyRoom, useLeaveParty, useKickMember } from "@/lib/hooks/use-party-rooms";
+import { usePartyRoom, useLeaveParty, useKickMember, useCompleteParty } from "@/lib/hooks/use-party-rooms";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { useBossNames } from "@/lib/hooks/use-boss-names";
 import {
@@ -31,6 +31,7 @@ import {
   UserX,
   AlertTriangle,
   Loader2,
+  CheckCircle,
 } from "lucide-react";
 import { ScheduleSection } from "@/components/schedule";
 import { useRouter } from "next/navigation";
@@ -45,6 +46,7 @@ export default function ChatRoomPage() {
   const { data: room, isLoading, error, refetch } = usePartyRoom(roomId);
   const leaveMutation = useLeaveParty();
   const kickMutation = useKickMember();
+  const completeMutation = useCompleteParty();
 
   const [mannerModal, setMannerModal] = useState<{
     isOpen: boolean;
@@ -53,6 +55,7 @@ export default function ChatRoomPage() {
   }>({ isOpen: false, targetUserId: null, targetName: "" });
 
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
   const [kickTarget, setKickTarget] = useState<{
     userId: string;
     name: string;
@@ -67,6 +70,11 @@ export default function ChatRoomPage() {
     await leaveMutation.mutateAsync(roomId);
     setLeaveDialogOpen(false);
     router.push("/me");
+  };
+
+  const handleComplete = async () => {
+    await completeMutation.mutateAsync(roomId);
+    setCompleteDialogOpen(false);
   };
 
   const handleKick = async () => {
@@ -275,6 +283,21 @@ export default function ChatRoomPage() {
                 </>
               )}
 
+              {/* 파티 종료 버튼 (파티장 전용) */}
+              {isLeader && room.status === "ACTIVE" && (
+                <div className="pt-3 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full border-green-500/50 text-green-600 hover:bg-green-50 hover:text-green-700"
+                    onClick={() => setCompleteDialogOpen(true)}
+                  >
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    파티 종료
+                  </Button>
+                </div>
+              )}
+
               {/* 탈퇴 버튼 (파티장이 아닌 경우만) */}
               {!isLeader && room.status === "ACTIVE" && (
                 <div className="pt-3 border-t">
@@ -354,6 +377,53 @@ export default function ChatRoomPage() {
                 <>
                   <LogOut className="h-4 w-4 mr-2" />
                   파티 탈퇴
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 파티 종료 확인 다이얼로그 */}
+      <Dialog open={completeDialogOpen} onOpenChange={setCompleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              파티 종료
+            </DialogTitle>
+            <DialogDescription className="pt-2">
+              파티를 종료하시겠습니까?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="p-4 bg-muted rounded-lg space-y-2">
+              <p className="text-sm font-medium">종료 시 다음과 같이 처리됩니다:</p>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
+                <li>파티 상태가 완료로 변경됩니다</li>
+                <li>기본 파티 목록에서 숨겨집니다</li>
+                <li>종료된 파티 보기 옵션으로 확인할 수 있습니다</li>
+              </ul>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCompleteDialogOpen(false)}>
+              취소
+            </Button>
+            <Button
+              onClick={handleComplete}
+              disabled={completeMutation.isPending}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              {completeMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  종료 중...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  파티 종료
                 </>
               )}
             </Button>

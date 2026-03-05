@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { PageContainer, PageHeader } from "@/components/layout/PageContainer";
@@ -37,6 +37,7 @@ function MyPageContent() {
   const router = useRouter();
   const tabParam = searchParams.get("tab");
   const activeTab = VALID_TABS.includes(tabParam ?? "") ? tabParam! : "parties";
+  const [showCompleted, setShowCompleted] = useState(false);
 
   const handleTabChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -45,7 +46,11 @@ function MyPageContent() {
   };
 
   const { user, isLoading: authLoading } = useAuth();
-  const { data: partyRooms, isLoading: roomsLoading, error: roomsError } = usePartyRooms();
+  const { data: activePartyRooms, isLoading: roomsLoading, error: roomsError } = usePartyRooms("ACTIVE");
+  const { data: completedPartyRooms, isLoading: completedLoading } = usePartyRooms(showCompleted ? "COMPLETED" : undefined);
+  const partyRooms = showCompleted
+    ? [...(activePartyRooms || []), ...(completedPartyRooms || [])]
+    : activePartyRooms;
   const { data: applications, isLoading: appsLoading } = useMyApplications();
   const { data: myPosts, isLoading: postsLoading } = useMyPosts();
   const { formatBossNames } = useBossNames();
@@ -234,7 +239,18 @@ function MyPageContent() {
 
         {/* My Parties */}
         <TabsContent value="parties">
-          {roomsLoading ? (
+          <div className="flex justify-end mb-3">
+            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={showCompleted}
+                onChange={(e) => setShowCompleted(e.target.checked)}
+                className="rounded border-border"
+              />
+              종료된 파티 보기
+            </label>
+          </div>
+          {(roomsLoading || (showCompleted && completedLoading)) ? (
             <LoadingPage message="파티 목록을 불러오는 중..." />
           ) : roomsError ? (
             <ErrorState title="파티 목록을 불러올 수 없습니다" />

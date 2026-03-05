@@ -275,6 +275,7 @@ export default function ChatPage() {
       onEvaluate={handleEvaluate}
       targetUserId={selectedRoomType === "dm" ? selectedDmRoom?.otherUserId : undefined}
       targetName={selectedRoomType === "dm" ? (selectedDmRoom?.otherCharacterName || selectedDmRoom?.otherUserNickname || "상대방") : undefined}
+      disabled={selectedRoomType === "party" && selectedPartyRoomData?.status !== "ACTIVE"}
     />
   ) : (
     <div className="flex flex-col items-center justify-center h-full text-muted-foreground">

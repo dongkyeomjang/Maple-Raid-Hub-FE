@@ -11,16 +11,16 @@ import type {
 
 export const partyRoomKeys = {
   all: ["partyRooms"] as const,
-  list: () => [...partyRoomKeys.all, "list"] as const,
+  list: (status?: string) => [...partyRoomKeys.all, "list", status ?? "all"] as const,
   detail: (id: string) => [...partyRoomKeys.all, "detail", id] as const,
 };
 
-export function usePartyRooms() {
+export function usePartyRooms(status?: string) {
   const { user, isLoading } = useAuth();
   return useQuery({
-    queryKey: partyRoomKeys.list(),
+    queryKey: partyRoomKeys.list(status),
     queryFn: async () => {
-      const result = await apiClient.partyRooms.list();
+      const result = await apiClient.partyRooms.list(status);
       if (!result.success) throw new Error(result.error.message);
       return (result.data as { partyRooms: PartyRoomResponse[] }).partyRooms;
     },
@@ -99,7 +99,7 @@ export function useLeaveParty() {
       return { roomId };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: partyRoomKeys.list() });
+      queryClient.invalidateQueries({ queryKey: [...partyRoomKeys.all, "list"] });
     },
   });
 }
@@ -115,7 +115,7 @@ export function useCompleteParty() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: partyRoomKeys.detail(data.roomId) });
-      queryClient.invalidateQueries({ queryKey: partyRoomKeys.list() });
+      queryClient.invalidateQueries({ queryKey: [...partyRoomKeys.all, "list"] });
     },
   });
 }
@@ -130,7 +130,7 @@ export function useDisbandParty() {
       return { roomId };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: partyRoomKeys.list() });
+      queryClient.invalidateQueries({ queryKey: [...partyRoomKeys.all, "list"] });
     },
   });
 }
@@ -178,7 +178,7 @@ export function usePartyRoomUpdatesSubscription() {
     if (!connected || !user) return;
 
     subscriptionIdRef.current = subscribe(`/user/queue/party-room-updates`, () => {
-      queryClient.invalidateQueries({ queryKey: partyRoomKeys.list() });
+      queryClient.invalidateQueries({ queryKey: [...partyRoomKeys.all, "list"] });
     });
 
     return () => {
