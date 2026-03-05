@@ -65,7 +65,9 @@ export function Header() {
           {isAuthenticated &&
             navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname.startsWith(item.href);
+              const isActive = item.href === "/chat"
+                ? pathname === "/chat"
+                : pathname.startsWith(item.href);
               return (
                 <Link
                   key={item.href}
@@ -172,7 +174,9 @@ export function Header() {
                 {/* Nav Items */}
                 {navItems.map((item) => {
                   const Icon = item.icon;
-                  const isActive = pathname.startsWith(item.href);
+                  const isActive = item.href === "/chat"
+                    ? pathname === "/chat"
+                    : pathname.startsWith(item.href);
                   return (
                     <Link
                       key={item.href}
