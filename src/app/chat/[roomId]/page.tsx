@@ -32,6 +32,7 @@ import {
   AlertTriangle,
   Loader2,
   CheckCircle,
+  Archive,
 } from "lucide-react";
 import { ScheduleSection } from "@/components/schedule";
 import { useRouter } from "next/navigation";
@@ -116,6 +117,17 @@ export default function ChatRoomPage() {
           </Link>
         </Button>
       </div>
+
+      {/* 종료된 파티 안내 배너 */}
+      {room.status !== "ACTIVE" && (
+        <div className="mb-4 flex items-center gap-3 p-4 bg-muted/50 border border-border rounded-lg">
+          <Archive className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+          <div>
+            <p className="text-sm font-medium">종료된 파티입니다</p>
+            <p className="text-xs text-muted-foreground">채팅 기록을 읽기 전용으로 확인할 수 있습니다.</p>
+          </div>
+        </div>
+      )}
 
       {/* Room Header */}
       <Card className="mb-6">

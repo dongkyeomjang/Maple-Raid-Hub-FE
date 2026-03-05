@@ -48,6 +48,7 @@ export interface PartyChatRoom {
   id: string;
   name: string; // 보스명 등
   memberNames: string[]; // 참여자 캐릭터명 목록
+  status: string; // ACTIVE | COMPLETED | CANCELED
   unreadCount: number;
   lastMessage: string | null;
   lastMessageAt: string | null;

@@ -95,7 +95,6 @@ export function ChatPanel() {
   useEffect(() => {
     if (partyRoomsData && user) {
       const chatRooms: PartyChatRoom[] = partyRoomsData
-        .filter((room) => room.status === "ACTIVE")
         .map((room) => partyRoomToChatRoom(room, getBossName, user.id));
       setPartyRooms(chatRooms);
     }

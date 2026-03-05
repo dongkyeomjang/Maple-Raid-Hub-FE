@@ -2,7 +2,8 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
-import { MessageCircle, Users } from "lucide-react";
+import { MessageCircle, Users, CheckCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useChatStore, DmRoom, PartyChatRoom } from "@/lib/stores/chat-store";
 
@@ -103,12 +104,24 @@ function PartyChatRoomItem({
       )}
     >
       <div className="flex items-start gap-3">
-        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-          <Users className="h-5 w-5 text-primary" />
+        <div className={cn(
+          "flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center",
+          room.status === "ACTIVE" ? "bg-primary/10" : "bg-muted"
+        )}>
+          {room.status === "ACTIVE" ? (
+            <Users className="h-5 w-5 text-primary" />
+          ) : (
+            <CheckCircle className="h-5 w-5 text-muted-foreground" />
+          )}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
-            <span className="font-medium text-sm truncate">{room.name}</span>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className={cn("font-medium text-sm truncate", room.status !== "ACTIVE" && "text-muted-foreground")}>{room.name}</span>
+              {room.status !== "ACTIVE" && (
+                <Badge variant="secondary" className="text-[10px] px-1 py-0 flex-shrink-0">종료</Badge>
+              )}
+            </div>
             {room.unreadCount > 0 && (
               <span className="flex-shrink-0 px-1.5 py-0.5 rounded-full bg-red-500 text-white text-xs font-medium">
                 {room.unreadCount}
