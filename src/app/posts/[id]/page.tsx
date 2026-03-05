@@ -400,7 +400,7 @@ export default function PostDetailPage() {
                             : `${post.currentMembers}명으로 파티를 시작합니다`}
                         </p>
                       </div>
-                      {!post.partyRoomId && (
+                      {(!post.partyRoomId || post.currentMembers <= 1) && (
                         <div className="space-y-1 pt-2 border-t">
                           <Button
                             variant="ghost"

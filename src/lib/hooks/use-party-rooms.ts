@@ -116,6 +116,7 @@ export function useCompleteParty() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: partyRoomKeys.detail(data.roomId) });
       queryClient.invalidateQueries({ queryKey: [...partyRoomKeys.all, "list"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "myPosts"] });
     },
   });
 }
