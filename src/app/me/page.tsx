@@ -165,11 +165,16 @@ function MyPageContent() {
             <span className="sm:hidden">지원</span>
             ({applications?.length || 0})
           </TabsTrigger>
-          <TabsTrigger value="posts" className="gap-1.5 text-xs sm:text-sm sm:gap-2">
+          <TabsTrigger value="posts" className="gap-1.5 text-xs sm:text-sm sm:gap-2 relative">
             <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">내 모집글</span>
             <span className="sm:hidden">모집</span>
             ({myPosts?.length || 0})
+            {(myPosts?.reduce((sum, p) => sum + (p.pendingApplicationCount ?? 0), 0) ?? 0) > 0 && (
+              <span className="ml-1 px-1.5 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-medium min-w-[16px] text-center leading-none">
+                {myPosts!.reduce((sum, p) => sum + (p.pendingApplicationCount ?? 0), 0)}
+              </span>
+            )}
           </TabsTrigger>
           <TabsTrigger value="evaluations" className="gap-1.5 text-xs sm:text-sm sm:gap-2">
             <Thermometer className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -221,10 +226,15 @@ function MyPageContent() {
                         </Link>
                       </Button>
                       {post.status === "RECRUITING" && (
-                        <Button size="sm" className="flex-1" asChild>
+                        <Button size="sm" className="flex-1 relative" asChild>
                           <Link href={`/posts/${post.id}/manage`}>
                             <Settings className="h-4 w-4 mr-1" />
                             관리
+                            {(post.pendingApplicationCount ?? 0) > 0 && (
+                              <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-medium min-w-[16px] text-center leading-none">
+                                {post.pendingApplicationCount}
+                              </span>
+                            )}
                           </Link>
                         </Button>
                       )}

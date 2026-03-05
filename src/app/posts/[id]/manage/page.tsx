@@ -12,11 +12,10 @@ import { LoadingPage } from "@/components/common/LoadingSpinner";
 import {
   usePost,
   useRespondToApplication,
-  useClosePost,
   usePostUpdates,
 } from "@/lib/hooks/use-posts";
 import { useBossNames } from "@/lib/hooks/use-boss-names";
-import { ArrowLeft, Users, Settings, XCircle } from "lucide-react";
+import { ArrowLeft, Users, Settings } from "lucide-react";
 
 export default function ManagePostPage() {
   const params = useParams();
@@ -27,7 +26,6 @@ export default function ManagePostPage() {
   usePostUpdates(postId);
   const { formatBossNames } = useBossNames();
   const respondMutation = useRespondToApplication();
-  const closeMutation = useClosePost();
 
   const post = postDetail?.post;
   const applications = postDetail?.applications ?? [];
@@ -40,13 +38,6 @@ export default function ManagePostPage() {
   const handleReject = async (applicationId: string) => {
     await respondMutation.mutateAsync({ postId, applicationId, accept: false });
     refetchPost();
-  };
-
-  const handleClosePost = async () => {
-    if (confirm("정말 이 모집글을 마감하시겠습니까?")) {
-      await closeMutation.mutateAsync(postId);
-      router.push(`/posts/${postId}`);
-    }
   };
 
   if (postLoading) {
@@ -85,18 +76,7 @@ export default function ManagePostPage() {
       <PageHeader
         title="모집글 관리"
         description={`${displayName} 파티 관리`}
-        actions={
-          post.status === "RECRUITING" && (
-            <Button
-              variant="destructive"
-              onClick={handleClosePost}
-              disabled={closeMutation.isPending}
-            >
-              <XCircle className="h-4 w-4 mr-2" />
-              모집 마감
-            </Button>
-          )
-        }
+        actions={null}
       />
 
       <Tabs defaultValue="pending">
