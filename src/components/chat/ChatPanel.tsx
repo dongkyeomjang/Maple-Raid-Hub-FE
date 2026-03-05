@@ -68,7 +68,7 @@ export function ChatPanel() {
   }>({ isOpen: false, targetUserId: null, targetName: "", context: "DM" });
 
   // /chat 페이지에서는 ChatPage가 전담하므로 중복 구독 방지
-  const isChatPage = pathname.startsWith("/chat");
+  const isChatPage = pathname === "/chat";
 
   // 데이터 로딩
   useDmRooms();
@@ -105,7 +105,7 @@ export function ChatPanel() {
   // 방 선택 시 읽음 처리 및 메시지 로드
   // /chat 페이지에서는 ChatPage가 직접 처리하므로 중복 실행 방지
   useEffect(() => {
-    if (pathname.startsWith("/chat")) return;
+    if (pathname === "/chat") return;
     if (selectedRoomId && selectedRoomType) {
       if (selectedRoomType === "dm") {
         markDmAsRead(selectedRoomId);
@@ -125,7 +125,7 @@ export function ChatPanel() {
   }, [selectedRoomType]);
 
   // /chat 전용 페이지에서는 플로팅 패널 숨김
-  if (!user || !isOpen || pathname.startsWith("/chat")) return null;
+  if (!user || !isOpen || pathname === "/chat") return null;
 
   const handleSelectRoom = (roomId: string, type: "party" | "dm") => {
     selectRoom(roomId, type);
