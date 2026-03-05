@@ -59,6 +59,26 @@ import { formatMeso, formatNumber } from "@/lib/utils";
 import { TemperatureWithTags } from "@/components/domain/TemperatureWithTags";
 import type { PublicCharacterResponse } from "@/types/api";
 
+function renderLinkedText(text: string) {
+  const parts = text.split(/(https?:\/\/[^\s]+)/);
+  if (parts.length === 1) return text;
+  return parts.map((part, i) =>
+    i % 2 === 1 ? (
+      <a
+        key={i}
+        href={part}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline text-primary break-all"
+      >
+        {part}
+      </a>
+    ) : (
+      part
+    )
+  );
+}
+
 interface SelectedMemberInfo {
   character: PublicCharacterResponse;
   ownerUserId?: string;
@@ -283,7 +303,7 @@ export default function PostDetailPage() {
               {post.description && (
                 <div className="p-4 bg-muted rounded-lg">
                   <h4 className="font-medium mb-2">설명</h4>
-                  <p className="text-sm whitespace-pre-line">{post.description}</p>
+                  <p className="text-sm whitespace-pre-line">{renderLinkedText(post.description)}</p>
                 </div>
               )}
             </CardContent>
