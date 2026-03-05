@@ -137,7 +137,7 @@ export default function ChatRoomPage() {
               <CardTitle className="text-xl">{displayName}</CardTitle>
               <div className="flex items-center gap-2 mt-2">
                 <Badge variant={room.status === "ACTIVE" ? "success" : "secondary"}>
-                  {room.status === "ACTIVE" ? "진행 중" : room.status === "COMPLETED" ? "완료" : "취소"}
+                  {room.status === "ACTIVE" ? "진행 중" : room.status === "COMPLETED" ? "종료" : "취소"}
                 </Badge>
               </div>
             </div>

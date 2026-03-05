@@ -566,7 +566,7 @@ function PostStatusBadge({ status }: { status: string }) {
 function PartyStatusBadge({ status }: { status: string }) {
   const config: Record<string, { label: string; variant: "default" | "secondary" | "success" | "destructive" | "warning" }> = {
     ACTIVE: { label: "활성", variant: "success" },
-    COMPLETED: { label: "완료", variant: "secondary" },
+    COMPLETED: { label: "종료", variant: "secondary" },
     CANCELED: { label: "취소", variant: "destructive" },
   };
 
