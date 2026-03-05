@@ -336,6 +336,7 @@ export default function ChatRoomPage() {
             memberCount={room.members?.length || 0}
             scheduledTime={room.scheduledTime}
             scheduleConfirmed={room.scheduleConfirmed}
+            partyStatus={room.status}
           />
         </div>
       </div>

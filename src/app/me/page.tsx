@@ -46,9 +46,10 @@ function MyPageContent() {
   };
 
   const { user, isLoading: authLoading } = useAuth();
-  const { data: activePartyRooms, isLoading: roomsLoading, error: roomsError } = usePartyRooms("ACTIVE");
-  const { data: completedPartyRooms, isLoading: completedLoading } = usePartyRooms(partyFilter === "COMPLETED" ? "COMPLETED" : undefined);
-  const partyRooms = partyFilter === "COMPLETED" ? completedPartyRooms : activePartyRooms;
+  const { data: allPartyRooms, isLoading: roomsLoading, error: roomsError } = usePartyRooms();
+  const partyRooms = allPartyRooms?.filter((room) =>
+    partyFilter === "ACTIVE" ? room.status === "ACTIVE" : room.status !== "ACTIVE"
+  );
   const { data: applications, isLoading: appsLoading } = useMyApplications();
   const { data: myPosts, isLoading: postsLoading } = useMyPosts();
   const { formatBossNames } = useBossNames();
@@ -263,7 +264,7 @@ function MyPageContent() {
               </button>
             </div>
           </div>
-          {(roomsLoading || (partyFilter === "COMPLETED" && completedLoading)) ? (
+          {roomsLoading ? (
             <LoadingPage message="파티 목록을 불러오는 중..." />
           ) : roomsError ? (
             <ErrorState title="파티 목록을 불러올 수 없습니다" />

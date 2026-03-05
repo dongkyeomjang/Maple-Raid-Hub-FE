@@ -53,7 +53,7 @@ export function ChatPanel() {
   const { getBossName } = useBossNames();
 
   // 읽지 않은 메시지 카운트 계산
-  const partyUnreadCount = partyRooms.reduce((sum, r) => sum + r.unreadCount, 0);
+  const partyUnreadCount = partyRooms.filter((r) => r.status === "ACTIVE").reduce((sum, r) => sum + r.unreadCount, 0);
   const dmUnreadCount = dmRooms.reduce((sum, r) => sum + r.unreadCount, 0);
 
   // 로딩 상태
@@ -279,7 +279,7 @@ export function ChatPanel() {
           <TabsContent value="party" className="flex-1 overflow-y-auto m-0">
             <ChatRoomList
               type="party"
-              rooms={partyRooms}
+              rooms={partyRooms.filter((r) => r.status === "ACTIVE")}
               selectedRoomId={selectedRoomId}
               onSelectRoom={(id) => handleSelectRoom(id, "party")}
             />

@@ -20,6 +20,7 @@ interface ScheduleSectionProps {
   memberCount: number;
   scheduledTime?: string | null;
   scheduleConfirmed?: boolean;
+  partyStatus?: string;
 }
 
 interface AvailabilityData {
@@ -43,7 +44,9 @@ export function ScheduleSection({
   memberCount,
   scheduledTime,
   scheduleConfirmed,
+  partyStatus,
 }: ScheduleSectionProps) {
+  const isInactive = partyStatus !== undefined && partyStatus !== "ACTIVE";
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [selectedSlots, setSelectedSlots] = useState<TimeSlot[]>([]);
@@ -213,7 +216,7 @@ export function ScheduleSection({
               onSlotsChange={handleSlotsChange}
               startHour={9}
               endHour={24}
-              disabled={isSaving}
+              disabled={isSaving || isInactive}
             />
 
             <div className="flex items-center justify-between pt-2">
@@ -222,7 +225,7 @@ export function ScheduleSection({
               </p>
               <Button
                 onClick={() => saveAvailability()}
-                disabled={!hasChanges || isSaving}
+                disabled={!hasChanges || isSaving || isInactive}
                 className="gap-1.5"
               >
                 <Save className="h-4 w-4" />
@@ -251,8 +254,8 @@ export function ScheduleSection({
                 totalMembers={memberCount}
                 startHour={9}
                 endHour={24}
-                isLeader={isLeader}
-                onConfirmTime={isLeader ? handleConfirmTime : undefined}
+                isLeader={isLeader && !isInactive}
+                onConfirmTime={isLeader && !isInactive ? handleConfirmTime : undefined}
                 confirmedTime={confirmedTimeData}
               />
             )}
