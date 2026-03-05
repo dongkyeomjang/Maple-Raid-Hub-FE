@@ -293,6 +293,7 @@ export interface PartyRoomResponse {
   bossIds: string[];
   status: PartyRoomStatus;
   members: PartyMemberResponse[];
+  leftMembers: LeftMemberResponse[] | null;
   readyCheckActive: boolean;
   allReady: boolean;
   scheduledTime: string | null;
@@ -313,6 +314,15 @@ export interface PartyMemberResponse {
   isReady: boolean;
   joinedAt: string;
   unreadCount: number;
+}
+
+export interface LeftMemberResponse {
+  userId: string;
+  characterId: string;
+  characterName: string | null;
+  characterImageUrl: string | null;
+  joinedAt: string;
+  leftAt: string;
 }
 
 // ============================================

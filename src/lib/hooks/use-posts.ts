@@ -176,7 +176,7 @@ export function useRespondToApplication() {
       queryClient.invalidateQueries({ queryKey: postKeys.detail(data.postId) });
       // 수락 시 파티방이 생성될 수 있으므로 파티 목록도 갱신
       if (data.accept) {
-        queryClient.invalidateQueries({ queryKey: partyRoomKeys.list() });
+        queryClient.invalidateQueries({ queryKey: [...partyRoomKeys.all, "list"] });
       }
     },
   });

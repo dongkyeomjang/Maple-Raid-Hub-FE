@@ -477,6 +477,7 @@ export function partyRoomToChatRoom(
   partyRoom: {
     id: string;
     bossIds: string[];
+    status: string;
     members: Array<{ userId: string; characterName: string | null; unreadCount: number }>;
     lastMessage?: string | null;
     lastMessageAt?: string | null;
@@ -497,6 +498,7 @@ export function partyRoomToChatRoom(
     id: partyRoom.id,
     name,
     memberNames,
+    status: partyRoom.status,
     unreadCount,
     lastMessage: partyRoom.lastMessage ?? null,
     lastMessageAt: partyRoom.lastMessageAt ?? null,

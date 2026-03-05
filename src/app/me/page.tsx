@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { PageContainer, PageHeader } from "@/components/layout/PageContainer";
@@ -37,6 +37,7 @@ function MyPageContent() {
   const router = useRouter();
   const tabParam = searchParams.get("tab");
   const activeTab = VALID_TABS.includes(tabParam ?? "") ? tabParam! : "parties";
+  const [partyFilter, setPartyFilter] = useState<"ACTIVE" | "COMPLETED">("ACTIVE");
 
   const handleTabChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -45,7 +46,10 @@ function MyPageContent() {
   };
 
   const { user, isLoading: authLoading } = useAuth();
-  const { data: partyRooms, isLoading: roomsLoading, error: roomsError } = usePartyRooms();
+  const { data: allPartyRooms, isLoading: roomsLoading, error: roomsError } = usePartyRooms();
+  const partyRooms = allPartyRooms?.filter((room) =>
+    partyFilter === "ACTIVE" ? room.status === "ACTIVE" : room.status !== "ACTIVE"
+  );
   const { data: applications, isLoading: appsLoading } = useMyApplications();
   const { data: myPosts, isLoading: postsLoading } = useMyPosts();
   const { formatBossNames } = useBossNames();
@@ -234,6 +238,32 @@ function MyPageContent() {
 
         {/* My Parties */}
         <TabsContent value="parties">
+          <div className="flex justify-end mb-3">
+            <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+              <button
+                onClick={() => setPartyFilter("ACTIVE")}
+                className={cn(
+                  "px-3 py-1 rounded-md text-sm font-medium transition-colors",
+                  partyFilter === "ACTIVE"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                활성
+              </button>
+              <button
+                onClick={() => setPartyFilter("COMPLETED")}
+                className={cn(
+                  "px-3 py-1 rounded-md text-sm font-medium transition-colors",
+                  partyFilter === "COMPLETED"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                종료
+              </button>
+            </div>
+          </div>
           {roomsLoading ? (
             <LoadingPage message="파티 목록을 불러오는 중..." />
           ) : roomsError ? (
@@ -241,12 +271,12 @@ function MyPageContent() {
           ) : !partyRooms?.length ? (
             <EmptyState
               icon={<Users className="h-8 w-8 text-muted-foreground" />}
-              title="참여 중인 파티가 없습니다"
-              description="모집글에 지원하거나 새로운 파티를 모집해보세요."
-              action={{
+              title={partyFilter === "ACTIVE" ? "참여 중인 파티가 없습니다" : "종료된 파티가 없습니다"}
+              description={partyFilter === "ACTIVE" ? "모집글에 지원하거나 새로운 파티를 모집해보세요." : "종료된 파티가 있으면 여기에 표시됩니다."}
+              action={partyFilter === "ACTIVE" ? {
                 label: "모집글 보기",
                 onClick: () => {},
-              }}
+              } : undefined}
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -316,10 +346,10 @@ function MyPageContent() {
                       </div>
                     </div>
 
-                    <Button className="w-full mt-auto" asChild>
+                    <Button className="w-full mt-auto" variant={room.status === "ACTIVE" ? "default" : "outline"} asChild>
                       <Link href={`/chat/${room.id}`}>
                         <MessageSquare className="h-4 w-4 mr-2" />
-                        파티방 입장
+                        {room.status === "ACTIVE" ? "파티방 입장" : "상세 보기"}
                       </Link>
                     </Button>
                   </CardContent>
@@ -537,7 +567,7 @@ function PostStatusBadge({ status }: { status: string }) {
 function PartyStatusBadge({ status }: { status: string }) {
   const config: Record<string, { label: string; variant: "default" | "secondary" | "success" | "destructive" | "warning" }> = {
     ACTIVE: { label: "활성", variant: "success" },
-    COMPLETED: { label: "완료", variant: "secondary" },
+    COMPLETED: { label: "종료", variant: "secondary" },
     CANCELED: { label: "취소", variant: "destructive" },
   };
 
