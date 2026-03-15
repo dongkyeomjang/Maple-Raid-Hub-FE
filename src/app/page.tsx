@@ -287,7 +287,17 @@ export default function HomePage() {
             </div>
             <div className="text-center sm:text-right text-caption text-muted-foreground">
               <p>메-력소는 Nexon Open API가 제공해주는 데이터를 활용합니다.</p>
-              <p className="mt-1">문의: jangelliot0404@dgu.ac.kr</p>
+              <p className="mt-1">
+                문의:{" "}
+                <a
+                  href="https://open.kakao.com/o/sv6bswli"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-foreground transition-colors underline underline-offset-2"
+                >
+                  카카오톡 오픈채팅
+                </a>
+              </p>
             </div>
           </div>
         </div>
