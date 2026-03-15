@@ -3,7 +3,6 @@ import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import { WebSocketProvider } from "@/lib/websocket/WebSocketProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { FloatingChatButton, ChatPanel } from "@/components/chat";
@@ -71,7 +70,6 @@ export default function RootLayout({
                 <div className="min-h-screen flex flex-col bg-background">
                   <Header />
                   <main className="flex-1">{children}</main>
-                  <Footer />
                 </div>
                 <FloatingChatButton />
                 <ChatPanel />
