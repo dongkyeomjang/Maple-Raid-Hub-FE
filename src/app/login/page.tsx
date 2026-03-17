@@ -11,7 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/ui/Logo";
 import { BRAND_SLOGANS } from "@/components/brand/brand-constants";
 import { useAuth } from "@/lib/hooks/use-auth";
-import { Loader2, MessageCircle, CalendarClock, Sparkles, ArrowLeft } from "lucide-react";
+import { useCapsLock } from "@/lib/hooks/use-caps-lock";
+import { AlertTriangle, Loader2, MessageCircle, CalendarClock, Sparkles, ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,6 +25,7 @@ export default function LoginPage() {
 
   // 한글 포함 여부 체크
   const hasKorean = (text: string) => /[\uAC00-\uD7AF\u3131-\u318E]/.test(text);
+  const { isCapsLockOn, capsLockProps } = useCapsLock();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,12 +115,22 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="비밀번호를 입력하세요"
                   required
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck={false}
                   className="h-12 input-warm"
+                  {...capsLockProps}
                 />
                 {hasKorean(password) && (
                   <p className="text-sm text-destructive">
                     한글이 입력되었습니다. 영문으로 전환해주세요.
                   </p>
+                )}
+                {isCapsLockOn && (
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-yellow-50 border border-yellow-200">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600 shrink-0" />
+                    <p className="text-sm text-yellow-700">Caps Lock이 켜져 있습니다.</p>
+                  </div>
                 )}
               </div>
 
@@ -167,12 +179,20 @@ export default function LoginPage() {
                 카카오로 시작하기
               </Button>
 
-              <p className="text-center text-body-sm text-muted-foreground">
-                아직 계정이 없으신가요?{" "}
-                <Link href="/onboarding" className="text-primary hover:underline font-medium underline-cute">
-                  무료로 시작하기
-                </Link>
-              </p>
+              <div className="text-center space-y-2">
+                <p className="text-body-sm text-muted-foreground">
+                  아이디 또는 비밀번호를 잊으셨나요?{" "}
+                  <Link href="/recovery" className="text-primary hover:underline font-medium underline-cute">
+                    계정 찾기
+                  </Link>
+                </p>
+                <p className="text-body-sm text-muted-foreground">
+                  아직 계정이 없으신가요?{" "}
+                  <Link href="/onboarding" className="text-primary hover:underline font-medium underline-cute">
+                    무료로 시작하기
+                  </Link>
+                </p>
+              </div>
             </form>
           </CardContent>
         </Card>

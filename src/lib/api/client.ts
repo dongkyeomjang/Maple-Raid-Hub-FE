@@ -442,6 +442,31 @@ export const api = {
       }),
   },
 
+  // Account Recovery (no auth required)
+  recovery: {
+    createChallenge: (data: { characterName: string; worldName: string }) =>
+      fetchApi("/api/auth/recovery/challenge", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+
+    getPendingChallenge: (characterName: string, worldName: string) =>
+      fetchApi(
+        `/api/auth/recovery/challenges/pending?characterName=${encodeURIComponent(characterName)}&worldName=${encodeURIComponent(worldName)}`
+      ),
+
+    checkChallenge: (challengeId: string) =>
+      fetchApi(`/api/auth/recovery/challenges/${challengeId}/check`, {
+        method: "POST",
+      }),
+
+    resetPassword: (data: { recoveryToken: string; newPassword: string }) =>
+      fetchApi<void>("/api/auth/recovery/reset-password", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+  },
+
   // Config (no auth required)
   config: {
     worldGroups: () => fetchApi("/api/config/world-groups"),

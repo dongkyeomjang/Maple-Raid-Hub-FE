@@ -470,6 +470,36 @@ export interface UpdateNotificationPreferencesRequest {
 }
 
 // ============================================
+// Account Recovery DTOs
+// ============================================
+
+export interface RecoveryChallengeResponse {
+  exists: boolean;
+  id: string | null;
+  characterId: string | null;
+  requiredSymbol1: string | null;
+  requiredSymbol2: string | null;
+  status: ChallengeStatus | null;
+  createdAt: string | null;
+  expiresAt: string | null;
+  checkCount: number;
+  maxChecks: number;
+  remainingChecks: number | null;
+  remainingTimeSeconds: number | null;
+  canCheck: boolean | null;
+  secondsUntilNextCheck: number | null;
+}
+
+export interface RecoveryCheckResponse {
+  status: string;
+  message: string;
+  remainingChecks: number | null;
+  remainingTimeSeconds: number | null;
+  username: string | null;
+  recoveryToken: string | null;
+}
+
+// ============================================
 // Error Response
 // ============================================
 
