@@ -28,6 +28,7 @@ import {LoadingSpinner} from "@/components/common/LoadingSpinner";
 import {useCharacters, useClaimCharacter} from "@/lib/hooks/use-characters";
 import {useRequireAuth} from "@/lib/hooks/use-require-auth";
 import {Plus, Users, Loader2} from "lucide-react";
+import {ServerLogo} from "@/components/domain/ServerLogo";
 
 // 메이플스토리 월드 목록
 const WORLDS = [
@@ -150,7 +151,10 @@ export default function CharactersPage() {
                                             <SelectContent>
                                                 {WORLDS.map((world) => (
                                                     <SelectItem key={world.name} value={world.name}>
-                                                        {world.name}
+                                                        <span className="inline-flex items-center gap-1.5">
+                                                            <ServerLogo serverName={world.name} size="xs" />
+                                                            {world.name}
+                                                        </span>
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>

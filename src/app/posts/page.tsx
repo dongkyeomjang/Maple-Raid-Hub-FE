@@ -27,6 +27,7 @@ import { BossFilterSelector } from "@/components/domain/BossFilterSelector";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { TipBanner } from "@/components/common/TipBanner";
+import { ServerLogo, WorldGroupIcon } from "@/components/domain/ServerLogo";
 import { usePosts } from "@/lib/hooks/use-posts";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { useWorldGroups } from "@/lib/hooks/use-config";
@@ -82,6 +83,7 @@ function PostsPageContent() {
     return [...worldGroups]
       .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id))
       .map((group) => ({
+        groupId: group.id,
         groupName: group.displayName,
         worlds: group.worlds,
       }));
@@ -238,10 +240,18 @@ function PostsPageContent() {
                 <SelectSeparator />
                 {allServers.map((group) => (
                   <SelectGroup key={group.groupName}>
-                    <SelectLabel>{group.groupName}</SelectLabel>
+                    <SelectLabel>
+                      <span className="inline-flex items-center gap-1.5">
+                        <WorldGroupIcon groupId={group.groupId} size={16} />
+                        {group.groupName}
+                      </span>
+                    </SelectLabel>
                     {group.worlds.map((world) => (
                       <SelectItem key={world} value={world}>
-                        {world}
+                        <span className="inline-flex items-center gap-1.5">
+                          <ServerLogo serverName={world} size="xs" />
+                          {world}
+                        </span>
                       </SelectItem>
                     ))}
                   </SelectGroup>
@@ -273,7 +283,6 @@ function PostsPageContent() {
         </div>
       ) : posts.length === 0 ? (
         <EmptyState
-          icon={viewFilter === "mine" ? <Crown className="h-8 w-8 text-muted-foreground" /> : <Swords className="h-8 w-8 text-muted-foreground" />}
           title={viewFilter === "mine" ? "작성한 모집글이 없습니다" : "모집글이 없습니다"}
           description={viewFilter === "mine"
             ? "아직 작성한 모집글이 없습니다. 새 모집글을 작성해보세요!"

@@ -35,6 +35,7 @@ import {
   Archive,
 } from "lucide-react";
 import { ScheduleSection } from "@/components/schedule";
+import { ServerLogo } from "@/components/domain/ServerLogo";
 import { useRouter } from "next/navigation";
 
 export default function ChatRoomPage() {
@@ -197,7 +198,7 @@ export default function ChatRoomPage() {
                       )}
                     </div>
                     {member.worldName && (
-                      <p className="text-xs text-muted-foreground">{member.worldName}</p>
+                      <p className="text-xs text-muted-foreground inline-flex items-center gap-0.5"><ServerLogo serverName={member.worldName} size="xs" /> {member.worldName}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">

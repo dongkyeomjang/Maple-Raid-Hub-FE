@@ -21,6 +21,7 @@ import { useBossNames } from "@/lib/hooks/use-boss-names";
 import { cn, formatDateTime, formatRelativeTime } from "@/lib/utils";
 import { useDiscordStatus } from "@/lib/hooks/use-discord";
 import { User, Calendar, Users, MessageSquare, Clock, Swords, Crown, Settings, CheckCircle, Bell, Link2, XCircle, Loader2, Thermometer } from "lucide-react";
+import { ServerLogo } from "@/components/domain/ServerLogo";
 
 const VALID_TABS = ["parties", "applications", "posts", "evaluations"];
 
@@ -417,7 +418,7 @@ function MyPageContent() {
                             <Crown className="h-3 w-3 text-yellow-500" />
                             <span className="text-sm">
                               {app.authorCharacterName}
-                              {app.authorWorldName && <span className="text-xs text-muted-foreground"> · {app.authorWorldName}</span>}
+                              {app.authorWorldName && <span className="text-xs text-muted-foreground inline-flex items-center gap-0.5"> · <ServerLogo serverName={app.authorWorldName} size="xs" /> {app.authorWorldName}</span>}
                             </span>
                           </div>
                         </div>

@@ -11,6 +11,7 @@ import { VerificationBadge } from "./VerificationBadge";
 import { EquipmentGrid } from "./EquipmentGrid";
 import type { PublicCharacterResponse, EquipmentInfo } from "@/types/api";
 import { User, Swords, Info } from "lucide-react";
+import { ServerLogo } from "./ServerLogo";
 import { TemperatureWithTags } from "./TemperatureWithTags";
 import { formatDateTime } from "@/lib/utils";
 
@@ -81,7 +82,8 @@ export function CharacterDetailDialog({
             </p>
             <div className="flex items-center gap-2 mt-2">
               <WorldGroupBadge worldGroup={character.worldGroup} />
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-muted-foreground inline-flex items-center gap-1">
+                <ServerLogo serverName={character.worldName} size="sm" />
                 {character.worldName}
               </span>
             </div>

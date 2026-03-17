@@ -14,6 +14,7 @@ import { LoadingPage } from "@/components/common/LoadingSpinner";
 import { useCharacter, useDeleteCharacter, useSyncCharacter } from "@/lib/hooks/use-characters";
 import { formatDate, formatDateTime } from "@/lib/utils";
 import { User, Shield, Trash2, ArrowLeft, Swords, RefreshCw } from "lucide-react";
+import { ServerLogo } from "@/components/domain/ServerLogo";
 import type { EquipmentInfo } from "@/types/api";
 
 export default function CharacterDetailPage() {
@@ -106,7 +107,8 @@ export default function CharacterDetailPage() {
                 )}
                 <div className="flex items-center gap-2 mt-2">
                   <WorldGroupBadge worldGroup={character.worldGroup} />
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-sm text-muted-foreground inline-flex items-center gap-1">
+                    <ServerLogo serverName={character.worldName} size="sm" />
                     {character.worldName}
                   </span>
                 </div>

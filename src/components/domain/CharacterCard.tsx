@@ -5,6 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { WorldGroupBadge } from "./WorldGroupBadge";
+import { ServerLogo } from "./ServerLogo";
 import { VerificationBadge } from "./VerificationBadge";
 import type { CharacterResponse } from "@/types/api";
 import { formatRelativeTime } from "@/lib/utils";
@@ -48,7 +49,10 @@ export function CharacterCard({ character, showActions = true }: CharacterCardPr
           )}
           <div className="flex items-center justify-center gap-2">
             <WorldGroupBadge worldGroup={character.worldGroup} />
-            <span className="text-sm text-muted-foreground">{character.worldName}</span>
+            <span className="text-sm text-muted-foreground inline-flex items-center gap-1">
+              <ServerLogo serverName={character.worldName} size="sm" />
+              {character.worldName}
+            </span>
           </div>
         </div>
       </CardHeader>
