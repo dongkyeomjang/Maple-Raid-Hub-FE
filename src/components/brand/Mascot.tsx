@@ -60,7 +60,6 @@ export function MuscleMushroomMascot({ size = "lg", className }: MuscleMushroomP
  * 귀여운 표정과 따뜻한 주황색으로 친근감을 전달
  */
 export function Mascot({
-  variant = "default",
   size = "md",
   animate = true,
   className,
@@ -75,159 +74,13 @@ export function Mascot({
         className
       )}
     >
-      <svg
+      <Image
+        src="/머쉬맘.png"
+        alt="머쉬맘"
         width={pixelSize}
         height={pixelSize}
-        viewBox="0 0 120 120"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="drop-shadow-lg"
-      >
-        <defs>
-          {/* 버섯 갓 그라데이션 - 메이플 주황색 */}
-          <linearGradient id="capGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#FF8C42" />
-            <stop offset="50%" stopColor="#F97316" />
-            <stop offset="100%" stopColor="#EA580C" />
-          </linearGradient>
-          {/* 하이라이트 */}
-          <radialGradient id="capHighlight" cx="30%" cy="25%" r="40%">
-            <stop offset="0%" stopColor="white" stopOpacity="0.6" />
-            <stop offset="100%" stopColor="white" stopOpacity="0" />
-          </radialGradient>
-          {/* 버섯 기둥 그라데이션 */}
-          <linearGradient id="stemGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#FEF3C7" />
-            <stop offset="100%" stopColor="#FDE68A" />
-          </linearGradient>
-          {/* 볼터치 */}
-          <radialGradient id="blushGrad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#FDA4AF" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#FDA4AF" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-
-        {/* 버섯 기둥 (몸통) */}
-        <ellipse cx="60" cy="95" rx="22" ry="18" fill="url(#stemGrad)" />
-        <ellipse cx="60" cy="95" rx="22" ry="18" fill="white" fillOpacity="0.2" />
-
-        {/* 버섯 갓 (머리) - 둥글고 귀여운 반원형 */}
-        <ellipse cx="60" cy="55" rx="45" ry="38" fill="url(#capGrad)" />
-
-        {/* 버섯 갓 하이라이트 */}
-        <ellipse cx="60" cy="55" rx="45" ry="38" fill="url(#capHighlight)" />
-
-        {/* 버섯 갓 무늬 - 흰색 점들 (주황버섯 특유의 무늬) */}
-        <ellipse cx="35" cy="45" rx="8" ry="6" fill="white" fillOpacity="0.9" />
-        <ellipse cx="55" cy="35" rx="10" ry="7" fill="white" fillOpacity="0.9" />
-        <ellipse cx="80" cy="42" rx="7" ry="5" fill="white" fillOpacity="0.9" />
-        <ellipse cx="70" cy="58" rx="6" ry="4" fill="white" fillOpacity="0.85" />
-        <ellipse cx="42" cy="60" rx="5" ry="4" fill="white" fillOpacity="0.85" />
-
-        {/* 눈 - 표정별 */}
-        {variant === "happy" || variant === "excited" ? (
-          <>
-            {/* 웃는 눈 (^^) */}
-            <path
-              d="M42 75 Q47 68 52 75"
-              stroke="#44403C"
-              strokeWidth="3"
-              strokeLinecap="round"
-              fill="none"
-            />
-            <path
-              d="M68 75 Q73 68 78 75"
-              stroke="#44403C"
-              strokeWidth="3"
-              strokeLinecap="round"
-              fill="none"
-            />
-          </>
-        ) : variant === "thinking" ? (
-          <>
-            {/* 생각하는 눈 - 위를 바라봄 */}
-            <ellipse cx="47" cy="72" rx="5" ry="6" fill="#44403C" />
-            <ellipse cx="73" cy="72" rx="5" ry="6" fill="#44403C" />
-            <circle cx="45" cy="70" r="2" fill="white" />
-            <circle cx="71" cy="70" r="2" fill="white" />
-            {/* 물음표 이펙트 */}
-            <text x="95" y="45" fontSize="16" fill="#F97316" fontWeight="bold">?</text>
-          </>
-        ) : variant === "wave" ? (
-          <>
-            {/* 윙크 */}
-            <ellipse cx="47" cy="73" rx="5" ry="6" fill="#44403C" />
-            <circle cx="45" cy="71" r="2" fill="white" />
-            <path
-              d="M68 73 Q73 68 78 73"
-              stroke="#44403C"
-              strokeWidth="3"
-              strokeLinecap="round"
-              fill="none"
-            />
-          </>
-        ) : (
-          <>
-            {/* 기본 눈 - 반짝반짝 */}
-            <ellipse cx="47" cy="73" rx="5" ry="6" fill="#44403C" />
-            <ellipse cx="73" cy="73" rx="5" ry="6" fill="#44403C" />
-            <circle cx="45" cy="71" r="2" fill="white" />
-            <circle cx="71" cy="71" r="2" fill="white" />
-          </>
-        )}
-
-        {/* 볼터치 */}
-        <ellipse cx="32" cy="80" rx="8" ry="5" fill="url(#blushGrad)" />
-        <ellipse cx="88" cy="80" rx="8" ry="5" fill="url(#blushGrad)" />
-
-        {/* 입 - 표정별 */}
-        {variant === "happy" || variant === "wave" ? (
-          <path
-            d="M52 88 Q60 96 68 88"
-            stroke="#44403C"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            fill="none"
-          />
-        ) : variant === "excited" ? (
-          <>
-            <ellipse cx="60" cy="90" rx="8" ry="6" fill="#44403C" />
-            <ellipse cx="60" cy="88" rx="6" ry="3" fill="#FDA4AF" />
-          </>
-        ) : variant === "thinking" ? (
-          <ellipse cx="60" cy="88" rx="4" ry="3" fill="#44403C" />
-        ) : (
-          <path
-            d="M54 87 Q60 91 66 87"
-            stroke="#44403C"
-            strokeWidth="2"
-            strokeLinecap="round"
-            fill="none"
-          />
-        )}
-
-        {/* 손 (wave 변형일 때) */}
-        {variant === "wave" && (
-          <g className="animate-wave origin-[95px_75px]">
-            <ellipse
-              cx="95"
-              cy="75"
-              rx="8"
-              ry="6"
-              fill="#FDE68A"
-              transform="rotate(-20 95 75)"
-            />
-          </g>
-        )}
-
-        {/* 반짝이 이펙트 (excited일 때) */}
-        {variant === "excited" && (
-          <>
-            <path d="M15 50 L20 55 L15 60 L10 55 Z" fill="#FBBF24" className="animate-sparkle" />
-            <path d="M105 45 L108 50 L105 55 L102 50 Z" fill="#FBBF24" className="animate-sparkle" style={{ animationDelay: "0.3s" }} />
-          </>
-        )}
-      </svg>
+        className="object-contain drop-shadow-lg"
+      />
     </div>
   );
 }

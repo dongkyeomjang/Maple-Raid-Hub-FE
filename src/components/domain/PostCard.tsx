@@ -6,6 +6,7 @@ import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 import {WorldGroupBadge} from "./WorldGroupBadge";
+import {ServerLogo} from "./ServerLogo";
 import type {PostResponse} from "@/types/api";
 import {cn, formatMeso, formatNumber, formatRelativeTime} from "@/lib/utils";
 import {useBossNames} from "@/lib/hooks/use-boss-names";
@@ -77,7 +78,7 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
                       {post.characterName || "알 수 없음"}
                     </span>
                     <span className="text-tiny text-muted-foreground truncate">
-                      {post.worldName && <>{post.worldName} · </>}
+                      {post.worldName && <><ServerLogo serverName={post.worldName} size="xs" /> {post.worldName} · </>}
                       {formatRelativeTime(post.createdAt)}
                     </span>
                   </div>
@@ -110,14 +111,11 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
             <div className="flex items-center flex-wrap gap-1">
               {isOwner && (
                 <Badge variant="default" size="sm" className="bg-primary/10 text-primary border-primary/20">
-                  <Crown className="h-3 w-3 mr-0.5" />
+                  <Crown className="h-[18px] w-[18px] mr-0.5" />
                   내 글
                 </Badge>
               )}
               <WorldGroupBadge worldGroup={post.worldGroup} size="sm" showEmoji />
-              <Badge variant={statusConfig.variant} size="sm">
-                {statusConfig.label}
-              </Badge>
             </div>
             <h3 className="font-semibold text-h3 truncate">
               {displayName}
@@ -178,7 +176,7 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
               {post.characterName || "알 수 없음"}
             </span>
             <span className="text-tiny text-muted-foreground truncate">
-              {post.worldName && <>{post.worldName} · </>}
+              {post.worldName && <><ServerLogo serverName={post.worldName} size="xs" /> {post.worldName} · </>}
               {formatRelativeTime(post.createdAt)}
             </span>
           </div>

@@ -57,6 +57,7 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatMeso, formatNumber } from "@/lib/utils";
 import { TemperatureWithTags } from "@/components/domain/TemperatureWithTags";
+import { ServerLogo } from "@/components/domain/ServerLogo";
 import type { PublicCharacterResponse } from "@/types/api";
 
 function renderLinkedText(text: string) {
@@ -818,7 +819,7 @@ function CharacterInfoCard({
         </div>
         <p className="text-sm text-muted-foreground">
           Lv.{character.characterLevel} {character.characterClass}
-          {character.worldName && <span> · {character.worldName}</span>}
+          {character.worldName && <span className="inline-flex items-center gap-0.5"> · <ServerLogo serverName={character.worldName} size="xs" /> {character.worldName}</span>}
         </p>
         {character.combatPower > 0 && (
           <div className="flex items-center gap-1 text-sm">

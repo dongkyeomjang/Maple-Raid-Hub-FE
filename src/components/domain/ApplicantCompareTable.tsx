@@ -17,6 +17,7 @@ import { useCharacters } from "@/lib/hooks/use-characters";
 import { useChatStore } from "@/lib/stores/chat-store";
 import type { ApplicationWithCharacterResponse, PublicCharacterResponse } from "@/types/api";
 import { User, Check, X, Clock, Swords, Shield, Eye, MessageCircle, CheckCircle } from "lucide-react";
+import { ServerLogo } from "./ServerLogo";
 
 interface ApplicantCompareTableProps {
   applications: ApplicationWithCharacterResponse[];
@@ -116,7 +117,7 @@ export function ApplicantCompareTable({
                       <div>
                         <p className="font-medium">{char?.characterName ?? "알 수 없음"}</p>
                         <p className="text-xs text-muted-foreground">
-                          {char?.characterClass ?? "-"} · {char?.worldName ?? "-"}
+                          {char?.characterClass ?? "-"} · {char?.worldName && <ServerLogo serverName={char.worldName} size="xs" />} {char?.worldName ?? "-"}
                         </p>
                         <div className="flex items-center gap-1.5 mt-1">
                           {char?.ownerTemperature != null && (
