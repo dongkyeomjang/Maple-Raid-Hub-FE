@@ -26,6 +26,7 @@ import { PostCard, PostCardSkeleton } from "@/components/domain/PostCard";
 import { BossFilterSelector } from "@/components/domain/BossFilterSelector";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ErrorState } from "@/components/common/ErrorState";
+import { TipBanner } from "@/components/common/TipBanner";
 import { usePosts } from "@/lib/hooks/use-posts";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { useWorldGroups } from "@/lib/hooks/use-config";
@@ -188,6 +189,8 @@ function PostsPageContent() {
         title="파티 모집"
         description="보스 레이드 파티를 모집하거나 참여하세요."
       />
+
+      <TipBanner />
 
       {/* View Filter */}
       {isAuthenticated && (
