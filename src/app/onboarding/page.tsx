@@ -11,7 +11,9 @@ import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/ui/Logo";
 import { BRAND_SLOGANS } from "@/components/brand/brand-constants";
 import { useAuth } from "@/lib/hooks/use-auth";
+import { useCapsLock } from "@/lib/hooks/use-caps-lock";
 import {
+  AlertTriangle,
   Check,
   Loader2,
   MessageCircle,
@@ -71,6 +73,9 @@ function OnboardingContent() {
   // 한글 포함 여부 체크
   const hasKorean = (text: string) => /[\uAC00-\uD7AF\u3131-\u318E]/.test(text);
   const passwordHasKorean = hasKorean(password) || hasKorean(confirmPassword);
+
+  // CapsLock 감지
+  const { isCapsLockOn, capsLockProps } = useCapsLock();
 
   const handleAccountSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -301,7 +306,11 @@ function OnboardingContent() {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="8자 이상, 영문/숫자/특수문자"
                       required
+                      autoCapitalize="off"
+                      autoCorrect="off"
+                      spellCheck={false}
                       className="h-12 input-warm"
+                      {...capsLockProps}
                     />
                     {hasKorean(password) && (
                       <p className="text-sm text-destructive">
@@ -319,7 +328,11 @@ function OnboardingContent() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="비밀번호를 다시 입력하세요"
                       required
+                      autoCapitalize="off"
+                      autoCorrect="off"
+                      spellCheck={false}
                       className="h-12 input-warm"
+                      {...capsLockProps}
                     />
                     {hasKorean(confirmPassword) && (
                       <p className="text-sm text-destructive">
@@ -327,6 +340,13 @@ function OnboardingContent() {
                       </p>
                     )}
                   </div>
+
+                  {isCapsLockOn && (
+                    <div className="flex items-center gap-2 p-2 rounded-lg bg-yellow-50 border border-yellow-200">
+                      <AlertTriangle className="h-4 w-4 text-yellow-600 shrink-0" />
+                      <p className="text-sm text-yellow-700">Caps Lock이 켜져 있습니다.</p>
+                    </div>
+                  )}
 
                   {error && (
                     <div className="p-3 rounded-lg bg-error-bg text-error-text text-body-sm flex items-center gap-2">
