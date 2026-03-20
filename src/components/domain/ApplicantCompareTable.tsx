@@ -79,7 +79,137 @@ export function ApplicantCompareTable({
 
   return (
     <>
-      <div className="overflow-x-auto">
+      {/* 모바일 카드 레이아웃 */}
+      <div className="md:hidden space-y-3">
+        {applications.map((app) => {
+          const char = app.character;
+          return (
+            <div key={app.id} className="border rounded-lg p-4 space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <button
+                  className="flex items-center gap-3 text-left hover:opacity-80 transition-opacity min-w-0 flex-1"
+                  onClick={() => char && setSelectedInfo({ character: char, ownerUserId: app.applicantId })}
+                  disabled={!char}
+                >
+                  <div className="h-10 w-10 rounded-full overflow-hidden bg-muted flex-shrink-0">
+                    {char?.characterImageUrl ? (
+                      <img
+                        src={char.characterImageUrl}
+                        alt={char.characterName}
+                        className="w-full h-full object-cover scale-[2.5] object-[45%_35%]"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <User className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-medium truncate">{char?.characterName ?? "알 수 없음"}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {char?.characterClass ?? "-"} · {char?.worldName && <ServerLogo serverName={char.worldName} size="xs" />} {char?.worldName ?? "-"}
+                    </p>
+                  </div>
+                </button>
+                <ApplicationStatusBadge status={app.status} />
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap">
+                {char && (
+                  <>
+                    <span className="text-sm font-medium">Lv.{char.characterLevel}</span>
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Swords className="h-3 w-3 text-orange-500" />
+                      <span className="text-orange-600 font-medium">
+                        {formatCombatPower(char.combatPower)}
+                      </span>
+                    </span>
+                  </>
+                )}
+                {char?.ownerTemperature != null && (
+                  <TemperatureWithTags
+                    temperature={char.ownerTemperature}
+                    userId={app.applicantId}
+                    size="sm"
+                  />
+                )}
+                {char?.verificationStatus === "VERIFIED_OWNER" && (
+                  <Badge variant="success" className="text-xs whitespace-nowrap">
+                    <Shield className="h-3 w-3 mr-1" />
+                    인증됨
+                  </Badge>
+                )}
+              </div>
+
+              {app.message && (
+                <p className="text-sm text-muted-foreground line-clamp-2">
+                  {app.message}
+                </p>
+              )}
+
+              <div className="flex items-center gap-2">
+                {char && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-xs"
+                    onClick={() => setSelectedInfo({ character: char, ownerUserId: app.applicantId })}
+                  >
+                    <Eye className="h-3 w-3 mr-1" />
+                    상세
+                  </Button>
+                )}
+                {verifiedCharacters.length > 0 && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7"
+                    onClick={() => {
+                      setDmTarget({
+                        userId: app.applicantId,
+                        name: char?.characterName ?? "지원자",
+                        characterId: char?.id ?? null,
+                        characterImageUrl: char?.characterImageUrl ?? null,
+                      });
+                      setDmCharacterSelectOpen(true);
+                    }}
+                    title="메시지 보내기"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                  </Button>
+                )}
+                {app.status === "APPLIED" && (
+                  <div className="flex items-center gap-2 ml-auto">
+                    <Button
+                      size="sm"
+                      variant="default"
+                      className="h-7"
+                      onClick={() => onAccept(app.id)}
+                      disabled={isProcessing}
+                    >
+                      <Check className="h-4 w-4 mr-1" />
+                      수락
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7"
+                      onClick={() => onReject(app.id)}
+                      disabled={isProcessing}
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      거절
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 데스크톱 테이블 레이아웃 */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b">
@@ -130,7 +260,7 @@ export function ApplicantCompareTable({
                             </div>
                           )}
                           {char?.verificationStatus === "VERIFIED_OWNER" && (
-                            <Badge variant="success" className="text-xs">
+                            <Badge variant="success" className="text-xs whitespace-nowrap">
                               <Shield className="h-3 w-3 mr-1" />
                               인증됨
                             </Badge>
