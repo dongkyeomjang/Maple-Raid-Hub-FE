@@ -192,7 +192,16 @@ export interface WorldGroupConfig {
 // ============================================
 
 export interface CreatePostRequest {
-  characterId: string;
+  // 회원 작성 시 필수
+  characterId?: string | null;
+  // 비회원 작성 시 필수
+  guest?: boolean;
+  guestWorldGroup?: WorldGroup;
+  guestWorldName?: string;
+  guestCharacterName?: string;
+  contactLink?: string;
+  guestPassword?: string;
+  // 공통
   bossIds: string[];
   requiredMembers: number;
   preferredTime: string | null;
@@ -206,17 +215,24 @@ export interface UpdatePostRequest {
   clearPreferredTime?: boolean;
   description?: string;
   clearDescription?: boolean;
+  guestPassword?: string;
 }
 
 export interface PostResponse {
   id: string;
-  authorId: string;
+  authorId: string | null;
   authorNickname: string | null;
-  characterId: string;
+  characterId: string | null;
   characterName: string | null;
   characterImageUrl: string | null;
   worldGroup: WorldGroup;
   worldName: string | null;
+  guest: boolean;
+  contactLink: string | null;
+  // 상세 조회 시에만 포함 (PostDetailResponse.post)
+  guestWorldName?: string | null;
+  guestCharacterName?: string | null;
+  guestCharacterImageUrl?: string | null;
   bossIds: string[];
   requiredMembers: number;
   currentMembers: number;
@@ -227,6 +243,17 @@ export interface PostResponse {
   createdAt: string;
   updatedAt: string;
   pendingApplicationCount?: number;
+}
+
+export interface GuestCharacterInfoResponse {
+  characterName: string;
+  worldName: string;
+  worldGroup: WorldGroup;
+  characterClass: string;
+  characterLevel: number;
+  characterImageUrl: string | null;
+  combatPower: number;
+  equipmentJson: string | null;
 }
 
 export interface ApplyRequest {
@@ -245,16 +272,16 @@ export interface ApplicationResponse {
 }
 
 export interface PublicCharacterResponse {
-  id: string;
+  id: string | null;
   characterName: string;
   worldName: string;
   worldGroup: WorldGroup;
-  characterClass: string;
+  characterClass: string | null;
   characterLevel: number;
   characterImageUrl: string | null;
   combatPower: number;
   equipmentJson: string | null;
-  verificationStatus: VerificationStatus;
+  verificationStatus: VerificationStatus | null;
   lastSyncedAt: string | null;
   ownerTemperature?: number;
 }

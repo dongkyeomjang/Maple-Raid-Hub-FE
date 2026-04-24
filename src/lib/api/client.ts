@@ -196,7 +196,13 @@ export const api = {
     get: (id: string) => fetchApiWithRefresh(`/api/posts/${id}`),
 
     create: (data: {
-      characterId: string;
+      characterId?: string | null;
+      guest?: boolean;
+      guestWorldGroup?: string;
+      guestWorldName?: string;
+      guestCharacterName?: string;
+      contactLink?: string;
+      guestPassword?: string;
       bossIds: string[];
       requiredMembers: number;
       preferredTime: string | null;
@@ -205,6 +211,20 @@ export const api = {
       fetchApiWithRefresh("/api/posts", {
         method: "POST",
         body: JSON.stringify(data),
+      }),
+
+    guestCharacter: (postId: string) =>
+      fetchApiWithRefresh(`/api/posts/${postId}/guest-character`),
+
+    verifyGuestPassword: (postId: string, password: string) =>
+      fetchApi<void>(`/api/posts/${postId}/guest-verify`, {
+        method: "POST",
+        body: JSON.stringify({ password }),
+      }),
+
+    deleteGuest: (postId: string, guestPassword: string) =>
+      fetchApi<void>(`/api/posts/${postId}?guestPassword=${encodeURIComponent(guestPassword)}`, {
+        method: "DELETE",
       }),
 
     update: (
@@ -216,6 +236,7 @@ export const api = {
         clearPreferredTime?: boolean;
         description?: string;
         clearDescription?: boolean;
+        guestPassword?: string;
       }
     ) =>
       fetchApiWithRefresh(`/api/posts/${id}`, {

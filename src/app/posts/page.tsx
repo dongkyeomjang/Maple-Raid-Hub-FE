@@ -16,12 +16,6 @@ import {
   SelectLabel,
   SelectSeparator,
 } from "@/components/ui/select";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { PostCard, PostCardSkeleton } from "@/components/domain/PostCard";
 import { BossFilterSelector } from "@/components/domain/BossFilterSelector";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -160,29 +154,13 @@ function PostsPageContent() {
     setCurrentPage(1);
   };
 
-  const createPostButton = isAuthenticated ? (
+  const createPostButton = (
     <Button asChild>
       <Link href="/posts/new">
         <Plus className="h-4 w-4 mr-2" />
-        모집글 작성
+        {isAuthenticated ? "모집글 작성" : "가입 없이 모집글 작성"}
       </Link>
     </Button>
-  ) : (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span tabIndex={0}>
-            <Button disabled>
-              <Plus className="h-4 w-4 mr-2" />
-              모집글 작성
-            </Button>
-          </span>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>로그인 이후 이용 가능합니다</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
   );
 
   return (
@@ -290,12 +268,8 @@ function PostsPageContent() {
           action={{
             label: "모집글 작성하기",
             onClick: () => {
-              if (isAuthenticated) {
-                window.location.href = "/posts/new";
-              }
+              window.location.href = "/posts/new";
             },
-            disabled: !isAuthenticated,
-            disabledTooltip: "로그인 이후 이용 가능합니다",
           }}
         />
       ) : (
@@ -312,7 +286,7 @@ function PostsPageContent() {
                 <PostCard
                   key={post.id}
                   post={post}
-                  isOwner={user?.id === post.authorId}
+                  isOwner={!!user?.id && !!post.authorId && user.id === post.authorId}
                 />
               ))}
             </div>

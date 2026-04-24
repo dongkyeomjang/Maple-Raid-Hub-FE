@@ -75,7 +75,9 @@ export function CharacterDetailDialog({
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <h2 className="text-2xl font-bold">{character.characterName}</h2>
-              <VerificationBadge status={character.verificationStatus} />
+              {character.verificationStatus && (
+                <VerificationBadge status={character.verificationStatus} />
+              )}
             </div>
             <p className="text-lg text-muted-foreground">
               Lv.{character.characterLevel} {character.characterClass}
