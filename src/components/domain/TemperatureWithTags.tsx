@@ -36,7 +36,7 @@ export function TemperatureWithTags({
   temperature,
   userId,
   size = "md",
-  showLabel = false,
+  showLabel = true,
 }: TemperatureWithTagsProps) {
   const [open, setOpen] = useState(false);
   const { data: tagSummary, isLoading } = useTagSummary(temperature == null ? userId : (open ? userId : null));
