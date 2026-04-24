@@ -1,7 +1,7 @@
 "use client";
 
-import { Thermometer } from "lucide-react";
 import { cn, getTemperatureColor, getTemperatureLabel, getTemperatureBgColor } from "@/lib/utils";
+import { TemperatureFace } from "./TemperatureFace";
 
 interface TemperatureBadgeProps {
   temperature: number;
@@ -15,7 +15,7 @@ interface TemperatureBadgeProps {
 
 export function TemperatureBadge({
   temperature,
-  showLabel = false,
+  showLabel = true,
   showIcon = true,
   size = "md",
   variant = "default",
@@ -29,19 +29,19 @@ export function TemperatureBadge({
   const sizeConfig = {
     sm: {
       text: "text-tiny",
-      icon: "h-3 w-3",
+      iconPx: 14,
       gap: "gap-0.5",
       padding: variant === "pill" ? "px-1.5 py-0.5" : "",
     },
     md: {
       text: "text-caption",
-      icon: "h-3.5 w-3.5",
+      iconPx: 16,
       gap: "gap-1",
       padding: variant === "pill" ? "px-2 py-0.5" : "",
     },
     lg: {
       text: "text-body-sm",
-      icon: "h-4 w-4",
+      iconPx: 20,
       gap: "gap-1.5",
       padding: variant === "pill" ? "px-2.5 py-1" : "",
     },
@@ -61,7 +61,7 @@ export function TemperatureBadge({
           className
         )}
       >
-        {showIcon && <Thermometer className={cn(config.icon, colorClass)} />}
+        {showIcon && <TemperatureFace temperature={temperature} size={config.iconPx} />}
         <span className={cn("font-semibold tabular-nums", colorClass)}>
           {temperature.toFixed(decimals)}°C
         </span>
@@ -83,7 +83,7 @@ export function TemperatureBadge({
         className
       )}
     >
-      {showIcon && <Thermometer className={cn(config.icon, colorClass)} />}
+      {showIcon && <TemperatureFace temperature={temperature} size={config.iconPx} />}
       <span className={cn("font-semibold tabular-nums", colorClass)}>
         {temperature.toFixed(decimals)}°C
       </span>

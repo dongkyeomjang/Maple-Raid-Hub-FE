@@ -42,13 +42,34 @@ export function formatRelativeTime(date: string | Date): string {
 }
 
 // Temperature labels and colors based on design spec
+// 36.5도 초과(긍정 평가가 1회라도 쌓인 경우)부터 당근마켓 스타일로 단계 세분화
 export function getTemperatureLabel(temperature: number): string {
-  if (temperature >= 50) return "열정적";
-  if (temperature >= 40) return "따뜻함";
+  if (temperature >= 80) return "전설";
+  if (temperature >= 70) return "최고";
+  if (temperature >= 60) return "훌륭";
+  if (temperature >= 50) return "좋음";
+  if (temperature >= 40) return "따뜻";
+  if (temperature > 36.5) return "훈훈";
   if (temperature >= 36) return "기본";
   if (temperature >= 30) return "서늘함";
   if (temperature >= 20) return "차가움";
   return "냉랭함";
+}
+
+/**
+ * 당근마켓 스타일의 매너온도 표현 문장.
+ * 36.5도 초과(= 긍정 평가가 한 번이라도 쌓인 경우)부터만 단계별 문구를 반환한다.
+ * 그 이하(기본/하락 구간)에서는 null 을 반환하므로 호출부는 이를 체크해서 노출 여부를 결정해야 한다.
+ */
+export function getTemperatureExpression(temperature: number): string | null {
+  if (temperature >= 80) return "월드 대표 매너 유저예요";
+  if (temperature >= 70) return "파티원 모두가 찾는 매너예요";
+  if (temperature >= 60) return "매너가 훌륭한 편이에요";
+  if (temperature >= 50) return "매너가 좋은 편이에요";
+  if (temperature >= 45) return "매너가 따뜻해요";
+  if (temperature >= 40) return "매너가 쌓여가고 있어요";
+  if (temperature > 36.5) return "매너가 조금씩 쌓이고 있어요";
+  return null;
 }
 
 export function getTemperatureColor(temperature: number): string {
