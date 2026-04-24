@@ -10,7 +10,7 @@ import {ServerLogo} from "./ServerLogo";
 import type {PostResponse} from "@/types/api";
 import {cn, formatMeso, formatNumber, formatRelativeTime} from "@/lib/utils";
 import {useBossNames} from "@/lib/hooks/use-boss-names";
-import {Calendar, ChevronRight, Clock, Crown, Gem, User} from "lucide-react";
+import {Calendar, ChevronRight, Clock, Crown, Gem, ShieldCheck, User, UserCircle2} from "lucide-react";
 
 interface PostCardProps {
   post: PostResponse;
@@ -51,6 +51,7 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
                       내 모집글
                     </Badge>
                   )}
+                  <AuthorTypeBadge isGuest={post.guest} />
                   <WorldGroupBadge worldGroup={post.worldGroup} size="sm" />
                   <Badge variant={statusConfig.variant} size="sm">
                     {statusConfig.label}
@@ -115,6 +116,7 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
                   내 글
                 </Badge>
               )}
+              <AuthorTypeBadge isGuest={post.guest} />
               <WorldGroupBadge worldGroup={post.worldGroup} size="sm" showEmoji />
             </div>
             <h3 className="font-semibold text-h3 truncate">
@@ -197,6 +199,31 @@ export function PostCard({ post, variant = "default", isOwner = false }: PostCar
         </Button>
       </CardFooter>
     </Card>
+  );
+}
+
+function AuthorTypeBadge({ isGuest }: { isGuest: boolean }) {
+  if (isGuest) {
+    return (
+      <Badge
+        variant="secondary"
+        size="sm"
+        className="bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800"
+      >
+        <UserCircle2 className="h-3 w-3 mr-1" />
+        비회원
+      </Badge>
+    );
+  }
+  return (
+    <Badge
+      variant="secondary"
+      size="sm"
+      className="bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800"
+    >
+      <ShieldCheck className="h-3 w-3 mr-1" />
+      인증
+    </Badge>
   );
 }
 

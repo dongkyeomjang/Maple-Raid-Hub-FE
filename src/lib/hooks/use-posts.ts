@@ -17,6 +17,7 @@ import type {
   CreatePostRequest,
   UpdatePostRequest,
   ApplyRequest,
+  GuestCharacterInfoResponse,
 } from "@/types/api";
 
 export const postKeys = {
@@ -27,6 +28,7 @@ export const postKeys = {
   applications: (postId: string) => [...postKeys.all, "applications", postId] as const,
   myApplications: () => [...postKeys.all, "myApplications"] as const,
   myPosts: () => [...postKeys.all, "myPosts"] as const,
+  guestCharacter: (postId: string) => [...postKeys.all, "guestCharacter", postId] as const,
 };
 
 const DEFAULT_PAGE_SIZE = 6;
@@ -58,6 +60,19 @@ export function usePost(id: string) {
       return result.data as PostDetailResponse;
     },
     enabled: !!id,
+  });
+}
+
+export function useGuestCharacterInfo(postId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: postKeys.guestCharacter(postId),
+    queryFn: async () => {
+      const result = await apiClient.posts.guestCharacter(postId);
+      if (!result.success) throw new Error(result.error.message);
+      return result.data as GuestCharacterInfoResponse;
+    },
+    enabled: enabled && !!postId,
+    staleTime: 60_000,
   });
 }
 

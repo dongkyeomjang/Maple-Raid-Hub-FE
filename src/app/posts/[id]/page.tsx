@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { BossMultiSelector } from "@/components/domain/BossMultiSelector";
+import { apiClient } from "@/lib/api";
 import {
   Dialog,
   DialogContent,
@@ -29,7 +33,7 @@ import { WorldGroupBadge } from "@/components/domain/WorldGroupBadge";
 import { CharacterDetailDialog } from "@/components/domain/CharacterDetailDialog";
 import { ErrorState } from "@/components/common/ErrorState";
 import { LoadingPage } from "@/components/common/LoadingSpinner";
-import { usePost, useApplyToPost, useClosePost, useCancelPost, useWithdrawApplication, usePostUpdates } from "@/lib/hooks/use-posts";
+import { usePost, useApplyToPost, useClosePost, useCancelPost, useWithdrawApplication, usePostUpdates, useGuestCharacterInfo } from "@/lib/hooks/use-posts";
 import { useCharacters } from "@/lib/hooks/use-characters";
 import { useBossNames } from "@/lib/hooks/use-boss-names";
 import { useAuth } from "@/lib/hooks/use-auth";
@@ -53,12 +57,16 @@ import {
   Trash2,
   AlertTriangle,
   Gem,
+  UserCircle2,
+  ExternalLink,
+  KeyRound,
+  Lock,
 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatMeso, formatNumber } from "@/lib/utils";
 import { TemperatureWithTags } from "@/components/domain/TemperatureWithTags";
 import { ServerLogo } from "@/components/domain/ServerLogo";
-import type { PublicCharacterResponse } from "@/types/api";
+import type { PostResponse, PublicCharacterResponse } from "@/types/api";
 
 function renderLinkedText(text: string) {
   const parts = text.split(/(https?:\/\/[^\s]+)/);
@@ -116,8 +124,29 @@ export default function PostDetailPage() {
   const applications = postDetail?.applications ?? [];
   const authorCharacter = postDetail?.authorCharacter;
 
-  // 작성자 여부 확인
-  const isOwner = user?.id === post?.authorId;
+  const isGuestPost = !!post?.guest;
+
+  // 비회원 글: 캐릭터 상세(전투력/장비 등)는 저장하지 않고 매 조회마다 Nexon API 재조회
+  const { data: guestCharacterInfo } = useGuestCharacterInfo(postId, isGuestPost);
+
+  // 비회원 글이면 기본 authorCharacter 뼈대에 실시간 조회 값을 덮어씌움
+  const enrichedAuthorCharacter = useMemo(() => {
+    if (!authorCharacter) return null;
+    if (!isGuestPost || !guestCharacterInfo) return authorCharacter;
+    return {
+      ...authorCharacter,
+      characterName: guestCharacterInfo.characterName ?? authorCharacter.characterName,
+      worldName: guestCharacterInfo.worldName ?? authorCharacter.worldName,
+      characterClass: guestCharacterInfo.characterClass ?? authorCharacter.characterClass,
+      characterLevel: guestCharacterInfo.characterLevel ?? authorCharacter.characterLevel,
+      characterImageUrl: guestCharacterInfo.characterImageUrl ?? authorCharacter.characterImageUrl,
+      combatPower: guestCharacterInfo.combatPower ?? authorCharacter.combatPower,
+      equipmentJson: guestCharacterInfo.equipmentJson ?? authorCharacter.equipmentJson,
+    };
+  }, [authorCharacter, isGuestPost, guestCharacterInfo]);
+
+  // 작성자 여부 확인 (비회원 글은 작성자가 없음)
+  const isOwner = !isGuestPost && !!user?.id && user.id === post?.authorId;
 
   // 현재 사용자의 활성 지원 상태 확인
   const myApplication = applications.find(
@@ -209,16 +238,42 @@ export default function PostDetailPage() {
   return (
     <PageContainer>
       <div className="mb-6 flex justify-between items-center">
-        <Button variant="ghost" size="sm" onClick={() => router.back()}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            // 모집글 작성/수정 직후(회원/비회원) 진입한 경우에만 목록으로 복귀. 그 외는 기존 뒤로가기 동작 유지
+            if (typeof window !== "undefined") {
+              const returnToListId = sessionStorage.getItem("postReturnToListId");
+              if (returnToListId && returnToListId === postId) {
+                sessionStorage.removeItem("postReturnToListId");
+                router.push("/posts");
+                return;
+              }
+            }
+            router.back();
+          }}
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           뒤로가기
         </Button>
-        {isOwner && (
-          <Badge variant="default" className="bg-primary/10 text-primary border-primary/20">
-            <Crown className="h-3 w-3 mr-1" />
-            내 모집글
-          </Badge>
-        )}
+        <div className="flex items-center gap-2">
+          {isGuestPost && (
+            <Badge
+              variant="secondary"
+              className="bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800"
+            >
+              <UserCircle2 className="h-3 w-3 mr-1" />
+              비회원 작성
+            </Badge>
+          )}
+          {isOwner && (
+            <Badge variant="default" className="bg-primary/10 text-primary border-primary/20">
+              <Crown className="h-3 w-3 mr-1" />
+              내 모집글
+            </Badge>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -311,22 +366,25 @@ export default function PostDetailPage() {
           </Card>
 
           {/* 파티장 정보 */}
-          {authorCharacter && (
+          {enrichedAuthorCharacter && (
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Crown className="h-5 w-5 text-yellow-500" />
-                  파티장
+                  {isGuestPost ? "작성자 캐릭터 (비회원)" : "파티장"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <CharacterInfoCard
-                  character={authorCharacter}
-                  ownerUserId={post.authorId}
-                  onClick={() => setSelectedMemberInfo({ character: authorCharacter, ownerUserId: post.authorId })}
+                  character={enrichedAuthorCharacter}
+                  ownerUserId={post.authorId ?? undefined}
+                  onClick={() => setSelectedMemberInfo({
+                    character: enrichedAuthorCharacter,
+                    ownerUserId: post.authorId ?? undefined,
+                  })}
                 />
-                {/* 비작성자 + 로그인 + 인증된 캐릭터 소유자만 DM 버튼 표시 */}
-                {!isOwner && user && hasVerifiedCharacter && (
+                {/* 회원 글 + 비작성자 + 로그인 + 인증된 캐릭터 소유자만 DM 버튼 표시 */}
+                {!isGuestPost && !isOwner && user && hasVerifiedCharacter && (
                   <Button
                     variant="outline"
                     size="sm"
@@ -342,7 +400,7 @@ export default function PostDetailPage() {
           )}
 
           {/* 현재 파티원 (수락된 지원자) */}
-          {acceptedApplications.length > 0 && (
+          {!isGuestPost && acceptedApplications.length > 0 && (
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -368,9 +426,14 @@ export default function PostDetailPage() {
           )}
         </div>
 
-        {/* Sidebar - 작성자/비작성자에 따라 다른 UI */}
+        {/* Sidebar - 비회원 글 / 작성자 / 비작성자에 따라 다른 UI */}
         <div className="space-y-4">
-          {isOwner ? (
+          {isGuestPost ? (
+            <>
+              <GuestContactCard contactLink={post.contactLink} />
+              <GuestOwnerPanel post={post} onChanged={() => refetch()} />
+            </>
+          ) : isOwner ? (
             /* 작성자용 관리 패널 */
             <>
               <Card>
@@ -751,7 +814,7 @@ export default function PostDetailPage() {
                 const selectedChar = charactersData?.find(
                   (c) => c.id === selectedDmCharacterId
                 );
-                if (selectedChar && post && authorCharacter) {
+                if (selectedChar && post && !isGuestPost && post.authorId && authorCharacter && authorCharacter.id) {
                   setDraftDm({
                     targetUserId: post.authorId,
                     targetName: authorCharacter.characterName,
@@ -775,6 +838,376 @@ export default function PostDetailPage() {
       </Dialog>
     </PageContainer>
   );
+}
+
+function GuestOwnerPanel({ post, onChanged }: { post: PostResponse; onChanged: () => void }) {
+  const router = useRouter();
+  const storageKey = `guestPostPassword-${post.id}`;
+
+  const [authenticated, setAuthenticated] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [verifyOpen, setVerifyOpen] = useState(false);
+  const [verifyLoading, setVerifyLoading] = useState(false);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  // 수정 폼 상태
+  const [editBossIds, setEditBossIds] = useState<string[]>([]);
+  const [editRequiredMembers, setEditRequiredMembers] = useState(2);
+  const [editScheduledAt, setEditScheduledAt] = useState("");
+  const [editScheduleTbd, setEditScheduleTbd] = useState(false);
+  const [editDescription, setEditDescription] = useState("");
+  const [editError, setEditError] = useState<string | null>(null);
+
+  const isEditable = post.status === "RECRUITING";
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = sessionStorage.getItem(storageKey);
+    if (stored) setAuthenticated(true);
+  }, [storageKey]);
+
+  const getPassword = () => {
+    if (typeof window === "undefined") return "";
+    return sessionStorage.getItem(storageKey) ?? "";
+  };
+
+  const handleVerify = async () => {
+    if (!passwordInput) {
+      setVerifyError("비밀번호를 입력해주세요.");
+      return;
+    }
+    setVerifyLoading(true);
+    setVerifyError(null);
+    try {
+      const result = await apiClient.posts.verifyGuestPassword(post.id, passwordInput);
+      if (!result.success) {
+        setVerifyError(result.error.message || "비밀번호가 일치하지 않습니다.");
+        return;
+      }
+      sessionStorage.setItem(storageKey, passwordInput);
+      setAuthenticated(true);
+      setVerifyOpen(false);
+      setPasswordInput("");
+    } catch {
+      setVerifyError("비밀번호 검증에 실패했습니다.");
+    } finally {
+      setVerifyLoading(false);
+    }
+  };
+
+  const openEdit = () => {
+    setEditBossIds(post.bossIds ?? []);
+    setEditRequiredMembers(post.requiredMembers);
+    if (post.preferredTime) {
+      setEditScheduledAt(post.preferredTime.split("T")[0]);
+      setEditScheduleTbd(false);
+    } else {
+      setEditScheduledAt("");
+      setEditScheduleTbd(true);
+    }
+    setEditDescription(post.description ?? "");
+    setEditError(null);
+    setEditOpen(true);
+  };
+
+  const handleEditSubmit = async () => {
+    if (editBossIds.length === 0) {
+      setEditError("최소 1개 이상의 보스를 선택해주세요.");
+      return;
+    }
+    if (!editScheduleTbd && !editScheduledAt) {
+      setEditError("예정 날짜를 입력하거나 '상의 후 결정'을 선택해주세요.");
+      return;
+    }
+    setActionLoading(true);
+    setEditError(null);
+    try {
+      const result = await apiClient.posts.update(post.id, {
+        bossIds: editBossIds,
+        requiredMembers: editRequiredMembers,
+        preferredTime: editScheduleTbd ? undefined : new Date(editScheduledAt).toISOString(),
+        clearPreferredTime: editScheduleTbd,
+        description: editDescription || undefined,
+        clearDescription: !editDescription,
+        guestPassword: getPassword(),
+      });
+      if (!result.success) {
+        setEditError(result.error.message || "수정에 실패했습니다.");
+        return;
+      }
+      // 수정 직후 뒤로가기 시 목록으로 돌아가도록 플래그 저장
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("postReturnToListId", post.id);
+      }
+      setEditOpen(false);
+      onChanged();
+    } catch {
+      setEditError("수정에 실패했습니다.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    setActionLoading(true);
+    try {
+      const result = await apiClient.posts.deleteGuest(post.id, getPassword());
+      if (!result.success) {
+        alert(result.error.message || "모집 종료에 실패했습니다.");
+        return;
+      }
+      sessionStorage.removeItem(storageKey);
+      router.push("/posts");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <KeyRound className="h-5 w-5 text-amber-600" />
+          작성자 메뉴
+        </CardTitle>
+        <CardDescription>
+          비밀번호 인증 후 수정ㆍ모집 종료를 할 수 있습니다.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {!authenticated ? (
+          <>
+            <Button
+              className="w-full"
+              variant="outline"
+              onClick={() => setVerifyOpen(true)}
+              disabled={!isEditable}
+            >
+              <Lock className="h-4 w-4 mr-2" />
+              {isEditable ? "비밀번호 입력하고 관리하기" : "모집이 종료된 글입니다"}
+            </Button>
+          </>
+        ) : (
+          <>
+            <div className="flex items-center gap-2 p-2 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-md">
+              <CheckCircle className="h-4 w-4 text-emerald-600" />
+              <span className="text-xs text-emerald-800 dark:text-emerald-300">작성자 인증 완료</span>
+            </div>
+            {isEditable && (
+              <>
+                <Button className="w-full" variant="outline" onClick={openEdit}>
+                  <Pencil className="h-4 w-4 mr-2" />
+                  모집글 수정
+                </Button>
+                <Button
+                  className="w-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                  variant="ghost"
+                  onClick={() => setCancelOpen(true)}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  모집 종료
+                </Button>
+              </>
+            )}
+            <Button
+              className="w-full text-muted-foreground"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                sessionStorage.removeItem(storageKey);
+                setAuthenticated(false);
+              }}
+            >
+              인증 해제
+            </Button>
+          </>
+        )}
+      </CardContent>
+
+      {/* 비밀번호 검증 다이얼로그 */}
+      <Dialog open={verifyOpen} onOpenChange={setVerifyOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>작성자 비밀번호 입력</DialogTitle>
+            <DialogDescription>작성 시 설정한 비밀번호를 입력해주세요.</DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              type="password"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              placeholder="비밀번호"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleVerify();
+              }}
+            />
+            {verifyError && (
+              <p className="text-sm text-destructive mt-2">{verifyError}</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setVerifyOpen(false)}>
+              취소
+            </Button>
+            <Button onClick={handleVerify} disabled={verifyLoading}>
+              {verifyLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              확인
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 수정 다이얼로그 */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>모집글 수정</DialogTitle>
+            <DialogDescription>비회원 모집글의 내용을 수정합니다.</DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="space-y-2">
+              <Label>보스 선택</Label>
+              <BossMultiSelector value={editBossIds} onChange={setEditBossIds} />
+            </div>
+            <div className="space-y-2">
+              <Label>모집 인원</Label>
+              <Select
+                value={editRequiredMembers.toString()}
+                onValueChange={(v) => setEditRequiredMembers(parseInt(v))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[2, 3, 4, 5, 6].map((n) => (
+                    <SelectItem key={n} value={n.toString()}>
+                      {n}명
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>예정 날짜</Label>
+              <div className="flex items-center space-x-2 mb-1">
+                <Checkbox
+                  id="editScheduleTbd"
+                  checked={editScheduleTbd}
+                  onCheckedChange={(checked) => {
+                    setEditScheduleTbd(checked === true);
+                    if (checked) setEditScheduledAt("");
+                  }}
+                />
+                <label htmlFor="editScheduleTbd" className="text-sm font-medium">
+                  상의 후 결정
+                </label>
+              </div>
+              {!editScheduleTbd && (
+                <Input
+                  type="date"
+                  value={editScheduledAt}
+                  onChange={(e) => setEditScheduledAt(e.target.value)}
+                  min={new Date().toISOString().slice(0, 10)}
+                />
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label>메모</Label>
+              <Textarea
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+                rows={3}
+              />
+            </div>
+            {editError && <p className="text-sm text-destructive">{editError}</p>}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(false)}>
+              취소
+            </Button>
+            <Button onClick={handleEditSubmit} disabled={actionLoading}>
+              {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              수정하기
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 모집 종료 확인 */}
+      <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <AlertTriangle className="h-5 w-5" />
+              모집 종료
+            </DialogTitle>
+            <DialogDescription className="pt-2">
+              이 모집글을 종료합니다. 종료 후에는 목록에서 보이지 않으며 되돌릴 수 없습니다.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCancelOpen(false)}>
+              취소
+            </Button>
+            <Button variant="destructive" onClick={handleCancel} disabled={actionLoading}>
+              {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              모집 종료
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </Card>
+  );
+}
+
+function GuestContactCard({ contactLink }: { contactLink: string | null }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg flex items-center gap-2">
+          <UserCircle2 className="h-5 w-5 text-amber-600" />
+          비회원 모집글
+        </CardTitle>
+        <CardDescription>
+          이 모집글은 비회원이 작성했습니다. 지원 기능을 사용할 수 없으니 아래 연락수단으로 직접 연락해주세요.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          <Label>연락수단</Label>
+          <div className="p-3 bg-muted/50 rounded-lg text-sm break-all">
+            {renderContactLink(contactLink)}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function renderContactLink(contactLink: string | null) {
+  if (!contactLink) {
+    return <span className="text-muted-foreground">연락수단이 입력되지 않았습니다.</span>;
+  }
+  const trimmed = contactLink.trim();
+  if (/^https?:\/\//i.test(trimmed)) {
+    return (
+      <a
+        href={trimmed}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1 text-primary underline font-medium"
+      >
+        {trimmed}
+        <ExternalLink className="h-3.5 w-3.5" />
+      </a>
+    );
+  }
+  return <span className="whitespace-pre-line">{trimmed}</span>;
 }
 
 function CharacterInfoCard({

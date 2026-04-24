@@ -129,6 +129,10 @@ export default function EditPostPage() {
         },
       });
 
+      // 수정 직후 상세 페이지에서 뒤로가기 시 수정 폼이 아니라 목록으로 가도록 플래그 저장
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("postReturnToListId", postId);
+      }
       router.push(`/posts/${postId}`);
     } catch (err) {
       if (err instanceof Error) {
@@ -176,7 +180,9 @@ export default function EditPostPage() {
                 onValueChange={(v) => setRequiredMembers(parseInt(v))}
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="인원 선택">
+                    {requiredMembers ? `${requiredMembers}명` : null}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {memberOptions.map((n) => (
