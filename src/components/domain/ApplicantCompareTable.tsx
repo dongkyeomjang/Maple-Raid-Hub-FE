@@ -50,6 +50,7 @@ export function ApplicantCompareTable({
   const [dmTarget, setDmTarget] = useState<DMTargetInfo | null>(null);
   const [dmCharacterSelectOpen, setDmCharacterSelectOpen] = useState(false);
   const [selectedDmCharacterId, setSelectedDmCharacterId] = useState("");
+  const [viewingMessage, setViewingMessage] = useState<string | null>(null);
 
   const { data: charactersData } = useCharacters();
   const setDraftDm = useChatStore((s) => s.setDraftDm);
@@ -142,9 +143,20 @@ export function ApplicantCompareTable({
               </div>
 
               {app.message && (
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {app.message}
-                </p>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {app.message}
+                  </p>
+                  {app.message.length > 50 && (
+                    <button
+                      type="button"
+                      className="text-xs text-primary hover:underline"
+                      onClick={() => setViewingMessage(app.message!)}
+                    >
+                      전문 보기
+                    </button>
+                  )}
+                </div>
               )}
 
               <div className="flex items-center gap-2">
@@ -295,9 +307,20 @@ export function ApplicantCompareTable({
                   </td>
                   <td className="py-3 px-4">
                     {app.message ? (
-                      <p className="text-sm max-w-xs truncate" title={app.message}>
-                        {app.message}
-                      </p>
+                      <div className="max-w-xs space-y-1">
+                        <p className="text-sm truncate" title={app.message}>
+                          {app.message}
+                        </p>
+                        {app.message.length > 25 && (
+                          <button
+                            type="button"
+                            className="text-xs text-primary hover:underline"
+                            onClick={() => setViewingMessage(app.message!)}
+                          >
+                            전문 보기
+                          </button>
+                        )}
+                      </div>
                     ) : (
                       <span className="text-muted-foreground text-sm">-</span>
                     )}
@@ -453,6 +476,28 @@ export function ApplicantCompareTable({
             >
               <MessageCircle className="h-4 w-4 mr-2" />
               메시지 보내기
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 지원 메시지 전문 보기 다이얼로그 */}
+      <Dialog
+        open={viewingMessage !== null}
+        onOpenChange={(open) => !open && setViewingMessage(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>지원 메시지</DialogTitle>
+          </DialogHeader>
+          <div className="py-2 max-h-[60vh] overflow-y-auto">
+            <p className="text-sm whitespace-pre-wrap break-words">
+              {viewingMessage}
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setViewingMessage(null)}>
+              닫기
             </Button>
           </DialogFooter>
         </DialogContent>
