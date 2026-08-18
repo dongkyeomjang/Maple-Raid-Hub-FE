@@ -47,6 +47,7 @@ const bossFamilyNames: Record<string, string> = {
   adversary: "최초의 대적자",
   kaling: "카링",
   shining_star: "찬란한 흉성",
+  bellona: "벨로나",
   limbo: "림보",
   baldrix: "발드릭스",
   jupiter: "유피테르",
